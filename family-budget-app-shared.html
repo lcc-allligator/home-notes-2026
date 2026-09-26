@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Family Budget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Fraunces:opsz,wght@9..144,500..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#edf2ef; --surface:#fbfdfc; --surface-2:#f2f6f4; --line:#d9e2de; --line-soft:#e6ede9;
+  --ink:#13302b; --muted:#5d716b; --primary:#0f7b6c; --primary-soft:#d6ede8; --on-primary:#ffffff;
+  --good:#12805f; --bad:#c8402f; --warn:#b7791f; --bad-soft:#fbe4df; --good-soft:#d9f0e6; --warn-soft:#fbefd2;
+  --bar-bg:rgba(237,242,239,.86); --track:#dfe8e4;
+  --c-pyf:#0f8b7a; --c-rent:#2f5fb3; --c-fixed:#8a4f9e; --c-variable:#dfa020; --c-lifestyle:#e0709a; --c-sinking:#ee7a3d; --c-buffer:#a4b5af;
+  --shadow:0 1px 2px rgba(19,48,43,.05),0 10px 30px rgba(19,48,43,.06);
+  --display:'Fraunces',Georgia,'Times New Roman',serif;
+  --ui:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1a17; --surface:#15251f; --surface-2:#1a2d27; --line:#28403a; --line-soft:#203530;
+    --ink:#e5f0ec; --muted:#93aaa3; --primary:#39c2ad; --primary-soft:#173d36; --on-primary:#06231e;
+    --good:#4fd1a3; --bad:#ff8a78; --warn:#f0bf62; --bad-soft:#3c1f1b; --good-soft:#153a2e; --warn-soft:#3a2e14;
+    --bar-bg:rgba(14,26,23,.86); --track:#233a34;
+    --c-pyf:#2fc7b0; --c-rent:#6f9bec; --c-fixed:#c08bd6; --c-variable:#f0b83e; --c-lifestyle:#f28db2; --c-sinking:#ff955a; --c-buffer:#6f847d;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1a17; --surface:#15251f; --surface-2:#1a2d27; --line:#28403a; --line-soft:#203530;
+  --ink:#e5f0ec; --muted:#93aaa3; --primary:#39c2ad; --primary-soft:#173d36; --on-primary:#06231e;
+  --good:#4fd1a3; --bad:#ff8a78; --warn:#f0bf62; --bad-soft:#3c1f1b; --good-soft:#153a2e; --warn-soft:#3a2e14;
+  --bar-bg:rgba(14,26,23,.86); --track:#233a34;
+  --c-pyf:#2fc7b0; --c-rent:#6f9bec; --c-fixed:#c08bd6; --c-variable:#f0b83e; --c-lifestyle:#f28db2; --c-sinking:#ff955a; --c-buffer:#6f847d;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.45;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,p{margin:0}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:6px}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bar-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1180px;margin:0 auto;padding:10px 20px 0;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand b{font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:-.01em}
+.brand small{color:var(--muted);font-size:13px}
+.tabs{display:flex;gap:4px;order:3;width:100%;overflow-x:auto;scrollbar-width:none;margin-left:-8px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{background:none;border:0;padding:10px 12px 11px;color:var(--muted);font-weight:600;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tab:hover{color:var(--ink)}
+.tab[aria-current="page"]{color:var(--ink);border-bottom-color:var(--primary)}
+.tools{display:flex;gap:8px;align-items:center;margin-left:auto}
+.month-select{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-weight:600;cursor:pointer}
+.icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:16px;line-height:1}
+.icon-btn:hover{border-color:var(--primary)}
+@media(min-width:820px){.tabs{order:0;width:auto;margin-left:0}.topbar-in{flex-wrap:nowrap;padding-bottom:0}.tab{padding:16px 12px 17px}}
+
+.wrap{max-width:1180px;margin:0 auto;padding:26px 20px 60px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.right{text-align:right}
+
+/* buttons, chips */
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 14px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--primary)}
+.btn.primary{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.ghost{background:none}
+.btn.sm{padding:5px 10px;font-size:13px;border-radius:8px}
+.chip{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.info{background:var(--primary-soft);color:var(--primary)}
+.chip.mute{background:var(--surface-2);color:var(--muted)}
+
+/* banner */
+.banner{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);border-radius:12px;padding:12px 16px;margin-bottom:22px}
+.banner.info{background:var(--primary-soft);border-color:color-mix(in srgb,var(--primary) 30%,transparent)}
+.banner p{max-width:70ch}
+
+/* hero */
+.scope{display:flex;gap:18px;margin-bottom:14px}
+.scope button{background:none;border:0;padding:2px 0 4px;color:var(--muted);font-weight:600;cursor:pointer;border-bottom:2px solid transparent}
+.scope button[aria-pressed="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.headline{font-family:var(--display);font-weight:500;font-size:clamp(26px,4.4vw,44px);line-height:1.14;letter-spacing:-.02em;max-width:24ch;text-wrap:balance}
+.headline.wide{max-width:30ch}
+.strip{display:flex;height:54px;border-radius:12px;overflow:hidden;gap:3px;margin:26px 0 8px;background:var(--track)}
+.strip .seg{position:relative;min-width:3px;transition:flex-grow .4s ease;display:flex;align-items:flex-end;padding:6px 8px;color:#fff;font-size:12.5px;font-weight:700;overflow:hidden;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.strip-note{color:var(--muted);font-size:13px}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);margin:26px 0 34px;border-top:1px solid var(--line)}
+.fact{padding:16px 18px 6px 0}
+.fact+.fact{padding-left:18px;border-left:1px solid var(--line)}
+.fact .k{color:var(--muted);font-size:13.5px;font-weight:600}
+.fact .v{font-size:30px;font-weight:700;letter-spacing:-.02em;margin:2px 0}
+.fact .n{color:var(--muted);font-size:13px}
+@media(max-width:820px){
+  .facts{grid-template-columns:1fr 1fr}
+  .fact:nth-child(3){padding-left:0;border-left:0}
+  .fact:nth-child(n+3){border-top:1px solid var(--line);margin-top:8px;padding-top:16px}
+  .fact .v{font-size:25px}
+}
+
+/* layout */
+.cols{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:34px;align-items:start}
+@media(max-width:980px){.cols{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.panel-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:16px 20px 8px;flex-wrap:wrap}
+.panel-h h2{font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:-.01em}
+h2.sec{font-family:var(--display);font-size:20px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
+.section{margin-top:38px}
+
+/* ledger rows */
+.ledger{list-style:none;margin:0;padding:4px 20px 12px}
+.lrow{display:grid;grid-template-columns:12px minmax(130px,1.2fr) minmax(90px,1.6fr) 104px 56px;gap:14px;align-items:center;padding:13px 0;border-top:1px solid var(--line-soft)}
+.lrow:first-child{border-top:0}
+.sw{width:12px;height:12px;border-radius:4px}
+.lname b{display:block;font-weight:650}
+.lname span{color:var(--muted);font-size:12.5px}
+.track{position:relative;height:9px;border-radius:9px;background:var(--track)}
+.fill{position:absolute;left:0;top:0;bottom:0;border-radius:9px;transition:width .35s ease}
+.mark{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.55;border-radius:2px}
+.amt{font-weight:650;text-align:right;white-space:nowrap}
+.amt small{display:block;color:var(--muted);font-weight:500;font-size:12.5px}
+.diff{text-align:right;font-weight:650;font-size:13.5px}
+.diff.good{color:var(--good)}.diff.bad{color:var(--bad)}.diff.zero{color:var(--muted)}
+@media(max-width:620px){
+  .lrow{grid-template-columns:12px 1fr auto;row-gap:8px}
+  .lrow .track{grid-column:2 / 4;grid-row:2}
+  .lrow .diff{grid-column:3;grid-row:1;display:none}
+}
+
+/* rail */
+.rail>section+section{margin-top:30px;padding-top:26px;border-top:1px solid var(--line)}
+.jarrow{display:flex;gap:18px;align-items:center}
+.jar{width:74px;flex:none}
+.big{font-size:28px;font-weight:700;letter-spacing:-.02em}
+.notes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.notes li{padding-left:14px;border-left:3px solid var(--line)}
+.notes li.good{border-left-color:var(--good)}.notes li.bad{border-left-color:var(--bad)}.notes li.warn{border-left-color:var(--warn)}.notes li.info{border-left-color:var(--primary)}
+.notes b{display:block;font-weight:650}
+.notes span{color:var(--muted);font-size:13.5px}
+
+/* year chart */
+.chart{padding:0 14px 14px}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{font-family:var(--ui);fill:var(--muted);font-size:12.5px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;padding:0 20px 16px;color:var(--muted);font-size:13px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* simple lists */
+.flist{list-style:none;margin:0;padding:0}
+.frow{display:grid;grid-template-columns:minmax(0,1fr) minmax(70px,1fr) auto;gap:14px;align-items:center;padding:11px 0;border-top:1px solid var(--line-soft)}
+.frow:first-child{border-top:0}
+.frow.hol .fn{font-weight:700}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:34px}
+@media(max-width:980px){.three{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.three{grid-template-columns:1fr}}
+@media(max-width:820px){.two{grid-template-columns:1fr}}
+
+/* forms */
+.num{width:100%;min-width:60px;max-width:110px;text-align:right;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.num:focus{border-color:var(--primary);background:var(--surface)}
+.txt{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:7px 10px;width:100%}
+.txt:focus{border-color:var(--primary);background:var(--surface)}
+label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end;padding:6px 20px 18px}
+.err{color:var(--bad);font-size:13px;padding:0 20px 12px}
+
+/* budget tab */
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+@media(max-width:940px){.bgrid{grid-template-columns:1fr}}
+.bhead{display:flex;align-items:center;gap:10px;padding:15px 18px 6px}
+.bhead h3{font-family:var(--display);font-size:18px;font-weight:600}
+.bhead .tot{margin-left:auto;text-align:right;font-weight:650}
+.bhead .tot small{display:block;color:var(--muted);font-weight:500;font-size:12.5px}
+.cols-h,.brow{display:grid;grid-template-columns:minmax(0,1.5fr) 92px 92px 66px 26px;gap:8px;align-items:center;padding:7px 18px}
+.cols-h{color:var(--muted);font-size:12.5px;font-weight:600;padding-top:2px;padding-bottom:2px}
+.brow{border-top:1px solid var(--line-soft)}
+.brow .nm{overflow-wrap:anywhere}
+.tag{white-space:nowrap;display:inline-block;font-size:11.5px;color:var(--muted);background:var(--surface-2);border-radius:6px;padding:1px 6px;margin-left:6px}
+.xbtn{background:none;border:0;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:2px}
+.xbtn:hover{color:var(--bad)}
+.addrow{padding:10px 18px 14px;border-top:1px solid var(--line-soft);display:grid;grid-template-columns:1fr 110px auto;gap:8px}
+.linkbtn{background:none;border:0;color:var(--primary);font-weight:650;cursor:pointer;padding:10px 18px 14px}
+@media(max-width:520px){
+  .cols-h,.brow{grid-template-columns:minmax(0,1fr) 78px 78px 22px;gap:6px}
+  .cols-h span:nth-child(4),.brow .diff{display:none}
+}
+.incbox{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 20px;margin-bottom:22px}
+.incbox .num{max-width:150px;font-size:18px;font-weight:700}
+
+/* funds tab */
+.fund{margin-bottom:22px}
+.fund.hol{border-color:color-mix(in srgb,var(--c-sinking) 55%,var(--line));box-shadow:0 0 0 3px color-mix(in srgb,var(--c-sinking) 14%,transparent),var(--shadow)}
+.fund-top{display:flex;gap:20px;align-items:center;padding:18px 20px;flex-wrap:wrap}
+.fund-top .t{flex:1;min-width:180px}
+.fund-top h3{font-family:var(--display);font-size:21px;font-weight:600}
+.fstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;padding:0 20px 16px}
+.fstats .k{color:var(--muted);font-size:12.5px;font-weight:600;margin-bottom:3px}
+.fstats .v{font-weight:650}
+details.led{border-top:1px solid var(--line-soft);padding:10px 20px 14px}
+details.led summary{cursor:pointer;font-weight:650;color:var(--primary)}
+.tscroll{overflow-x:auto;margin-top:10px}
+table.led{border-collapse:collapse;min-width:640px;width:100%;font-size:13px}
+table.led th,table.led td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line-soft)}
+table.led th:first-child,table.led td:first-child{text-align:left;color:var(--muted);font-weight:600}
+table.led th{color:var(--muted);font-weight:600}
+
+/* extra tab */
+table.xt{width:100%;border-collapse:collapse}
+table.xt th,table.xt td{padding:10px 8px;text-align:right;border-top:1px solid var(--line-soft);font-size:14px}
+table.xt th{color:var(--muted);font-size:12.5px;font-weight:600;border-top:0}
+table.xt th:first-child,table.xt td:first-child,table.xt th:nth-child(2),table.xt td:nth-child(2){text-align:left}
+.empty{padding:28px 20px;color:var(--muted);text-align:center}
+.splitbar{display:flex;height:16px;border-radius:8px;overflow:hidden;gap:2px;margin:10px 0 6px}
+.splitbar i{display:block}
+
+/* setup */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+@media(max-width:900px){.sgrid{grid-template-columns:1fr}}
+.srow{display:grid;grid-template-columns:1fr 110px;gap:12px;align-items:center;padding:8px 18px;border-top:1px solid var(--line-soft)}
+.srow:first-of-type{border-top:0}
+.shead{padding:16px 18px 6px}
+.shead h3{font-family:var(--display);font-size:18px;font-weight:600}
+.shead p{color:var(--muted);font-size:13.5px;margin-top:2px}
+.stot{display:flex;justify-content:space-between;align-items:center;padding:10px 18px 14px;border-top:1px solid var(--line);font-weight:650}
+.pct{position:relative}
+.pct .num{padding-right:22px}
+.pct::after{content:'%';position:absolute;right:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+textarea.bk{width:100%;min-height:110px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;padding:6px 18px 18px}
+footer.foot{max-width:1180px;margin:0 auto;padding:0 20px 40px;color:var(--muted);font-size:12.5px}
+@media(max-width:620px){.strip .seg{font-size:0;padding:0}.strip{height:40px}}
+
+/* weekly logging */
+.rowrap{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.ro{width:100%;min-width:70px;max-width:120px;text-align:right;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;color:inherit;cursor:pointer;font-variant-numeric:tabular-nums;font-weight:650}
+.ro:hover{border-color:var(--primary);color:var(--primary)}
+.wtoggle{background:none;border:0;padding:0;color:var(--muted);font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.wtoggle:hover{color:var(--primary)}
+.wchips{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 12px}
+.wchip{border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer}
+.wchip:hover{border-color:var(--primary);color:var(--primary)}
+.wchip.filled{background:var(--good-soft);border-color:transparent;color:var(--good)}
+.hint{padding:0 18px 8px;margin-top:-2px}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:25;background:var(--primary);color:var(--on-primary);border:0;border-radius:999px;padding:14px 20px;font-weight:700;font-size:14.5px;box-shadow:0 8px 24px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;gap:8px}
+.fab:hover{filter:brightness(1.06)}
+.fab .plus{font-size:18px;line-height:1}
+@media(max-width:620px){.fab span.lbl{display:none}.fab{padding:0;border-radius:50%;width:54px;height:54px;justify-content:center}}
+.modal-back{position:fixed;inset:0;background:rgba(10,20,18,.45);backdrop-filter:blur(2px);z-index:30;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.modal{background:var(--surface);border-radius:18px 18px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom,0px));width:100%;max-width:460px;box-shadow:var(--shadow);max-height:88vh;overflow-y:auto}
+.mrow{margin-bottom:14px}
+.mrow.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(min-width:620px){.modal-back{align-items:center;padding:20px}.modal{border-radius:16px;max-height:80vh}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+'use strict';
+
+/* ------------------------------------------------------------------ constants */
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const FULL=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const BUCKETS=[
+  {id:'pyf',name:'PYF',sub:'Pay yourself first',good:true,v:'--c-pyf'},
+  {id:'rent',name:'Rent',sub:'Fixed monthly',good:false,v:'--c-rent'},
+  {id:'fixed',name:'Other fixed costs',sub:'Insurance, connectivity, childcare',good:false,v:'--c-fixed'},
+  {id:'variable',name:'Variable essentials',sub:'Groceries, utilities, health',good:false,v:'--c-variable'},
+  {id:'lifestyle',name:'Lifestyle',sub:'Eating out, outings, personal',good:false,v:'--c-lifestyle'},
+  {id:'sinking',name:'Sinking funds',sub:'Holidays, festive, renewals',good:true,v:'--c-sinking'},
+  {id:'buffer',name:'Buffer',sub:'What is left over',good:true,v:'--c-buffer'}
+];
+const BM=Object.fromEntries(BUCKETS.map(b=>[b.id,b]));
+const NONBUF=['pyf','rent','fixed','variable','lifestyle','sinking'];
+const KEY='penang-family-budget-v1';
+
+/* ------------------------------------------------------------------ helpers */
+const $=(s,el)=>(el||document).querySelector(s);
+const sum=a=>a.reduce((x,y)=>x+(+y||0),0);
+const num=x=>(typeof x==='number'&&isFinite(x))?x:0;
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>{n=Math.round(n||0);return (n<0?'\u2212':'')+'RM\u00a0'+Math.abs(n).toLocaleString('en-US')};
+const signed=n=>{n=Math.round(n||0);return n===0?'\u2013':(n>0?'+':'\u2212')+Math.abs(n).toLocaleString('en-US')};
+const pct=(n,d)=>(+((n||0)*100).toFixed(d===undefined?1:d))+'%';
+const parseNum=x=>{const s=String(x).replace(/[^0-9.\-]/g,'');if(s===''||s==='-'||s==='.')return null;const n=parseFloat(s);return isFinite(n)?n:null};
+const cv=id=>`var(${BM[id].v})`;
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* ------------------------------------------------------------------ state */
+function defaults(){
+  const L=(id,bucket,name,planned,extra)=>Object.assign({id,bucket,name,planned},extra||{});
+  return {
+    v:1,year:new Date().getFullYear(),demo:false,theme:null,
+    income1:8000,pyfPct:.15,rentLimit:.35,
+    pyfSplit:{emergency:.5,prs:.15,invest:.2,edu:.15},
+    extraSplit:{pyf:.5,sink:.3,free:.2},
+    targets:{rent:.32,fixed:.12,variable:.2,lifestyle:.085,sinking:.075,buffer:.05},
+    lines:[
+      L('p_em','pyf','Emergency fund',0,{share:'emergency'}),
+      L('p_prs','pyf','Retirement savings (PRS)',0,{share:'prs'}),
+      L('p_inv','pyf','Investments',0,{share:'invest'}),
+      L('p_edu','pyf',"Kids' education fund",0,{share:'edu'}),
+      L('rent','rent','Rent',2560),
+      L('f_med','fixed','Medical / hospitalisation insurance',300),
+      L('f_net','fixed','Internet / fibre',130),
+      L('f_mob','fixed','Mobile plans',120),
+      L('f_sub','fixed','Streaming & subscriptions',60),
+      L('f_help','fixed','Babysitter / domestic helper',250),
+      L('f_xtra','fixed','Extracurriculars',100),
+      L('v_groc','variable','Groceries',850),
+      L('v_elec','variable','Electricity (TNB)',180),
+      L('v_water','variable','Water & sewerage',40),
+      L('v_clin','variable','Clinic, medication, dental',150),
+      L('v_kids','variable',"Kids' misc. (clothes, toys, books)",150),
+      L('v_house','variable','Household supplies',100),
+      L('v_grab','variable','Grab / e-hailing',130),
+      L('l_eat','lifestyle','Eating out & hawker food',300),
+      L('l_take','lifestyle','Takeaway & delivery',120),
+      L('l_date','lifestyle','Date nights & family outings',130),
+      L('l_care','lifestyle','Personal care & adult clothing',130),
+      L('s_hol','sinking','Holidays (own fund)',300,{fund:'hol'}),
+      L('s_fest','sinking','Festive',150,{fund:'fest'}),
+      L('s_prem','sinking','Annual premiums & renewals',50,{fund:'prem'}),
+      L('s_appl','sinking','Appliances & replacements',100,{fund:'appl'})
+    ],
+    inc1Actual:Array(12).fill(null),actuals:{},extra:[],entries:[],
+    funds:[
+      {id:'hol',name:'Holidays',target:3600,opening:0,spent:Array(12).fill(null)},
+      {id:'fest',name:'Festive',target:1800,opening:0,spent:Array(12).fill(null)},
+      {id:'prem',name:'Annual premiums',target:600,opening:0,spent:Array(12).fill(null)},
+      {id:'appl',name:'Appliances',target:1200,opening:0,spent:Array(12).fill(null)}
+    ]
+  };
+}
+function applyDemo(s){
+  const r=rng(2026), n=Math.max(3,Math.min(9,new Date().getMonth()||8));
+  s.demo=true;
+  for(let m=0;m<n;m++){
+    s.inc1Actual[m]=s.income1;
+    s.lines.forEach(l=>{
+      const p=planOf(s,l);
+      if(l.bucket==='variable'||l.bucket==='lifestyle'){
+        const wks=weeksOf(s.year,m), variance=l.bucket==='variable'?.28:.5, lo=l.bucket==='variable'?.86:.75;
+        wks.forEach(w=>{
+          const amt=Math.max(0,Math.round((p/wks.length)*(lo+r()*variance)/5)*5);
+          s.entries.push({id:'e_demo_'+m+'_'+w.idx+'_'+l.id,line:l.id,month:m,week:w.idx,amount:amt,note:''});
+        });
+        return;
+      }
+      let a=p; if(l.id==='p_inv'&&m===3)a=Math.round(p*.5);
+      (s.actuals[l.id]=s.actuals[l.id]||Array(12).fill(null))[m]=Math.round(a);
+    });
+  }
+  const y=s.year, d=(m,dd)=>y+'-'+String(m).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
+  s.extra=[{id:'x1',date:d(2,12),source:'Freelance job',amount:1200,fund:'hol'},
+           {id:'x2',date:d(4,20),source:'One-off gig',amount:800,fund:'fest'},
+           {id:'x3',date:d(7,9),source:'Freelance job',amount:1500,fund:'hol'}].filter(x=>+x.date.slice(5,7)<=n);
+  if(n>5)s.funds[0].spent[5]=1500;
+}
+function planOf(s,l){return l.bucket==='pyf'?s.income1*s.pyfPct*s.pyfSplit[l.share]:num(l.planned)}
+
+let state=null, storageOk=true;
+const ui={tab:'overview',month:new Date().getMonth(),scope:'month',addingTo:null,confirm:null,err:null,backup:'',restoreErr:null,modal:null,modalErr:null,expandedLines:{},syncUrlDraft:null,syncErr:null};
+
+function load(){try{const raw=localStorage.getItem(KEY);if(raw){const s=JSON.parse(raw);if(s&&s.v===1){if(!Array.isArray(s.entries))s.entries=[];return s}}}catch(e){storageOk=false}return null}
+function localSave(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){storageOk=false}}
+
+/* ------------------------------------------------------------------ shared sync (Google Sheet via Apps Script) */
+const SYNC_URL_KEY=KEY+'-sync-url', SYNC_AT_KEY=KEY+'-sync-at';
+let sync={
+  url:(function(){try{return localStorage.getItem(SYNC_URL_KEY)||''}catch(e){return ''}})(),
+  status:'idle', // idle | syncing | synced | error
+  lastSyncedAt:(function(){try{return parseInt(localStorage.getItem(SYNC_AT_KEY)||'0',10)||0}catch(e){return 0}})(),
+  lastSyncedWhen:0, dirty:false, pollTimer:null, pushTimer:null
+};
+function setSyncUrl(u){
+  sync.url=(u||'').trim();
+  try{if(sync.url)localStorage.setItem(SYNC_URL_KEY,sync.url);else localStorage.removeItem(SYNC_URL_KEY)}catch(e){}
+  stopPolling();
+  if(sync.url){sync.status='syncing';cloudPull(false).then(()=>startPolling())}
+  else{sync.status='idle'}
+}
+function startPolling(){stopPolling();sync.pollTimer=setInterval(()=>{if(!sync.dirty)cloudPull(true)},20000)}
+function stopPolling(){if(sync.pollTimer)clearInterval(sync.pollTimer);sync.pollTimer=null}
+async function cloudPull(onlyIfNewer){
+  if(!sync.url)return;
+  sync.status='syncing';render();
+  try{
+    const res=await fetch(sync.url+'?t='+Date.now(),{method:'GET'});
+    const j=await res.json();
+    if(j&&j.ok&&j.data){
+      const isNewer=j.updatedAt>sync.lastSyncedAt;
+      if(!onlyIfNewer||isNewer){
+        if(onlyIfNewer&&sync.dirty){/* local unpushed edits take priority; a push is already scheduled */}
+        else{
+          const parsed=JSON.parse(j.data);
+          if(parsed&&parsed.v===1){
+            if(!Array.isArray(parsed.entries))parsed.entries=[];
+            state=parsed;
+            sync.lastSyncedAt=j.updatedAt;try{localStorage.setItem(SYNC_AT_KEY,String(j.updatedAt))}catch(e){}
+            localSave();
+          }
+        }
+      }
+    }else if(j&&j.ok&&!j.data){
+      sync.lastSyncedAt=j.updatedAt||0;
+      cloudPush();return;
+    }
+    sync.status='synced';sync.lastSyncedWhen=Date.now();
+  }catch(e){sync.status='error'}
+  render();
+}
+function scheduleCloudPush(){
+  if(!sync.url)return;
+  clearTimeout(sync.pushTimer);
+  sync.pushTimer=setTimeout(cloudPush,1200);
+}
+async function cloudPush(){
+  if(!sync.url)return;
+  sync.status='syncing';render();
+  try{
+    const res=await fetch(sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({data:JSON.stringify(state)})});
+    const j=await res.json();
+    if(j&&j.ok){
+      sync.dirty=false;sync.lastSyncedAt=j.updatedAt;try{localStorage.setItem(SYNC_AT_KEY,String(j.updatedAt))}catch(e){}
+      sync.status='synced';sync.lastSyncedWhen=Date.now();
+    }else{sync.status='error'}
+  }catch(e){sync.status='error'}
+  render();
+}
+function save(){
+  localSave();
+  if(sync.url){sync.dirty=true;scheduleCloudPush()}
+}
+
+/* ------------------------------------------------------------------ calculations */
+const planned=l=>planOf(state,l);
+const logged=m=>num(state.inc1Actual[m])>0;
+const ITEMIZED=['variable','lifestyle'];
+const isItemized=b=>ITEMIZED.indexOf(b)>=0;
+function weeksOf(year,month){
+  const days=new Date(year,month+1,0).getDate(), n=Math.ceil(days/7), arr=[];
+  for(let i=0;i<n;i++){const start=i*7+1,end=Math.min((i+1)*7,days);arr.push({idx:i,label:'Wk '+(i+1),range:start+(end>start?'\u2013'+end:'')})}
+  return arr;
+}
+function entriesFor(lineId,m){return state.entries.filter(e=>e.line===lineId&&e.month===m)}
+function findEntry(lineId,m,w){return state.entries.find(e=>e.line===lineId&&e.month===m&&e.week===w)}
+function refreshModal(){
+  if(!ui.modal)return;
+  const e=findEntry(ui.modal.line,ui.modal.month,ui.modal.week);
+  ui.modal.amount=e?e.amount:'';ui.modal.note=e?e.note:'';ui.modal.editingId=e?e.id:null;
+}
+function upsertEntry(lineId,m,w,amount,note){
+  const e=findEntry(lineId,m,w);
+  if(e){e.amount=amount;e.note=note||'';}
+  else state.entries.push({id:'e_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),line:lineId,month:m,week:w,amount,note:note||''});
+}
+function openWeekFor(lineId,m){const wks=weeksOf(state.year,m),nx=wks.find(w=>!findEntry(lineId,m,w.idx));return nx?nx.idx:wks[wks.length-1].idx}
+function currentWeekIndex(month){
+  const now=new Date();
+  if(now.getFullYear()!==state.year||now.getMonth()!==month)return 0;
+  const wks=weeksOf(state.year,month);
+  return Math.min(Math.floor((now.getDate()-1)/7),wks.length-1);
+}
+const lineActual=(l,m)=>isItemized(l.bucket)?sum(entriesFor(l.id,m).map(e=>num(e.amount))):num((state.actuals[l.id]||[])[m]);
+const linesOf=b=>state.lines.filter(l=>l.bucket===b);
+function bucketPlanned(b){
+  if(b==='buffer')return state.income1-sum(NONBUF.map(bucketPlanned));
+  return sum(linesOf(b).map(planned));
+}
+function bucketActual(b,m){
+  if(b==='buffer')return logged(m)?num(state.inc1Actual[m])-sum(NONBUF.map(x=>bucketActual(x,m))):0;
+  return sum(linesOf(b).map(l=>lineActual(l,m)));
+}
+function scopeMonths(){return ui.scope==='month'?[ui.month]:[0,1,2,3,4,5,6,7,8,9,10,11].filter(logged)}
+const nMonths=()=>ui.scope==='month'?1:scopeMonths().length;
+const isActive=()=>ui.scope==='month'?logged(ui.month):scopeMonths().length>0;
+const bA=b=>sum(scopeMonths().map(m=>bucketActual(b,m)));
+const bP=b=>bucketPlanned(b)*nMonths();
+const monthOf=d=>parseInt(String(d).slice(5,7),10)-1;
+const yearOf=d=>parseInt(String(d).slice(0,4),10);
+function extraAgg(ms){
+  const o={total:0,pyf:0,sink:0,free:0,byFund:{}};
+  state.extra.forEach(x=>{
+    if(yearOf(x.date)!==state.year||ms.indexOf(monthOf(x.date))<0)return;
+    const a=num(x.amount);o.total+=a;o.pyf+=a*state.extraSplit.pyf;o.sink+=a*state.extraSplit.sink;o.free+=a*state.extraSplit.free;
+    o.byFund[x.fund]=(o.byFund[x.fund]||0)+a*state.extraSplit.sink;
+  });
+  return o;
+}
+const scopeExtraMonths=()=>ui.scope==='month'?[ui.month]:[0,1,2,3,4,5,6,7,8,9,10,11];
+const fundLine=f=>state.lines.find(l=>l.fund===f.id);
+function fundFlow(f,m){
+  const ln=fundLine(f);
+  return {aside:ln?lineActual(ln,m):0,top:extraAgg([m]).byFund[f.id]||0,spent:num(f.spent[m])};
+}
+function fundBalance(f,m){let b=num(f.opening);for(let k=0;k<=m;k++){const x=fundFlow(f,k);b+=x.aside+x.top-x.spent}return b}
+function lastLogged(){let l=-1;for(let m=0;m<12;m++)if(logged(m))l=m;return l}
+const balMonth=()=>ui.scope==='month'?ui.month:Math.max(lastLogged(),0);
+function pyfStats(){
+  const ms=scopeMonths(), ex=extraAgg(scopeExtraMonths());
+  const inc=sum(ms.map(m=>num(state.inc1Actual[m]))), pyf=sum(ms.map(m=>bucketActual('pyf',m)));
+  return {inc,pyf,ex,reg:inc?pyf/inc:0,tot:(inc+ex.total)?(pyf+ex.pyf)/(inc+ex.total):0};
+}
+
+/* ------------------------------------------------------------------ svg bits */
+function yearChart(){
+  const W=Math.max(300,Math.min(1100,(document.documentElement.clientWidth||1000)-72)),H=W<560?230:250,x0=8,base=H-42,top=16,slot=(W-x0*2)/12,bw=Math.min(46,slot-(W<560?6:16));
+  const maxV=Math.max(state.income1,...state.inc1Actual.map(num))*1.04||1;
+  const sc=v=>(base-top)*v/maxV;
+  let g='';
+  for(let m=0;m<12;m++){
+    const cx=x0+slot*m+slot/2,x=cx-bw/2,sel=m===ui.month;
+    g+=`<g data-click="pick-month" data-m="${m}" style="cursor:pointer">`;
+    g+=`<rect x="${x0+slot*m+2}" y="${top-6}" width="${slot-4}" height="${base-top+34}" rx="8" fill="${sel?'var(--primary-soft)':'transparent'}"/>`;
+    if(logged(m)){
+      const saved=bucketActual('pyf',m)+bucketActual('sinking',m);
+      const spent=NONBUF.filter(b=>b!=='pyf'&&b!=='sinking').reduce((a,b)=>a+bucketActual(b,m),0);
+      const left=Math.max(0,bucketActual('buffer',m));
+      let y=base;
+      [[saved,'var(--c-pyf)','Set aside'],[spent,'var(--c-rent)','Living costs'],[left,'var(--c-buffer)','Left over']].forEach(([v,c,n])=>{
+        const h=sc(v);if(h<=0)return;y-=h;
+        g+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" fill="${c}"><title>${FULL[m]}: ${n} ${fmt(v)}</title></rect>`;
+      });
+    }else{
+      g+=`<rect x="${x}" y="${base-3}" width="${bw}" height="3" rx="1.5" fill="var(--line)"/>`;
+    }
+    g+=`<text x="${cx}" y="${base+20}" text-anchor="middle" style="${sel?'fill:var(--ink);font-weight:700':''}">${slot>=34?MONTHS[m]:MONTHS[m][0]}</text></g>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Income 1 by month, split into set aside, living costs and left over">${g}</svg>`;
+}
+function jarSvg(p){
+  const h=76*clamp(p,0,1), y=94-h;
+  return `<svg class="jar" viewBox="0 0 74 110" role="img" aria-label="Holiday fund is ${Math.round(clamp(p,0,1)*100)}% full">
+  <defs><clipPath id="jc"><rect x="9" y="18" width="56" height="78" rx="14"/></clipPath></defs>
+  <rect x="9" y="18" width="56" height="78" rx="14" fill="var(--surface-2)" stroke="var(--line)" stroke-width="2"/>
+  <g clip-path="url(#jc)"><rect x="9" y="${y+2}" width="56" height="${h+4}" fill="var(--c-sinking)" opacity=".92"/><rect x="9" y="${y}" width="56" height="3" fill="#fff" opacity=".28"/></g>
+  <rect x="17" y="6" width="40" height="13" rx="5" fill="var(--c-sinking)"/>
+  <rect x="9" y="18" width="56" height="78" rx="14" fill="none" stroke="var(--ink)" stroke-opacity=".25" stroke-width="2"/></svg>`;
+}
+
+/* ------------------------------------------------------------------ views */
+function header(){
+  const tabs=[['overview','Overview'],['budget','Budget'],['extra','Extra income'],['sinking','Sinking funds'],['setup','Setup']];
+  return `<header class="topbar"><div class="topbar-in">
+    <div class="brand"><b>Family Budget</b><small>${state.year}</small></div>
+    <nav class="tabs" aria-label="Sections">${tabs.map(t=>`<button class="tab" data-click="tab" data-t="${t[0]}" ${ui.tab===t[0]?'aria-current="page"':''}>${t[1]}</button>`).join('')}</nav>
+    <div class="tools">
+      ${syncChip()}
+      <select class="month-select" data-act="month" aria-label="Month">${FULL.map((n,i)=>`<option value="${i}" ${i===ui.month?'selected':''}>${n}</option>`).join('')}</select>
+      <button class="icon-btn" data-click="theme" aria-label="Switch light or dark theme" title="Light / dark">\u25D0</button>
+    </div></div></header>`;
+}
+
+function syncChip(){
+  if(!sync.url)return '';
+  const map={syncing:['info','Syncing…'],synced:['good','Synced'],error:['bad','Sync error'],idle:['mute','Not synced']};
+  const[t,label]=map[sync.status]||map.idle;
+  return `<button class="chip ${t}" data-click="tab" data-t="setup" style="border:0;cursor:pointer" title="Shared with your wife via Google Sheets. Tap to manage.">${label}</button>`;
+}
+function overview(){
+  const act=isActive(), ms=scopeMonths();
+  const spent=sum(['rent','fixed','variable','lifestyle'].map(bA)), saved=bA('pyf')+bA('sinking'), left=bA('buffer');
+  const when=ui.scope==='month'?'In '+FULL[ui.month]:'So far in '+state.year;
+  let head;
+  if(!act){
+    head=ui.scope==='month'?`${FULL[ui.month]} has not started yet. Enter Income 1 on the Budget tab to switch it on.`:`Nothing is logged for ${state.year} yet.`;
+  }else{
+    head=`${when}, ${fmt(spent)} went to living costs, ${fmt(saved)} was put aside and ${left>=0?fmt(left)+' is left over.':'you are '+fmt(-left)+' over.'}`;
+  }
+  const P=pyfStats(), ex=P.ex, hol=state.funds[0], hb=fundBalance(hol,balMonth()), hp=hol.target?hb/hol.target:0;
+  const incPlan=state.income1*nMonths();
+  const banner=state.demo?`<div class="banner"><p><b>You are looking at demo figures.</b> The plan uses sample amounts for an RM 8,000 income. Clear the demo to start entering your own numbers.</p><button class="btn primary" data-click="clear-demo">Clear demo data</button></div>`:'';
+  const notStarted=(ui.scope==='month'&&!act)?`<div class="banner info"><p>The plan below is what you have budgeted for ${FULL[ui.month]}. Actual figures appear once you enter Income 1 received.</p><button class="btn" data-click="tab" data-t="budget">Open Budget</button></div>`:'';
+
+  // money strip
+  const segs=BUCKETS.map(b=>({b,v:act?Math.max(0,bA(b.id)):Math.max(0,bP(b.id))})).filter(s=>s.v>0);
+  const tot=sum(segs.map(s=>s.v))||1;
+  const strip=`<div class="strip" role="img" aria-label="How Income 1 is split">${segs.map(s=>`<div class="seg" style="flex:${s.v} 1 0;background:${cv(s.b.id)}" title="${s.b.name}: ${fmt(s.v)}">${s.v/tot>.075?esc(s.b.name==='Variable essentials'?'Variable':s.b.name==='Other fixed costs'?'Fixed':s.b.name)+' '+Math.round(s.v/tot*100)+'%':''}</div>`).join('')}</div>
+    <div class="strip-note">${act?'How Income 1 was actually split.':'How Income 1 is planned to be split.'}</div>`;
+
+  const facts=`<div class="facts">
+    <div class="fact"><div class="k">Income 1 received</div><div class="v">${fmt(P.inc)}</div><div class="n">Planned ${fmt(incPlan)}</div></div>
+    <div class="fact"><div class="k">Extra income</div><div class="v">${fmt(ex.total)}</div><div class="n">Never part of the plan</div></div>
+    <div class="fact"><div class="k">PYF rate</div><div class="v">${act?pct(P.reg):'\u2013'}</div><div class="n">Target ${pct(state.pyfPct)}${act&&ex.total?', '+pct(P.tot)+' with top-ups':''}</div></div>
+    <div class="fact"><div class="k">Holiday fund</div><div class="v">${fmt(hb)}</div><div class="n">${pct(hp,0)} of ${fmt(hol.target)}</div></div></div>`;
+
+  // ledger
+  const rows=BUCKETS.map(b=>{
+    const p=bP(b.id),a=bA(b.id),ratio=p>0?a/p:0,w=clamp(ratio,0,1.3)/1.3*100;
+    let tone='',diff=null;
+    if(act){
+      diff=b.good?a-p:p-a;
+      if(b.good)tone=ratio>=1?'good':ratio>=.9?'warn':'bad';else tone=ratio<=1?'good':ratio<=1.08?'warn':'bad';
+    }
+    const fill=tone==='bad'?'var(--bad)':tone==='warn'?'var(--warn)':cv(b.id);
+    const share=state.income1?(bucketPlanned(b.id)/state.income1):0;
+    return `<li class="lrow"><span class="sw" style="background:${cv(b.id)}"></span>
+      <div class="lname"><b>${b.name}</b><span>${pct(share)} of Income 1 planned</span></div>
+      <div class="track" aria-hidden="true"><div class="fill" style="width:${act?w:0}%;background:${fill}"></div><div class="mark" style="left:${100/1.3}%"></div></div>
+      <div class="amt">${act?fmt(a):'\u2013'}<small>plan ${fmt(p)}</small></div>
+      <div class="diff ${diff===null||Math.round(diff)===0?'zero':diff>0?'good':'bad'}">${diff===null?'':signed(diff)}</div></li>`;
+  }).join('');
+  const ledger=`<div class="panel"><div class="panel-h"><h2>Plan against reality</h2><span class="muted small">Bars fill to the plan (marker). A plus is good news.</span></div><ul class="ledger">${rows}</ul></div>`;
+
+  // rail
+  const holNeed=hol.target/12, mth=balMonth()+1, expected=holNeed*mth, holPlan=planned(fundLine(hol));
+  const pace=hb>=expected?`<span class="chip good">On pace</span>`:`<span class="chip warn">${fmt(expected-hb)} behind pace</span>`;
+  const jar=`<section><h2 class="sec">Holiday fund</h2><div class="jarrow">${jarSvg(hp)}<div><div class="big">${fmt(hb)}</div>
+    <div class="muted small">${pct(hp,0)} of your ${fmt(hol.target)} goal</div><div style="margin-top:8px">${pace}</div>
+    <div class="muted small" style="margin-top:8px">Setting aside ${fmt(holPlan)} a month. Needs ${fmt(holNeed)} to reach the goal in a year.</div></div></div></section>`;
+
+  const notes=insights();
+  const rail=`<div class="rail">${jar}<section><h2 class="sec">Worth a look</h2><ul class="notes">${notes.map(n=>`<li class="${n.t}"><b>${esc(n.h)}</b><span>${esc(n.p)}</span></li>`).join('')}</ul></section></div>`;
+
+  // year chart
+  const chart=`<section class="section"><div class="panel"><div class="panel-h"><h2>The year so far</h2><span class="muted small">Tap a month to open it</span></div>
+    <div class="chart">${yearChart()}</div>
+    <div class="legend"><span><i style="background:var(--c-pyf)"></i>Set aside</span><span><i style="background:var(--c-rent)"></i>Living costs</span><span><i style="background:var(--c-buffer)"></i>Left over</span></div></div></section>`;
+
+  // funds + extra
+  const fl=state.funds.map((f,i)=>{
+    const b=fundBalance(f,balMonth()),p=f.target?clamp(b/f.target,0,1):0;
+    return `<li class="frow ${i===0?'hol':''}"><span class="fn">${esc(f.name)}</span><div class="track"><div class="fill" style="width:${p*100}%;background:var(--c-sinking)"></div></div><span class="amt">${fmt(b)}<small>of ${fmt(f.target)}</small></span></li>`;
+  }).join('');
+  const recent=state.extra.slice().sort((a,b)=>a.date<b.date?1:-1).slice(0,5);
+  const rl=recent.length?recent.map(x=>{const f=state.funds.find(z=>z.id===x.fund);return `<li class="frow" style="grid-template-columns:minmax(0,1fr) auto"><span><b>${esc(x.source||'Extra income')}</b><br><span class="muted small">${MONTHS[monthOf(x.date)]} ${+x.date.slice(8,10)}, sinking share to ${esc(f?f.name:'a fund')}</span></span><span class="amt">${fmt(x.amount)}</span></li>`}).join(''):`<li class="muted small" style="padding:8px 0">No extra income logged yet.</li>`;
+  const recentSpend=state.entries.slice().sort((x,y)=>y.month-x.month||y.week-x.week).slice(0,5);
+  const rs=recentSpend.length?recentSpend.map(x=>{const ln=state.lines.find(z=>z.id===x.line);const wk=weeksOf(state.year,x.month).find(w=>w.idx===x.week);return `<li class="frow" style="grid-template-columns:minmax(0,1fr) auto"><span><b>${esc(ln?ln.name:'Spending')}</b><br><span class="muted small">${MONTHS[x.month]}, ${wk?wk.label:''}${x.note?' \u2014 '+esc(x.note):''}</span></span><span class="amt">${fmt(x.amount)}</span></li>`}).join(''):`<li class="muted small" style="padding:8px 0">No spending logged yet.</li>`;
+  const lower=`<section class="section three"><div><h2 class="sec">Sinking funds</h2><ul class="flist">${fl}</ul></div><div><h2 class="sec">Recent spending</h2><ul class="flist">${rs}</ul></div><div><h2 class="sec">Recent extra income</h2><ul class="flist">${rl}</ul>
+    <p class="muted small" style="margin-top:10px">Each payment is split ${pct(state.extraSplit.pyf,0)} PYF top-up, ${pct(state.extraSplit.sink,0)} sinking funds and ${pct(state.extraSplit.free,0)} guilt-free.</p></div></section>`;
+
+  return `${banner}${notStarted}
+    <div class="scope" role="group" aria-label="Time range"><button data-click="scope" data-s="month" aria-pressed="${ui.scope==='month'}">${FULL[ui.month]}</button><button data-click="scope" data-s="ytd" aria-pressed="${ui.scope==='ytd'}">Year to date</button></div>
+    <h1 class="headline ${act?'wide':''}">${esc(head)}</h1>${strip}${facts}
+    <div class="cols"><div>${ledger}</div>${rail}</div>${chart}${lower}`;
+}
+
+function insights(){
+  const out=[], inc=state.income1;
+  const rentP=inc?bucketPlanned('rent')/inc:0;
+  out.push(rentP>state.rentLimit?{t:'bad',h:'Rent is above your limit',p:`Rent is ${pct(rentP)} of Income 1, over your ${pct(state.rentLimit,0)} comfort limit.`}
+    :{t:'good',h:'Rent is within your limit',p:`${pct(rentP)} of Income 1, against a ${pct(state.rentLimit,0)} limit.`});
+  const bp=bucketPlanned('buffer');
+  if(bp<0)out.push({t:'bad',h:'The plan is over-allocated',p:`Planned costs exceed Income 1 by ${fmt(-bp)}. Trim a line before the month starts.`});
+  else if(inc&&bp/inc<state.targets.buffer-.0005)out.push({t:'warn',h:'Buffer is under target',p:`Planned buffer is ${pct(bp/inc)}, target ${pct(state.targets.buffer)}. Overspends come out of it.`});
+  if(isActive()){
+    const P=pyfStats();
+    out.push(P.reg>=state.pyfPct-.0005?{t:'good',h:'PYF is on target',p:`You moved ${pct(P.reg)} of Income 1 against a ${pct(state.pyfPct)} target.`}:{t:'warn',h:'PYF is short of target',p:`${pct(P.reg)} moved so far against ${pct(state.pyfPct)}. Top up when extra income arrives.`});
+    const over=[];const n=nMonths();
+    state.lines.filter(l=>l.bucket!=='pyf'&&!BM[l.bucket].good).forEach(l=>{
+      const a=sum(scopeMonths().map(m=>lineActual(l,m))),p=planned(l)*n;
+      if(a>p*1.05&&a-p>=20)over.push({n:l.name,d:a-p});
+    });
+    over.sort((a,b)=>b.d-a.d);
+    if(over.length)out.push({t:'warn',h:'Lines running over plan',p:over.slice(0,3).map(o=>`${o.n} ${fmt(o.d)} over`).join(', ')+'.'});
+    else out.push({t:'good',h:'No line is over plan',p:'Every spending line is within 5% of what you budgeted.'});
+  }
+  const short=state.funds.filter(f=>{const l=fundLine(f);return l&&planned(l)*12<f.target-1});
+  if(short.length)out.push({t:'info',h:'Sinking funds need a bigger set-aside',p:short.map(f=>f.name).join(', ')+' will not reach the annual target at the current monthly amount.'});
+  return out.slice(0,5);
+}
+
+function inp(k,act,val,attrs,label){return `<input class="num" inputmode="decimal" data-k="${k}" data-act="${act}" ${attrs||''} value="${val===null||val===undefined||val===''?'':+(+val).toFixed(2)}" aria-label="${esc(label||k)}">`}
+
+function budget(){
+  const m=ui.month, on=logged(m);
+  const incRaw=state.inc1Actual[m];
+  const head=`<div class="panel incbox"><div><div class="muted small">Income 1 received in ${FULL[m]}</div><div class="muted small">Entering this switches the month on.</div></div>
+    ${inp('inc1a','inc1a',incRaw,'','Income 1 received in '+FULL[m])}
+    <span class="chip ${on?'good':'mute'}">${on?'Month is on':'Month is off'}</span>
+    <span class="muted small" style="margin-left:auto">Planned ${fmt(state.income1)}. Buffer is whatever the plan leaves.</span></div>`;
+  const card=b=>{
+    const lines=linesOf(b.id), p=bucketPlanned(b.id), a=bucketActual(b.id,m);
+    const good=b.good, diff=on?(good?a-p:p-a):null;
+    let body='';
+    if(b.id==='buffer'){
+      body=`<div class="brow"><span class="nm">Income 1 minus everything planned</span><span class="amt">${fmt(p)}</span><span class="amt">${on?fmt(a):'\u2013'}</span><span class="diff ${diff===null||Math.round(diff)===0?'zero':diff>0?'good':'bad'}">${diff===null?'':signed(diff)}</span><span></span></div>
+      <p class="muted small" style="padding:8px 18px 16px">Planned is the balancing line, so every ringgit has a job. Actual is what is really left after everything you logged. Overspends shrink it.</p>`;
+    }else{
+      const itemized=isItemized(b.id);
+      if(itemized)body+=`<p class="muted small hint">Tap the total to log this week. Tap the week count to see or edit past weeks.</p>`;
+      body+=lines.map(l=>{
+        const pl=planned(l),ac=lineActual(l,m),raw=(state.actuals[l.id]||[])[m];
+        const d=on?(good?ac-pl:pl-ac):null, custom=/^c_/.test(l.id);
+        const wks=itemized?weeksOf(state.year,m):null, logged=itemized?entriesFor(l.id,m).length:0, expanded=itemized&&!!ui.expandedLines[l.id];
+        const actualCell=itemized
+          ?`<div class="rowrap"><button class="ro" data-click="open-log" data-line="${l.id}" data-month="${m}" data-week="${openWeekFor(l.id,m)}" aria-label="Log ${esc(l.name)} spending, so far ${fmt(ac)}">${fmt(ac)}</button>
+             <button class="wtoggle" data-click="toggle-weeks" data-line="${l.id}" aria-expanded="${expanded}" aria-label="${expanded?'Hide':'Show'} the weekly breakdown for ${esc(l.name)}">${logged} of ${wks.length} wks ${expanded?'\u25b4':'\u25be'}</button></div>`
+          :inp('a_'+l.id+'_'+m,'actual',raw,`data-line="${l.id}"`,l.name+' actual in '+FULL[m]);
+        const chips=(itemized&&expanded)?`<div class="wchips">${wks.map(w=>{const e=findEntry(l.id,m,w.idx);return `<button class="wchip ${e?'filled':''}" data-click="open-log" data-line="${l.id}" data-month="${m}" data-week="${w.idx}" aria-label="${esc(l.name)} ${w.label}${e?', logged '+fmt(e.amount):', not logged'}">${w.label}${e?': '+fmt(e.amount):''}</button>`}).join('')}</div>`:'';
+        return `<div class="brow"><span class="nm">${esc(l.name)}${l.bucket==='pyf'?'<span class="tag">auto</span>':''}</span>
+          <span>${l.bucket==='pyf'?`<span class="amt">${fmt(pl)}</span>`:inp('p_'+l.id,'planned',pl,`data-line="${l.id}"`,l.name+' planned')}</span>
+          <span>${actualCell}</span>
+          <span class="diff ${d===null||Math.round(d)===0?'zero':d>0?'good':'bad'}">${d===null?'':signed(d)}</span>
+          <span>${custom?`<button class="xbtn" data-click="del-line" data-line="${l.id}" aria-label="Remove ${esc(l.name)}">\u00d7</button>`:''}</span></div>${chips}`;
+      }).join('');
+      if(['fixed','variable','lifestyle'].indexOf(b.id)>=0){
+        body+=ui.addingTo===b.id?`<div class="addrow"><input class="txt" id="al-name" placeholder="Line name" maxlength="40"><input class="num" id="al-amt" inputmode="decimal" placeholder="Planned" style="max-width:none"><span style="display:flex;gap:6px"><button class="btn sm primary" data-click="save-line" data-b="${b.id}">Add</button><button class="btn sm ghost" data-click="cancel-line">Cancel</button></span></div>${ui.err?`<div class="err">${esc(ui.err)}</div>`:''}`
+          :`<button class="linkbtn" data-click="add-line" data-b="${b.id}">Add a line</button>`;
+      }
+    }
+    const shareA=on&&num(state.inc1Actual[m])?a/num(state.inc1Actual[m]):0;
+    return `<section class="panel"><div class="bhead"><span class="sw" style="background:${cv(b.id)}"></span><h3>${b.name}</h3>
+      <div class="tot">${on?fmt(a):'\u2013'} <span class="muted">of ${fmt(p)}</span><small>${on?pct(shareA)+' of Income 1 actual':pct(state.income1?p/state.income1:0)+' of Income 1 planned'}</small></div></div>
+      <div class="cols-h"><span>Line</span><span class="right">Planned</span><span class="right">Actual</span><span class="right">Diff</span><span></span></div>${body}</section>`;
+  };
+  const left=['pyf','rent','fixed'].map(id=>card(BM[id])).join('<div style="height:22px"></div>');
+  const right=['variable','lifestyle','sinking','buffer'].map(id=>card(BM[id])).join('<div style="height:22px"></div>');
+  return `<h1 class="headline" style="font-size:clamp(24px,3.6vw,34px);max-width:none;margin-bottom:20px">${FULL[m]} budget</h1>${head}<div class="bgrid"><div>${left}</div><div>${right}</div></div>`;
+}
+
+function extraView(){
+  const yr=state.extra.filter(x=>yearOf(x.date)===state.year).sort((a,b)=>a.date<b.date?1:-1);
+  const T=extraAgg([0,1,2,3,4,5,6,7,8,9,10,11]);
+  const today=new Date().toISOString().slice(0,10);
+  const s=state.extraSplit;
+  const rows=yr.length?yr.map(x=>{
+    const a=num(x.amount),f=state.funds.find(z=>z.id===x.fund);
+    return `<tr><td>${x.date.slice(8,10)} ${MONTHS[monthOf(x.date)]}</td><td>${esc(x.source||'')}</td><td><b>${fmt(a)}</b></td><td>${fmt(a*s.pyf)}</td><td>${fmt(a*s.sink)}<div class="muted small">${esc(f?f.name:'')}</div></td><td>${fmt(a*s.free)}</td><td><button class="xbtn" data-click="del-extra" data-id="${x.id}" aria-label="Delete entry">\u00d7</button></td></tr>`;
+  }).join(''):'';
+  return `<h1 class="headline" style="font-size:clamp(24px,3.6vw,34px);max-width:none;margin-bottom:8px">Extra income</h1>
+  <p class="muted" style="max-width:62ch;margin-bottom:20px">Income 2 is never spent in advance. Log each payment and move the three shares the same day.</p>
+  <div class="facts" style="margin-top:0">
+    <div class="fact"><div class="k">Received this year</div><div class="v">${fmt(T.total)}</div><div class="n">${yr.length} payment${yr.length===1?'':'s'}</div></div>
+    <div class="fact"><div class="k">To PYF top-ups</div><div class="v">${fmt(T.pyf)}</div><div class="n">${pct(s.pyf,0)} of each payment</div></div>
+    <div class="fact"><div class="k">To sinking funds</div><div class="v">${fmt(T.sink)}</div><div class="n">${pct(s.sink,0)} of each payment</div></div>
+    <div class="fact"><div class="k">Guilt-free</div><div class="v">${fmt(T.free)}</div><div class="n">${pct(s.free,0)}, no tracking needed</div></div></div>
+  <div class="panel"><div class="panel-h"><h2>Log a payment</h2></div>
+    <div class="form-row"><div><label class="f" for="x-date">Date</label><input class="txt" id="x-date" type="date" value="${today}"></div>
+    <div><label class="f" for="x-src">Source or note</label><input class="txt" id="x-src" placeholder="e.g. Freelance job" maxlength="50"></div>
+    <div><label class="f" for="x-amt">Amount (RM)</label><input class="txt" id="x-amt" inputmode="decimal" placeholder="0"></div>
+    <div><label class="f" for="x-fund">Sinking share goes to</label><select class="txt" id="x-fund">${state.funds.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}</select></div>
+    <div><button class="btn primary" data-click="add-extra" style="width:100%">Add payment</button></div></div>${ui.err?`<div class="err">${esc(ui.err)}</div>`:''}</div>
+  <div class="panel section" style="margin-top:22px"><div class="panel-h"><h2>Payments in ${state.year}</h2></div>
+    ${yr.length?`<div class="tscroll" style="padding:0 14px 10px"><table class="xt"><thead><tr><th>Date</th><th>Source</th><th>Amount</th><th>PYF top-up</th><th>Sinking</th><th>Guilt-free</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty">Nothing logged yet. Your first extra payment will show up here.</div>`}</div>`;
+}
+
+function sinkingView(){
+  const m=ui.month;
+  const cards=state.funds.map((f,i)=>{
+    const ln=fundLine(f), pl=ln?planned(ln):0, need=f.target/12, bal=fundBalance(f,m), pc=f.target?bal/f.target:0;
+    const gap=pl-need, hol=i===0;
+    let led='';
+    const rowsL=[['Set aside',k=>fundFlow(f,k).aside],['Top-up',k=>fundFlow(f,k).top],['Spent',k=>fundFlow(f,k).spent],['Balance',k=>fundBalance(f,k)]];
+    led=`<details class="led"><summary>Month by month</summary><div class="tscroll"><table class="led"><thead><tr><th></th>${MONTHS.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rowsL.map(([n,fn])=>`<tr><td>${n}</td>${MONTHS.map((x,k)=>{const v=fn(k);return `<td style="${n==='Balance'?'font-weight:700;color:var(--ink)':''}">${Math.round(v)===0?'\u2013':Math.round(v).toLocaleString('en-US')}</td>`}).join('')}</tr>`).join('')}</tbody></table></div></details>`;
+    return `<article class="panel fund ${hol?'hol':''}"><div class="fund-top">${hol?jarSvg(pc):''}<div class="t"><h3>${esc(f.name)}${hol?' <span class="chip info" style="vertical-align:3px">Its own fund</span>':''}</h3>
+      <div class="big" style="margin-top:4px">${fmt(bal)}</div><div class="muted small">Balance at the end of ${FULL[m]}, ${pct(pc,0)} of target</div></div>
+      <div style="min-width:180px;flex:1"><div class="track"><div class="fill" style="width:${clamp(pc,0,1)*100}%;background:var(--c-sinking)"></div></div></div></div>
+      <div class="fstats">
+        <div><div class="k">Annual target</div>${inp('ft_'+f.id,'fundTarget',f.target,`data-fund="${f.id}"`,f.name+' annual target')}</div>
+        <div><div class="k">Opening balance</div>${inp('fo_'+f.id,'fundOpening',f.opening,`data-fund="${f.id}"`,f.name+' opening balance')}</div>
+        <div><div class="k">Spent in ${FULL[m]}</div>${inp('fs_'+f.id+'_'+m,'fundSpent',f.spent[m],`data-fund="${f.id}"`,f.name+' spent in '+FULL[m])}</div>
+        <div><div class="k">Set aside each month</div><div class="v">${fmt(pl)}</div></div>
+        <div><div class="k">Needed each month</div><div class="v">${fmt(need)}</div></div>
+        <div><div class="k">Against the target</div><div class="v"><span class="chip ${gap>=-.5?'good':'warn'}">${gap>=-.5?'On plan':fmt(-gap)+' a month short'}</span></div></div></div>${led}</article>`;
+  }).join('');
+  return `<h1 class="headline" style="font-size:clamp(24px,3.6vw,34px);max-width:none;margin-bottom:8px">Sinking funds</h1>
+  <p class="muted" style="max-width:66ch;margin-bottom:22px">Set-asides come from the Budget tab and top-ups from extra income. You only enter what you spend from each fund. Holidays sits in its own fund, apart from festive, renewals and appliances.</p>${cards}`;
+}
+
+function agoStr(ms){
+  if(!ms)return '';
+  const s=Math.max(0,Math.round((Date.now()-ms)/1000));
+  if(s<10)return 'just now';
+  if(s<60)return s+'s ago';
+  const m=Math.round(s/60);if(m<60)return m+' min ago';
+  const h=Math.round(m/60);if(h<48)return h+' hr ago';
+  return Math.round(h/24)+' days ago';
+}
+function syncSection(){
+  const statusMap={syncing:['info','Syncing…'],synced:['good','Synced'],error:['bad','Could not reach the sheet — check the link and your connection'],idle:['mute','Not connected']};
+  if(!sync.url){
+    const draft=ui.syncUrlDraft===null?'':ui.syncUrlDraft;
+    return `<div class="shead"><h3>Share with your wife (live sync)</h3><p>Paste your Google Apps Script Web App URL to sync this budget between both your phones, for free. See the setup guide for how to create it.</p></div>
+    <div class="form-row"><div style="grid-column:1/-1"><label class="f" for="sync-url">Apps Script Web App URL</label><input class="txt" id="sync-url" data-k="sync-url" data-act="syncUrlDraft" placeholder="https://script.google.com/macros/s/.../exec" value="${esc(draft)}"></div></div>
+    ${ui.syncErr?`<div class="err">${esc(ui.syncErr)}</div>`:''}
+    <div class="actions" style="padding-top:0"><button class="btn primary" data-click="connect-sync">Connect</button></div>`;
+  }
+  const[t,label]=statusMap[sync.status]||statusMap.idle;
+  const when=sync.lastSyncedWhen?agoStr(sync.lastSyncedWhen):'';
+  return `<div class="shead"><h3>Share with your wife (live sync)</h3><p>This budget is linked to a shared Google Sheet, so both of you see the same numbers.</p></div>
+    <div class="srow"><span>Status</span><span class="right"><span class="chip ${t}">${label}</span></span></div>
+    ${when?`<div class="srow"><span>Last synced</span><span class="right muted small">${when}</span></div>`:''}
+    <div class="actions"><button class="btn primary" data-click="sync-now">Sync now</button><button class="btn danger" data-click="disconnect-sync">Disconnect</button></div>
+    <p class="muted small" style="padding:0 18px 14px">Disconnecting only stops this device from syncing — your data stays in the sheet and in this browser.</p>`;
+}
+function setupView(){
+  const P=(k,act,val,attrs)=>`<span class="pct"><input class="num" inputmode="decimal" data-k="${k}" data-act="${act}" ${attrs||''} value="${+(val*100).toFixed(2)}" aria-label="${esc(k)}"></span>`;
+  const chk=v=>Math.abs(v-1)<.0005?`<span class="chip good">Totals 100%</span>`:`<span class="chip bad">Must total 100% (now ${pct(v)})</span>`;
+  const ps=state.pyfSplit, es=state.extraSplit, tg=state.targets;
+  const names={emergency:'Emergency fund',prs:'Retirement savings (PRS)',invest:'Investments',edu:"Kids' education fund"};
+  const tsum=state.pyfPct+sum(Object.values(tg));
+  const conf=(id,label,act)=>ui.confirm===id?`<button class="btn danger" data-click="${act}">Tap again to confirm</button>`:`<button class="btn" data-click="ask" data-id="${id}">${label}</button>`;
+  return `<h1 class="headline" style="font-size:clamp(24px,3.6vw,34px);max-width:none;margin-bottom:20px">Setup</h1>
+  <div class="sgrid"><div>
+   <section class="panel"><div class="shead"><h3>Income and PYF</h3><p>Everything is planned from Income 1 alone.</p></div>
+    <div class="srow"><span>Income 1, fixed monthly take-home (RM)</span>${inp('income1','income1',state.income1,'','Income 1 monthly take-home')}</div>
+    <div class="srow"><span>PYF share of Income 1</span>${P('pyfPct','pyfPct',state.pyfPct)}</div>
+    <div class="srow"><span>Rent comfort limit</span>${P('rentLimit','rentLimit',state.rentLimit)}</div>
+    <div class="stot"><span>PYF per month</span><span>${fmt(state.income1*state.pyfPct)}</span></div></section>
+   <section class="panel" style="margin-top:22px"><div class="shead"><h3>How PYF is split</h3><p>Emergency fund first, until it covers three to six months of essentials.</p></div>
+    ${Object.keys(ps).map(k=>`<div class="srow"><span>${names[k]}</span>${P('ps_'+k,'splitPyf',ps[k],`data-key="${k}"`)}</div>`).join('')}
+    <div class="stot"><span>Total</span>${chk(sum(Object.values(ps)))}</div></section>
+   <section class="panel" style="margin-top:22px"><div class="shead"><h3>Extra income split</h3><p>Applied to every payment you log. It never plugs an overspend.</p></div>
+    <div class="srow"><span>PYF top-up</span>${P('es_pyf','splitExtra',es.pyf,'data-key="pyf"')}</div>
+    <div class="srow"><span>Sinking funds catch-up</span>${P('es_sink','splitExtra',es.sink,'data-key="sink"')}</div>
+    <div class="srow"><span>Guilt-free spending</span>${P('es_free','splitExtra',es.free,'data-key="free"')}</div>
+    <div class="stot"><span>Total</span>${chk(sum(Object.values(es)))}</div></section>
+  </div><div>
+   <section class="panel"><div class="shead"><h3>Bucket targets</h3><p>A guide only. The Overview compares your plan against these.</p></div>
+    <div class="srow"><span>PYF (follows the share above)</span><span class="right muted">${pct(state.pyfPct)}</span></div>
+    ${[['rent','Rent'],['fixed','Other fixed costs'],['variable','Variable essentials'],['lifestyle','Lifestyle'],['sinking','Sinking funds'],['buffer','Buffer']].map(([k,n])=>`<div class="srow"><span>${n}</span>${P('tg_'+k,'target',tg[k],`data-key="${k}"`)}</div>`).join('')}
+    <div class="stot"><span>Total</span>${chk(tsum)}</div></section>
+   <section class="panel" style="margin-top:22px"><div class="shead"><h3>Your data</h3><p>${storageOk?'Everything is saved in this browser only.':'This browser is not letting the page save, so use a backup before you close it.'} A backup lets you move it to another device.</p></div>
+    <div class="actions"><button class="btn primary" data-click="export">Create backup</button><button class="btn" data-click="import">Restore from backup</button></div>
+    ${ui.backup!==''?`<div style="padding:0 18px 18px"><textarea class="bk" id="bk" spellcheck="false" placeholder="Paste a backup here, then choose Restore from backup">${esc(ui.backup==='paste'?'':ui.backup)}</textarea>${ui.restoreErr?`<div class="err" style="padding:8px 0 0">${esc(ui.restoreErr)}</div>`:''}<div class="muted small" style="margin-top:6px">${ui.backup==='paste'?'Paste your backup text above.':'Select all and copy this text somewhere safe.'}</div></div>`:''}
+    <div class="actions">${conf('clear','Clear all logged spending and extra income','clear-actuals')}${conf('reset','Reset everything to the sample plan','reset-all')}</div></section>
+   <section class="panel" style="margin-top:22px">${syncSection()}</section>
+  </div></div>`;
+}
+
+function view(){
+  return ({overview,budget,extra:extraView,sinking:sinkingView,setup:setupView}[ui.tab]||overview)();
+}
+
+function fab(){
+  if(ui.tab!=='overview'&&ui.tab!=='budget')return '';
+  return `<button class="fab" data-click="open-log" aria-label="Log an expense"><span class="plus">+</span><span class="lbl">Log expense</span></button>`;
+}
+function modalHtml(){
+  if(!ui.modal)return '';
+  const md=ui.modal, itemLines=state.lines.filter(l=>isItemized(l.bucket));
+  const groups=[['variable','Variable essentials'],['lifestyle','Lifestyle']];
+  const lineOptions=groups.map(([b,n])=>`<optgroup label="${n}">${itemLines.filter(l=>l.bucket===b).map(l=>`<option value="${l.id}" ${l.id===md.line?'selected':''}>${esc(l.name)}</option>`).join('')}</optgroup>`).join('');
+  const wks=weeksOf(state.year,md.month);
+  const weekOptions=wks.map(w=>`<option value="${w.idx}" ${w.idx===md.week?'selected':''}>${w.label} (${esc(w.range)} ${MONTHS[md.month]})</option>`).join('');
+  const monthOptions=FULL.map((n,i)=>`<option value="${i}" ${i===md.month?'selected':''}>${n}</option>`).join('');
+  const editing=!!md.editingId;
+  return `<div class="modal-back" data-click="close-modal"><div class="modal" role="dialog" aria-modal="true" aria-label="Log a week's spending">
+    <h2 class="sec" style="margin-bottom:14px">${editing?'Edit':'Log'} a week\u2019s spending</h2>
+    <div class="mrow"><label class="f" for="lm-line">Category</label><select class="txt" id="lm-line" data-k="lm-line" data-act="logLine">${lineOptions}</select></div>
+    <div class="mrow two-col"><div><label class="f" for="lm-month">Month</label><select class="txt" id="lm-month" data-k="lm-month" data-act="logMonth">${monthOptions}</select></div>
+    <div><label class="f" for="lm-week">Week</label><select class="txt" id="lm-week" data-k="lm-week" data-act="logWeek">${weekOptions}</select></div></div>
+    <div class="mrow"><label class="f" for="lm-amount">Amount spent this week (RM)</label><input class="txt" id="lm-amount" data-k="lm-amount" data-act="logAmount" inputmode="decimal" value="${md.amount===''||md.amount===null||md.amount===undefined?'':md.amount}" placeholder="0"></div>
+    <div class="mrow"><label class="f" for="lm-note">Note (optional)</label><input class="txt" id="lm-note" data-k="lm-note" data-act="logNote" maxlength="60" value="${esc(md.note||'')}" placeholder="e.g. Tesco run + wet market"></div>
+    ${ui.modalErr?`<div class="err" style="padding:0 0 10px">${esc(ui.modalErr)}</div>`:''}
+    <div class="actions" style="padding:4px 0 0">
+      <button class="btn primary" data-click="save-entry">Save</button>
+      ${editing?`<button class="btn danger" data-click="delete-entry">Delete</button>`:''}
+      <button class="btn ghost" data-click="close-modal">Cancel</button>
+    </div>
+  </div></div>`;
+}
+
+/* ------------------------------------------------------------------ render */
+function render(){
+  const ae=document.activeElement, key=ae&&ae.dataset?ae.dataset.k:null, y=window.scrollY;
+  const keepBk=$('#bk')?$('#bk').value:null;
+  document.documentElement.dataset.theme=state.theme||'';
+  if(!state.theme)document.documentElement.removeAttribute('data-theme');
+  const footNote=!storageOk?'Saving is switched off in this browser. Use Setup to create a backup.':sync.url?'Shared live with your wife via Google Sheets.':'Your figures live in this browser only. Set up sharing in Setup to sync with your wife.';
+  $('#app').innerHTML=header()+`<main class="wrap">${view()}</main><footer class="foot">${footNote}</footer>`+fab()+modalHtml();
+  if(keepBk!==null&&$('#bk')&&ui.backup==='paste')$('#bk').value=keepBk;
+  if(key){const el=document.querySelector(`[data-k="${key}"]`);if(el){el.focus();try{el.select()}catch(e){}}}
+  else if(ui.modal&&ui.modal._fresh){delete ui.modal._fresh;const af=$('#lm-amount');if(af){af.focus();try{af.select()}catch(e){}}}
+  window.scrollTo(0,y);
+}
+const later=()=>setTimeout(render,0);
+
+/* ------------------------------------------------------------------ events */
+function setActual(id,m,v){const a=state.actuals[id]||(state.actuals[id]=Array(12).fill(null));a[m]=v===null?null:Math.max(0,v)}
+function onChange(e){
+  const t=e.target,act=t.dataset&&t.dataset.act;if(!act)return;
+  const v=parseNum(t.value),d=t.dataset;
+  switch(act){
+    case 'month':ui.month=+t.value;break;
+    case 'income1':state.income1=Math.max(0,v||0);break;
+    case 'pyfPct':state.pyfPct=clamp((v||0)/100,0,1);break;
+    case 'rentLimit':state.rentLimit=clamp((v||0)/100,0,1);break;
+    case 'splitPyf':state.pyfSplit[d.key]=clamp((v||0)/100,0,1);break;
+    case 'splitExtra':state.extraSplit[d.key]=clamp((v||0)/100,0,1);break;
+    case 'target':state.targets[d.key]=clamp((v||0)/100,0,1);break;
+    case 'planned':{const l=state.lines.find(x=>x.id===d.line);if(l)l.planned=Math.max(0,v||0);break}
+    case 'actual':setActual(d.line,ui.month,v);break;
+    case 'inc1a':state.inc1Actual[ui.month]=v>0?v:null;break;
+    case 'fundTarget':{const f=state.funds.find(x=>x.id===d.fund);if(f)f.target=Math.max(0,v||0);break}
+    case 'fundOpening':{const f=state.funds.find(x=>x.id===d.fund);if(f)f.opening=v||0;break}
+    case 'fundSpent':{const f=state.funds.find(x=>x.id===d.fund);if(f)f.spent[ui.month]=v>0?v:null;break}
+    case 'logLine':if(ui.modal){ui.modal.line=t.value;refreshModal();}break;
+    case 'logMonth':if(ui.modal){ui.modal.month=+t.value;const wks=weeksOf(state.year,ui.modal.month);if(!wks.find(w=>w.idx===ui.modal.week))ui.modal.week=0;refreshModal();}break;
+    case 'logWeek':if(ui.modal){ui.modal.week=+t.value;refreshModal();}break;
+    case 'logAmount':if(ui.modal)ui.modal.amount=v===null?'':v;break;
+    case 'logNote':if(ui.modal)ui.modal.note=t.value;break;
+    case 'syncUrlDraft':ui.syncUrlDraft=t.value;break;
+  }
+  save();later();
+}
+function onClick(e){
+  const el=e.target.closest('[data-click]');if(!el)return;
+  const a=el.dataset.click,d=el.dataset;
+  switch(a){
+    case 'tab':ui.tab=d.t;ui.err=null;ui.addingTo=null;ui.confirm=null;ui.modal=null;window.scrollTo(0,0);break;
+    case 'scope':ui.scope=d.s;break;
+    case 'pick-month':ui.month=+d.m;ui.scope='month';break;
+    case 'theme':{const cur=document.documentElement.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');state.theme=cur==='dark'?'light':'dark';save();break}
+    case 'clear-demo':clearActuals();state.demo=false;save();break;
+    case 'add-line':ui.addingTo=d.b;ui.err=null;break;
+    case 'cancel-line':ui.addingTo=null;ui.err=null;break;
+    case 'save-line':{
+      const n=($('#al-name')||{}).value||'',p=parseNum(($('#al-amt')||{}).value);
+      if(!n.trim()){ui.err='Give the line a name.';break}
+      state.lines.splice(lastIndexOf(d.b)+1,0,{id:'c_'+Date.now().toString(36),bucket:d.b,name:n.trim(),planned:Math.max(0,p||0)});
+      ui.addingTo=null;ui.err=null;save();break}
+    case 'del-line':state.lines=state.lines.filter(l=>l.id!==d.line);delete state.actuals[d.line];delete ui.expandedLines[d.line];state.entries=state.entries.filter(e=>e.line!==d.line);save();break;
+    case 'add-extra':{
+      const date=($('#x-date')||{}).value,amt=parseNum(($('#x-amt')||{}).value);
+      if(!date){ui.err='Pick the date the money arrived.';break}
+      if(!(amt>0)){ui.err='Enter an amount above zero.';break}
+      state.extra.push({id:'x'+Date.now().toString(36),date,source:($('#x-src')||{}).value||'',amount:amt,fund:($('#x-fund')||{}).value||'hol'});
+      ui.err=null;save();break}
+    case 'del-extra':state.extra=state.extra.filter(x=>x.id!==d.id);save();break;
+    case 'open-log':{
+      const line=d.line||(state.lines.find(l=>isItemized(l.bucket))||{}).id;
+      if(!line)break;
+      const month=d.month!==undefined?+d.month:ui.month;
+      const week=d.week!==undefined?+d.week:currentWeekIndex(month);
+      const existing=findEntry(line,month,week);
+      ui.modal={line,month,week,amount:existing?existing.amount:'',note:existing?existing.note:'',editingId:existing?existing.id:null,_fresh:true};
+      ui.modalErr=null;break}
+    case 'close-modal':if(el===e.target){ui.modal=null;ui.modalErr=null;}break;
+    case 'toggle-weeks':ui.expandedLines[d.line]=!ui.expandedLines[d.line];break;
+    case 'save-entry':{
+      const md=ui.modal;if(!md)break;
+      const amt=parseNum(($('#lm-amount')||{}).value);
+      if(!(amt>0)){ui.modalErr='Enter an amount above zero.';break}
+      upsertEntry(md.line,md.month,md.week,amt,($('#lm-note')||{}).value||'');
+      ui.modal=null;ui.modalErr=null;save();break}
+    case 'delete-entry':{
+      if(ui.modal&&ui.modal.editingId)state.entries=state.entries.filter(x=>x.id!==ui.modal.editingId);
+      ui.modal=null;save();break}
+    case 'ask':ui.confirm=d.id;break;
+    case 'clear-actuals':clearActuals();state.demo=false;ui.confirm=null;save();break;
+    case 'reset-all':{const th=state.theme;state=defaults();state.theme=th;ui.confirm=null;save();break}
+    case 'connect-sync':{
+      const v=(($('#sync-url')||{}).value||'').trim();
+      if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(v)){ui.syncErr='That does not look like an Apps Script Web App URL. It should start with https://script.google.com/ and end in /exec.';break}
+      ui.syncErr=null;ui.syncUrlDraft=null;setSyncUrl(v);break}
+    case 'sync-now':(sync.dirty?cloudPush():cloudPull(true));break;
+    case 'disconnect-sync':setSyncUrl('');break;
+    case 'export':ui.backup=JSON.stringify(state);ui.restoreErr=null;break;
+    case 'import':{
+      const box=$('#bk');
+      if(ui.backup!=='paste'&&!(box&&ui.backup==='paste')){ui.backup='paste';ui.restoreErr=null;break}
+      try{const s=JSON.parse((box&&box.value)||'');if(!s||s.v!==1||!Array.isArray(s.lines)||!Array.isArray(s.funds))throw 0;if(!Array.isArray(s.entries))s.entries=[];state=s;ui.backup='';ui.restoreErr=null;save()}
+      catch(x){ui.restoreErr='That does not look like a backup from this app.'}
+      break}
+  }
+  later();
+}
+function lastIndexOf(b){let i=-1;state.lines.forEach((l,k)=>{if(l.bucket===b)i=k});return i}
+function clearActuals(){state.inc1Actual=Array(12).fill(null);state.actuals={};state.entries=[];state.extra=[];state.funds.forEach(f=>f.spent=Array(12).fill(null))}
+let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,180)});
+document.addEventListener('change',onChange);
+document.addEventListener('click',onClick);
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('num'))e.target.blur()});
+
+/* ------------------------------------------------------------------ boot */
+try{localStorage.setItem(KEY+'-t','1');localStorage.removeItem(KEY+'-t')}catch(e){storageOk=false}
+state=load();
+if(!state){state=defaults();applyDemo(state);localSave()}
+const ll=lastLogged();ui.month=ll>=0?ll:new Date().getMonth();
+render();
+if(sync.url){cloudPull(false).then(()=>startPolling())}
+})();
+</script>
+</body>
+</html>
