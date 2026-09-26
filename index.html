@@ -339,46 +339,64 @@ function defaults(){
       L('s_prem','sinking','Annual premiums & renewals',50,{fund:'prem'}),
       L('s_appl','sinking','Appliances & replacements',100,{fund:'appl'})
     ],
-    inc1Actual:Array(12).fill(null),actuals:{},extra:[],entries:[],
+    extra:[],entries:[],byYear:{},
     funds:[
-      {id:'hol',name:'Holidays',target:3600,opening:0,spent:Array(12).fill(null)},
-      {id:'fest',name:'Festive',target:1800,opening:0,spent:Array(12).fill(null)},
-      {id:'prem',name:'Annual premiums',target:600,opening:0,spent:Array(12).fill(null)},
-      {id:'appl',name:'Appliances',target:1200,opening:0,spent:Array(12).fill(null)}
+      {id:'hol',name:'Holidays',target:3600,opening:0},
+      {id:'fest',name:'Festive',target:1800,opening:0},
+      {id:'prem',name:'Annual premiums',target:600,opening:0},
+      {id:'appl',name:'Appliances',target:1200,opening:0}
     ]
   };
 }
 function applyDemo(s){
-  const r=rng(2026), n=Math.max(3,Math.min(9,new Date().getMonth()||8));
+  const r=rng(2026), n=Math.max(3,Math.min(9,new Date().getMonth()||8)), y=s.year;
   s.demo=true;
+  s.byYear[y]={inc1Actual:Array(12).fill(null),actuals:{},fundsSpent:{}};
+  s.funds.forEach(f=>s.byYear[y].fundsSpent[f.id]=Array(12).fill(null));
+  const yd=s.byYear[y];
   for(let m=0;m<n;m++){
-    s.inc1Actual[m]=s.income1;
+    yd.inc1Actual[m]=s.income1;
     s.lines.forEach(l=>{
       const p=planOf(s,l);
       if(l.bucket==='variable'||l.bucket==='lifestyle'){
-        const wks=weeksOf(s.year,m), variance=l.bucket==='variable'?.28:.5, lo=l.bucket==='variable'?.86:.75;
+        const wks=weeksOf(y,m), variance=l.bucket==='variable'?.28:.5, lo=l.bucket==='variable'?.86:.75;
         wks.forEach(w=>{
           const amt=Math.max(0,Math.round((p/wks.length)*(lo+r()*variance)/5)*5);
-          s.entries.push({id:'e_demo_'+m+'_'+w.idx+'_'+l.id,line:l.id,month:m,week:w.idx,amount:amt,note:''});
+          s.entries.push({id:'e_demo_'+m+'_'+w.idx+'_'+l.id,line:l.id,month:m,week:w.idx,year:y,amount:amt,note:''});
         });
         return;
       }
       let a=p; if(l.id==='p_inv'&&m===3)a=Math.round(p*.5);
-      (s.actuals[l.id]=s.actuals[l.id]||Array(12).fill(null))[m]=Math.round(a);
+      (yd.actuals[l.id]=yd.actuals[l.id]||Array(12).fill(null))[m]=Math.round(a);
     });
   }
-  const y=s.year, d=(m,dd)=>y+'-'+String(m).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
+  const d=(m,dd)=>y+'-'+String(m).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
   s.extra=[{id:'x1',date:d(2,12),source:'Freelance job',amount:1200,fund:'hol'},
            {id:'x2',date:d(4,20),source:'One-off gig',amount:800,fund:'fest'},
            {id:'x3',date:d(7,9),source:'Freelance job',amount:1500,fund:'hol'}].filter(x=>+x.date.slice(5,7)<=n);
-  if(n>5)s.funds[0].spent[5]=1500;
+  if(n>5)yd.fundsSpent[s.funds[0].id][5]=1500;
 }
 function planOf(s,l){return l.bucket==='pyf'?s.income1*s.pyfPct*s.pyfSplit[l.share]:num(l.planned)}
 
 let state=null, storageOk=true;
-const ui={tab:'overview',month:new Date().getMonth(),scope:'month',addingTo:null,confirm:null,err:null,backup:'',restoreErr:null,modal:null,modalErr:null,expandedLines:{},syncUrlDraft:null,syncErr:null};
+const ui={tab:'overview',month:new Date().getMonth(),year:new Date().getFullYear(),scope:'month',addingTo:null,confirm:null,err:null,backup:'',restoreErr:null,modal:null,modalErr:null,expandedLines:{},syncUrlDraft:null,syncErr:null};
 
-function load(){try{const raw=localStorage.getItem(KEY);if(raw){const s=JSON.parse(raw);if(s&&s.v===1){if(!Array.isArray(s.entries))s.entries=[];return s}}}catch(e){storageOk=false}return null}
+/* Brings an older, single-year save (or a backup made before multi-year support) up to the
+   current shape: monthly actuals move into byYear[year], and every logged entry gets a year. */
+function migrate(s){
+  if(!s.byYear){
+    const y=s.year||new Date().getFullYear();
+    s.byYear={};
+    s.byYear[y]={inc1Actual:Array.isArray(s.inc1Actual)?s.inc1Actual:Array(12).fill(null),actuals:s.actuals||{},fundsSpent:{}};
+    (s.funds||[]).forEach(f=>{s.byYear[y].fundsSpent[f.id]=Array.isArray(f.spent)?f.spent:Array(12).fill(null);delete f.spent;});
+    delete s.inc1Actual;delete s.actuals;
+  }
+  if(!Array.isArray(s.entries))s.entries=[];
+  const fallbackYear=s.year||new Date().getFullYear();
+  s.entries.forEach(e=>{if(e.year===undefined||e.year===null)e.year=fallbackYear;});
+  return s;
+}
+function load(){try{const raw=localStorage.getItem(KEY);if(raw){const s=JSON.parse(raw);if(s&&s.v===1)return migrate(s)}}catch(e){storageOk=false}return null}
 function localSave(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){storageOk=false}}
 
 /* ------------------------------------------------------------------ shared sync (Google Sheet via Apps Script) */
@@ -411,8 +429,7 @@ async function cloudPull(onlyIfNewer){
         else{
           const parsed=JSON.parse(j.data);
           if(parsed&&parsed.v===1){
-            if(!Array.isArray(parsed.entries))parsed.entries=[];
-            state=parsed;
+            state=migrate(parsed);
             sync.lastSyncedAt=j.updatedAt;try{localStorage.setItem(SYNC_AT_KEY,String(j.updatedAt))}catch(e){}
             localSave();
           }
@@ -451,7 +468,22 @@ function save(){
 
 /* ------------------------------------------------------------------ calculations */
 const planned=l=>planOf(state,l);
-const logged=m=>num(state.inc1Actual[m])>0;
+/* Every year the app has touched gets its own bucket of monthly actuals, so 2026 and 2027
+   (and beyond) never overwrite each other. ensureYear/yd() lazily create + fetch that bucket
+   for whichever year is currently on screen (ui.year). */
+function ensureYear(y){
+  if(!state.byYear)state.byYear={};
+  if(!state.byYear[y])state.byYear[y]={inc1Actual:Array(12).fill(null),actuals:{},fundsSpent:{}};
+  const yr=state.byYear[y];
+  if(!yr.inc1Actual)yr.inc1Actual=Array(12).fill(null);
+  if(!yr.actuals)yr.actuals={};
+  if(!yr.fundsSpent)yr.fundsSpent={};
+  state.funds.forEach(f=>{if(!yr.fundsSpent[f.id])yr.fundsSpent[f.id]=Array(12).fill(null)});
+  return yr;
+}
+const yd=()=>ensureYear(ui.year);
+const inc1Of=(year,m)=>num(ensureYear(year).inc1Actual[m]);
+const logged=m=>inc1Of(ui.year,m)>0;
 const ITEMIZED=['variable','lifestyle'];
 const isItemized=b=>ITEMIZED.indexOf(b)>=0;
 function weeksOf(year,month){
@@ -459,8 +491,8 @@ function weeksOf(year,month){
   for(let i=0;i<n;i++){const start=i*7+1,end=Math.min((i+1)*7,days);arr.push({idx:i,label:'Wk '+(i+1),range:start+(end>start?'\u2013'+end:'')})}
   return arr;
 }
-function entriesFor(lineId,m){return state.entries.filter(e=>e.line===lineId&&e.month===m)}
-function findEntry(lineId,m,w){return state.entries.find(e=>e.line===lineId&&e.month===m&&e.week===w)}
+function entriesFor(lineId,m){return state.entries.filter(e=>e.line===lineId&&e.year===ui.year&&e.month===m)}
+function findEntry(lineId,m,w){return state.entries.find(e=>e.line===lineId&&e.year===ui.year&&e.month===m&&e.week===w)}
 function refreshModal(){
   if(!ui.modal)return;
   const e=findEntry(ui.modal.line,ui.modal.month,ui.modal.week);
@@ -469,23 +501,27 @@ function refreshModal(){
 function upsertEntry(lineId,m,w,amount,note){
   const e=findEntry(lineId,m,w);
   if(e){e.amount=amount;e.note=note||'';}
-  else state.entries.push({id:'e_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),line:lineId,month:m,week:w,amount,note:note||''});
+  else state.entries.push({id:'e_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),line:lineId,month:m,week:w,year:ui.year,amount,note:note||''});
 }
-function openWeekFor(lineId,m){const wks=weeksOf(state.year,m),nx=wks.find(w=>!findEntry(lineId,m,w.idx));return nx?nx.idx:wks[wks.length-1].idx}
+function openWeekFor(lineId,m){const wks=weeksOf(ui.year,m),nx=wks.find(w=>!findEntry(lineId,m,w.idx));return nx?nx.idx:wks[wks.length-1].idx}
 function currentWeekIndex(month){
   const now=new Date();
-  if(now.getFullYear()!==state.year||now.getMonth()!==month)return 0;
-  const wks=weeksOf(state.year,month);
+  if(now.getFullYear()!==ui.year||now.getMonth()!==month)return 0;
+  const wks=weeksOf(ui.year,month);
   return Math.min(Math.floor((now.getDate()-1)/7),wks.length-1);
 }
-const lineActual=(l,m)=>isItemized(l.bucket)?sum(entriesFor(l.id,m).map(e=>num(e.amount))):num((state.actuals[l.id]||[])[m]);
+function lineActualFor(l,year,m){
+  if(isItemized(l.bucket))return sum(state.entries.filter(e=>e.line===l.id&&e.year===year&&e.month===m).map(e=>num(e.amount)));
+  return num((ensureYear(year).actuals[l.id]||[])[m]);
+}
+const lineActual=(l,m)=>lineActualFor(l,ui.year,m);
 const linesOf=b=>state.lines.filter(l=>l.bucket===b);
 function bucketPlanned(b){
   if(b==='buffer')return state.income1-sum(NONBUF.map(bucketPlanned));
   return sum(linesOf(b).map(planned));
 }
 function bucketActual(b,m){
-  if(b==='buffer')return logged(m)?num(state.inc1Actual[m])-sum(NONBUF.map(x=>bucketActual(x,m))):0;
+  if(b==='buffer')return logged(m)?inc1Of(ui.year,m)-sum(NONBUF.map(x=>bucketActual(x,m))):0;
   return sum(linesOf(b).map(l=>lineActual(l,m)));
 }
 function scopeMonths(){return ui.scope==='month'?[ui.month]:[0,1,2,3,4,5,6,7,8,9,10,11].filter(logged)}
@@ -495,34 +531,47 @@ const bA=b=>sum(scopeMonths().map(m=>bucketActual(b,m)));
 const bP=b=>bucketPlanned(b)*nMonths();
 const monthOf=d=>parseInt(String(d).slice(5,7),10)-1;
 const yearOf=d=>parseInt(String(d).slice(0,4),10);
-function extraAgg(ms){
+function extraAggFor(year,ms){
   const o={total:0,pyf:0,sink:0,free:0,byFund:{}};
   state.extra.forEach(x=>{
-    if(yearOf(x.date)!==state.year||ms.indexOf(monthOf(x.date))<0)return;
+    if(yearOf(x.date)!==year||ms.indexOf(monthOf(x.date))<0)return;
     const a=num(x.amount);o.total+=a;o.pyf+=a*state.extraSplit.pyf;o.sink+=a*state.extraSplit.sink;o.free+=a*state.extraSplit.free;
     o.byFund[x.fund]=(o.byFund[x.fund]||0)+a*state.extraSplit.sink;
   });
   return o;
 }
+const extraAgg=ms=>extraAggFor(ui.year,ms);
 const scopeExtraMonths=()=>ui.scope==='month'?[ui.month]:[0,1,2,3,4,5,6,7,8,9,10,11];
 const fundLine=f=>state.lines.find(l=>l.fund===f.id);
-function fundFlow(f,m){
-  const ln=fundLine(f);
-  return {aside:ln?lineActual(ln,m):0,top:extraAgg([m]).byFund[f.id]||0,spent:num(f.spent[m])};
+function fundFlow(f,year,m){
+  const ln=fundLine(f), yr=ensureYear(year);
+  return {aside:ln?lineActualFor(ln,year,m):0,top:extraAggFor(year,[m]).byFund[f.id]||0,spent:num((yr.fundsSpent[f.id]||[])[m])};
 }
-function fundBalance(f,m){let b=num(f.opening);for(let k=0;k<=m;k++){const x=fundFlow(f,k);b+=x.aside+x.top-x.spent}return b}
+/* A sinking fund's balance is one continuous running total, not reset each January, so this
+   walks every tracked year from the earliest one up to (year, m) rather than just the 12
+   months of the year being viewed. */
+function fundBalance(f,year,m){
+  const known=Object.keys(state.byYear||{}).map(Number);
+  const minYear=known.length?Math.min(...known,year):year;
+  let b=num(f.opening);
+  for(let y=minYear;y<=year;y++){
+    const lastM=(y===year)?m:11;
+    for(let k=0;k<=lastM;k++){const x=fundFlow(f,y,k);b+=x.aside+x.top-x.spent}
+  }
+  return b;
+}
 function lastLogged(){let l=-1;for(let m=0;m<12;m++)if(logged(m))l=m;return l}
 const balMonth=()=>ui.scope==='month'?ui.month:Math.max(lastLogged(),0);
 function pyfStats(){
   const ms=scopeMonths(), ex=extraAgg(scopeExtraMonths());
-  const inc=sum(ms.map(m=>num(state.inc1Actual[m]))), pyf=sum(ms.map(m=>bucketActual('pyf',m)));
+  const inc=sum(ms.map(m=>inc1Of(ui.year,m))), pyf=sum(ms.map(m=>bucketActual('pyf',m)));
   return {inc,pyf,ex,reg:inc?pyf/inc:0,tot:(inc+ex.total)?(pyf+ex.pyf)/(inc+ex.total):0};
 }
 
 /* ------------------------------------------------------------------ svg bits */
 function yearChart(){
   const W=Math.max(300,Math.min(1100,(document.documentElement.clientWidth||1000)-72)),H=W<560?230:250,x0=8,base=H-42,top=16,slot=(W-x0*2)/12,bw=Math.min(46,slot-(W<560?6:16));
-  const maxV=Math.max(state.income1,...state.inc1Actual.map(num))*1.04||1;
+  const maxV=Math.max(state.income1,...yd().inc1Actual.map(num))*1.04||1;
   const sc=v=>(base-top)*v/maxV;
   let g='';
   for(let m=0;m<12;m++){
@@ -556,13 +605,23 @@ function jarSvg(p){
 }
 
 /* ------------------------------------------------------------------ views */
+/* Years the year-picker offers: every year that has real data, plus this year and next,
+   so there's always a next year to switch into (e.g. 2027) before you've touched it. */
+function yearOptions(){
+  const known=Object.keys(state.byYear||{}).map(Number), real=new Date().getFullYear();
+  const all=[real,real+1,ui.year,...known];
+  const lo=Math.min(...all), hi=Math.max(...all);
+  const arr=[];for(let y=lo;y<=hi;y++)arr.push(y);
+  return arr;
+}
 function header(){
   const tabs=[['overview','Overview'],['budget','Budget'],['extra','Extra income'],['sinking','Sinking funds'],['setup','Setup']];
   return `<header class="topbar"><div class="topbar-in">
-    <div class="brand"><b>Family Budget</b><small>${state.year}</small></div>
+    <div class="brand"><b>Family Budget</b><small>${ui.year}</small></div>
     <nav class="tabs" aria-label="Sections">${tabs.map(t=>`<button class="tab" data-click="tab" data-t="${t[0]}" ${ui.tab===t[0]?'aria-current="page"':''}>${t[1]}</button>`).join('')}</nav>
     <div class="tools">
       ${syncChip()}
+      <select class="month-select" data-act="year" aria-label="Year">${yearOptions().map(y=>`<option value="${y}" ${y===ui.year?'selected':''}>${y}</option>`).join('')}</select>
       <select class="month-select" data-act="month" aria-label="Month">${FULL.map((n,i)=>`<option value="${i}" ${i===ui.month?'selected':''}>${n}</option>`).join('')}</select>
       <button class="icon-btn" data-click="theme" aria-label="Switch light or dark theme" title="Light / dark">\u25D0</button>
     </div></div></header>`;
@@ -577,14 +636,14 @@ function syncChip(){
 function overview(){
   const act=isActive(), ms=scopeMonths();
   const spent=sum(['rent','fixed','variable','lifestyle'].map(bA)), saved=bA('pyf')+bA('sinking'), left=bA('buffer');
-  const when=ui.scope==='month'?'In '+FULL[ui.month]:'So far in '+state.year;
+  const when=ui.scope==='month'?'In '+FULL[ui.month]:'So far in '+ui.year;
   let head;
   if(!act){
-    head=ui.scope==='month'?`${FULL[ui.month]} has not started yet. Enter Income 1 on the Budget tab to switch it on.`:`Nothing is logged for ${state.year} yet.`;
+    head=ui.scope==='month'?`${FULL[ui.month]} has not started yet. Enter Income 1 on the Budget tab to switch it on.`:`Nothing is logged for ${ui.year} yet.`;
   }else{
     head=`${when}, ${fmt(spent)} went to living costs, ${fmt(saved)} was put aside and ${left>=0?fmt(left)+' is left over.':'you are '+fmt(-left)+' over.'}`;
   }
-  const P=pyfStats(), ex=P.ex, hol=state.funds[0], hb=fundBalance(hol,balMonth()), hp=hol.target?hb/hol.target:0;
+  const P=pyfStats(), ex=P.ex, hol=state.funds[0], hb=fundBalance(hol,ui.year,balMonth()), hp=hol.target?hb/hol.target:0;
   const incPlan=state.income1*nMonths();
   const banner=state.demo?`<div class="banner"><p><b>You are looking at demo figures.</b> The plan uses sample amounts for an RM 8,000 income. Clear the demo to start entering your own numbers.</p><button class="btn primary" data-click="clear-demo">Clear demo data</button></div>`:'';
   const notStarted=(ui.scope==='month'&&!act)?`<div class="banner info"><p>The plan below is what you have budgeted for ${FULL[ui.month]}. Actual figures appear once you enter Income 1 received.</p><button class="btn" data-click="tab" data-t="budget">Open Budget</button></div>`:'';
@@ -636,13 +695,13 @@ function overview(){
 
   // funds + extra
   const fl=state.funds.map((f,i)=>{
-    const b=fundBalance(f,balMonth()),p=f.target?clamp(b/f.target,0,1):0;
+    const b=fundBalance(f,ui.year,balMonth()),p=f.target?clamp(b/f.target,0,1):0;
     return `<li class="frow ${i===0?'hol':''}"><span class="fn">${esc(f.name)}</span><div class="track"><div class="fill" style="width:${p*100}%;background:var(--c-sinking)"></div></div><span class="amt">${fmt(b)}<small>of ${fmt(f.target)}</small></span></li>`;
   }).join('');
   const recent=state.extra.slice().sort((a,b)=>a.date<b.date?1:-1).slice(0,5);
   const rl=recent.length?recent.map(x=>{const f=state.funds.find(z=>z.id===x.fund);return `<li class="frow" style="grid-template-columns:minmax(0,1fr) auto"><span><b>${esc(x.source||'Extra income')}</b><br><span class="muted small">${MONTHS[monthOf(x.date)]} ${+x.date.slice(8,10)}, sinking share to ${esc(f?f.name:'a fund')}</span></span><span class="amt">${fmt(x.amount)}</span></li>`}).join(''):`<li class="muted small" style="padding:8px 0">No extra income logged yet.</li>`;
-  const recentSpend=state.entries.slice().sort((x,y)=>y.month-x.month||y.week-x.week).slice(0,5);
-  const rs=recentSpend.length?recentSpend.map(x=>{const ln=state.lines.find(z=>z.id===x.line);const wk=weeksOf(state.year,x.month).find(w=>w.idx===x.week);return `<li class="frow" style="grid-template-columns:minmax(0,1fr) auto"><span><b>${esc(ln?ln.name:'Spending')}</b><br><span class="muted small">${MONTHS[x.month]}, ${wk?wk.label:''}${x.note?' \u2014 '+esc(x.note):''}</span></span><span class="amt">${fmt(x.amount)}</span></li>`}).join(''):`<li class="muted small" style="padding:8px 0">No spending logged yet.</li>`;
+  const recentSpend=state.entries.slice().sort((x,y)=>(y.year-x.year)||(y.month-x.month)||(y.week-x.week)).slice(0,5);
+  const rs=recentSpend.length?recentSpend.map(x=>{const ln=state.lines.find(z=>z.id===x.line);const wk=weeksOf(x.year,x.month).find(w=>w.idx===x.week);return `<li class="frow" style="grid-template-columns:minmax(0,1fr) auto"><span><b>${esc(ln?ln.name:'Spending')}</b><br><span class="muted small">${MONTHS[x.month]}${x.year!==ui.year?' \u2019'+String(x.year).slice(2):''}, ${wk?wk.label:''}${x.note?' \u2014 '+esc(x.note):''}</span></span><span class="amt">${fmt(x.amount)}</span></li>`}).join(''):`<li class="muted small" style="padding:8px 0">No spending logged yet.</li>`;
   const lower=`<section class="section three"><div><h2 class="sec">Sinking funds</h2><ul class="flist">${fl}</ul></div><div><h2 class="sec">Recent spending</h2><ul class="flist">${rs}</ul></div><div><h2 class="sec">Recent extra income</h2><ul class="flist">${rl}</ul>
     <p class="muted small" style="margin-top:10px">Each payment is split ${pct(state.extraSplit.pyf,0)} PYF top-up, ${pct(state.extraSplit.sink,0)} sinking funds and ${pct(state.extraSplit.free,0)} guilt-free.</p></div></section>`;
 
@@ -681,7 +740,7 @@ function inp(k,act,val,attrs,label){return `<input class="num" inputmode="decima
 
 function budget(){
   const m=ui.month, on=logged(m);
-  const incRaw=state.inc1Actual[m];
+  const incRaw=yd().inc1Actual[m];
   const head=`<div class="panel incbox"><div><div class="muted small">Income 1 received in ${FULL[m]}</div><div class="muted small">Entering this switches the month on.</div></div>
     ${inp('inc1a','inc1a',incRaw,'','Income 1 received in '+FULL[m])}
     <span class="chip ${on?'good':'mute'}">${on?'Month is on':'Month is off'}</span>
@@ -697,9 +756,9 @@ function budget(){
       const itemized=isItemized(b.id);
       if(itemized)body+=`<p class="muted small hint">Tap the total to log this week. Tap the week count to see or edit past weeks.</p>`;
       body+=lines.map(l=>{
-        const pl=planned(l),ac=lineActual(l,m),raw=(state.actuals[l.id]||[])[m];
+        const pl=planned(l),ac=lineActual(l,m),raw=(yd().actuals[l.id]||[])[m];
         const d=on?(good?ac-pl:pl-ac):null, custom=/^c_/.test(l.id);
-        const wks=itemized?weeksOf(state.year,m):null, logged=itemized?entriesFor(l.id,m).length:0, expanded=itemized&&!!ui.expandedLines[l.id];
+        const wks=itemized?weeksOf(ui.year,m):null, logged=itemized?entriesFor(l.id,m).length:0, expanded=itemized&&!!ui.expandedLines[l.id];
         const actualCell=itemized
           ?`<div class="rowrap"><button class="ro" data-click="open-log" data-line="${l.id}" data-month="${m}" data-week="${openWeekFor(l.id,m)}" aria-label="Log ${esc(l.name)} spending, so far ${fmt(ac)}">${fmt(ac)}</button>
              <button class="wtoggle" data-click="toggle-weeks" data-line="${l.id}" aria-expanded="${expanded}" aria-label="${expanded?'Hide':'Show'} the weekly breakdown for ${esc(l.name)}">${logged} of ${wks.length} wks ${expanded?'\u25b4':'\u25be'}</button></div>`
@@ -716,7 +775,7 @@ function budget(){
           :`<button class="linkbtn" data-click="add-line" data-b="${b.id}">Add a line</button>`;
       }
     }
-    const shareA=on&&num(state.inc1Actual[m])?a/num(state.inc1Actual[m]):0;
+    const shareA=on&&inc1Of(ui.year,m)?a/inc1Of(ui.year,m):0;
     return `<section class="panel"><div class="bhead"><span class="sw" style="background:${cv(b.id)}"></span><h3>${b.name}</h3>
       <div class="tot">${on?fmt(a):'\u2013'} <span class="muted">of ${fmt(p)}</span><small>${on?pct(shareA)+' of Income 1 actual':pct(state.income1?p/state.income1:0)+' of Income 1 planned'}</small></div></div>
       <div class="cols-h"><span>Line</span><span class="right">Planned</span><span class="right">Actual</span><span class="right">Diff</span><span></span></div>${body}</section>`;
@@ -727,7 +786,7 @@ function budget(){
 }
 
 function extraView(){
-  const yr=state.extra.filter(x=>yearOf(x.date)===state.year).sort((a,b)=>a.date<b.date?1:-1);
+  const yr=state.extra.filter(x=>yearOf(x.date)===ui.year).sort((a,b)=>a.date<b.date?1:-1);
   const T=extraAgg([0,1,2,3,4,5,6,7,8,9,10,11]);
   const today=new Date().toISOString().slice(0,10);
   const s=state.extraSplit;
@@ -748,25 +807,25 @@ function extraView(){
     <div><label class="f" for="x-amt">Amount (RM)</label><input class="txt" id="x-amt" inputmode="decimal" placeholder="0"></div>
     <div><label class="f" for="x-fund">Sinking share goes to</label><select class="txt" id="x-fund">${state.funds.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}</select></div>
     <div><button class="btn primary" data-click="add-extra" style="width:100%">Add payment</button></div></div>${ui.err?`<div class="err">${esc(ui.err)}</div>`:''}</div>
-  <div class="panel section" style="margin-top:22px"><div class="panel-h"><h2>Payments in ${state.year}</h2></div>
+  <div class="panel section" style="margin-top:22px"><div class="panel-h"><h2>Payments in ${ui.year}</h2></div>
     ${yr.length?`<div class="tscroll" style="padding:0 14px 10px"><table class="xt"><thead><tr><th>Date</th><th>Source</th><th>Amount</th><th>PYF top-up</th><th>Sinking</th><th>Guilt-free</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty">Nothing logged yet. Your first extra payment will show up here.</div>`}</div>`;
 }
 
 function sinkingView(){
   const m=ui.month;
   const cards=state.funds.map((f,i)=>{
-    const ln=fundLine(f), pl=ln?planned(ln):0, need=f.target/12, bal=fundBalance(f,m), pc=f.target?bal/f.target:0;
+    const ln=fundLine(f), pl=ln?planned(ln):0, need=f.target/12, bal=fundBalance(f,ui.year,m), pc=f.target?bal/f.target:0;
     const gap=pl-need, hol=i===0;
     let led='';
-    const rowsL=[['Set aside',k=>fundFlow(f,k).aside],['Top-up',k=>fundFlow(f,k).top],['Spent',k=>fundFlow(f,k).spent],['Balance',k=>fundBalance(f,k)]];
+    const rowsL=[['Set aside',k=>fundFlow(f,ui.year,k).aside],['Top-up',k=>fundFlow(f,ui.year,k).top],['Spent',k=>fundFlow(f,ui.year,k).spent],['Balance',k=>fundBalance(f,ui.year,k)]];
     led=`<details class="led"><summary>Month by month</summary><div class="tscroll"><table class="led"><thead><tr><th></th>${MONTHS.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rowsL.map(([n,fn])=>`<tr><td>${n}</td>${MONTHS.map((x,k)=>{const v=fn(k);return `<td style="${n==='Balance'?'font-weight:700;color:var(--ink)':''}">${Math.round(v)===0?'\u2013':Math.round(v).toLocaleString('en-US')}</td>`}).join('')}</tr>`).join('')}</tbody></table></div></details>`;
     return `<article class="panel fund ${hol?'hol':''}"><div class="fund-top">${hol?jarSvg(pc):''}<div class="t"><h3>${esc(f.name)}${hol?' <span class="chip info" style="vertical-align:3px">Its own fund</span>':''}</h3>
       <div class="big" style="margin-top:4px">${fmt(bal)}</div><div class="muted small">Balance at the end of ${FULL[m]}, ${pct(pc,0)} of target</div></div>
       <div style="min-width:180px;flex:1"><div class="track"><div class="fill" style="width:${clamp(pc,0,1)*100}%;background:var(--c-sinking)"></div></div></div></div>
       <div class="fstats">
         <div><div class="k">Annual target</div>${inp('ft_'+f.id,'fundTarget',f.target,`data-fund="${f.id}"`,f.name+' annual target')}</div>
-        <div><div class="k">Opening balance</div>${inp('fo_'+f.id,'fundOpening',f.opening,`data-fund="${f.id}"`,f.name+' opening balance')}</div>
-        <div><div class="k">Spent in ${FULL[m]}</div>${inp('fs_'+f.id+'_'+m,'fundSpent',f.spent[m],`data-fund="${f.id}"`,f.name+' spent in '+FULL[m])}</div>
+        <div><div class="k">Starting balance (one-time, before tracking began)</div>${inp('fo_'+f.id,'fundOpening',f.opening,`data-fund="${f.id}"`,f.name+' opening balance')}</div>
+        <div><div class="k">Spent in ${FULL[m]}</div>${inp('fs_'+f.id+'_'+m,'fundSpent',ensureYear(ui.year).fundsSpent[f.id][m],`data-fund="${f.id}"`,f.name+' spent in '+FULL[m])}</div>
         <div><div class="k">Set aside each month</div><div class="v">${fmt(pl)}</div></div>
         <div><div class="k">Needed each month</div><div class="v">${fmt(need)}</div></div>
         <div><div class="k">Against the target</div><div class="v"><span class="chip ${gap>=-.5?'good':'warn'}">${gap>=-.5?'On plan':fmt(-gap)+' a month short'}</span></div></div></div>${led}</article>`;
@@ -831,7 +890,7 @@ function setupView(){
    <section class="panel" style="margin-top:22px"><div class="shead"><h3>Your data</h3><p>${storageOk?'Everything is saved in this browser only.':'This browser is not letting the page save, so use a backup before you close it.'} A backup lets you move it to another device.</p></div>
     <div class="actions"><button class="btn primary" data-click="export">Create backup</button><button class="btn" data-click="import">Restore from backup</button></div>
     ${ui.backup!==''?`<div style="padding:0 18px 18px"><textarea class="bk" id="bk" spellcheck="false" placeholder="Paste a backup here, then choose Restore from backup">${esc(ui.backup==='paste'?'':ui.backup)}</textarea>${ui.restoreErr?`<div class="err" style="padding:8px 0 0">${esc(ui.restoreErr)}</div>`:''}<div class="muted small" style="margin-top:6px">${ui.backup==='paste'?'Paste your backup text above.':'Select all and copy this text somewhere safe.'}</div></div>`:''}
-    <div class="actions">${conf('clear','Clear all logged spending and extra income','clear-actuals')}${conf('reset','Reset everything to the sample plan','reset-all')}</div></section>
+    <div class="actions">${conf('clear','Clear all logged spending and extra income (every year)','clear-actuals')}${conf('reset','Reset everything to the sample plan','reset-all')}</div></section>
    <section class="panel" style="margin-top:22px">${syncSection()}</section>
   </div></div>`;
 }
@@ -849,7 +908,7 @@ function modalHtml(){
   const md=ui.modal, itemLines=state.lines.filter(l=>isItemized(l.bucket));
   const groups=[['variable','Variable essentials'],['lifestyle','Lifestyle']];
   const lineOptions=groups.map(([b,n])=>`<optgroup label="${n}">${itemLines.filter(l=>l.bucket===b).map(l=>`<option value="${l.id}" ${l.id===md.line?'selected':''}>${esc(l.name)}</option>`).join('')}</optgroup>`).join('');
-  const wks=weeksOf(state.year,md.month);
+  const wks=weeksOf(ui.year,md.month);
   const weekOptions=wks.map(w=>`<option value="${w.idx}" ${w.idx===md.week?'selected':''}>${w.label} (${esc(w.range)} ${MONTHS[md.month]})</option>`).join('');
   const monthOptions=FULL.map((n,i)=>`<option value="${i}" ${i===md.month?'selected':''}>${n}</option>`).join('');
   const editing=!!md.editingId;
@@ -885,12 +944,13 @@ function render(){
 const later=()=>setTimeout(render,0);
 
 /* ------------------------------------------------------------------ events */
-function setActual(id,m,v){const a=state.actuals[id]||(state.actuals[id]=Array(12).fill(null));a[m]=v===null?null:Math.max(0,v)}
+function setActual(id,m,v){const yr=yd(),a=yr.actuals[id]||(yr.actuals[id]=Array(12).fill(null));a[m]=v===null?null:Math.max(0,v)}
 function onChange(e){
   const t=e.target,act=t.dataset&&t.dataset.act;if(!act)return;
   const v=parseNum(t.value),d=t.dataset;
   switch(act){
     case 'month':ui.month=+t.value;break;
+    case 'year':{ui.year=+t.value;const ll=lastLogged();ui.month=ll>=0?ll:new Date().getMonth();break}
     case 'income1':state.income1=Math.max(0,v||0);break;
     case 'pyfPct':state.pyfPct=clamp((v||0)/100,0,1);break;
     case 'rentLimit':state.rentLimit=clamp((v||0)/100,0,1);break;
@@ -899,12 +959,12 @@ function onChange(e){
     case 'target':state.targets[d.key]=clamp((v||0)/100,0,1);break;
     case 'planned':{const l=state.lines.find(x=>x.id===d.line);if(l)l.planned=Math.max(0,v||0);break}
     case 'actual':setActual(d.line,ui.month,v);break;
-    case 'inc1a':state.inc1Actual[ui.month]=v>0?v:null;break;
+    case 'inc1a':yd().inc1Actual[ui.month]=v>0?v:null;break;
     case 'fundTarget':{const f=state.funds.find(x=>x.id===d.fund);if(f)f.target=Math.max(0,v||0);break}
     case 'fundOpening':{const f=state.funds.find(x=>x.id===d.fund);if(f)f.opening=v||0;break}
-    case 'fundSpent':{const f=state.funds.find(x=>x.id===d.fund);if(f)f.spent[ui.month]=v>0?v:null;break}
+    case 'fundSpent':{const f=state.funds.find(x=>x.id===d.fund);if(f)yd().fundsSpent[f.id][ui.month]=v>0?v:null;break}
     case 'logLine':if(ui.modal){ui.modal.line=t.value;refreshModal();}break;
-    case 'logMonth':if(ui.modal){ui.modal.month=+t.value;const wks=weeksOf(state.year,ui.modal.month);if(!wks.find(w=>w.idx===ui.modal.week))ui.modal.week=0;refreshModal();}break;
+    case 'logMonth':if(ui.modal){ui.modal.month=+t.value;const wks=weeksOf(ui.year,ui.modal.month);if(!wks.find(w=>w.idx===ui.modal.week))ui.modal.week=0;refreshModal();}break;
     case 'logWeek':if(ui.modal){ui.modal.week=+t.value;refreshModal();}break;
     case 'logAmount':if(ui.modal)ui.modal.amount=v===null?'':v;break;
     case 'logNote':if(ui.modal)ui.modal.note=t.value;break;
@@ -928,7 +988,7 @@ function onClick(e){
       if(!n.trim()){ui.err='Give the line a name.';break}
       state.lines.splice(lastIndexOf(d.b)+1,0,{id:'c_'+Date.now().toString(36),bucket:d.b,name:n.trim(),planned:Math.max(0,p||0)});
       ui.addingTo=null;ui.err=null;save();break}
-    case 'del-line':state.lines=state.lines.filter(l=>l.id!==d.line);delete state.actuals[d.line];delete ui.expandedLines[d.line];state.entries=state.entries.filter(e=>e.line!==d.line);save();break;
+    case 'del-line':state.lines=state.lines.filter(l=>l.id!==d.line);Object.values(state.byYear||{}).forEach(yr=>{delete yr.actuals[d.line]});delete ui.expandedLines[d.line];state.entries=state.entries.filter(e=>e.line!==d.line);save();break;
     case 'add-extra':{
       const date=($('#x-date')||{}).value,amt=parseNum(($('#x-amt')||{}).value);
       if(!date){ui.err='Pick the date the money arrived.';break}
@@ -968,14 +1028,14 @@ function onClick(e){
     case 'import':{
       const box=$('#bk');
       if(ui.backup!=='paste'&&!(box&&ui.backup==='paste')){ui.backup='paste';ui.restoreErr=null;break}
-      try{const s=JSON.parse((box&&box.value)||'');if(!s||s.v!==1||!Array.isArray(s.lines)||!Array.isArray(s.funds))throw 0;if(!Array.isArray(s.entries))s.entries=[];state=s;ui.backup='';ui.restoreErr=null;save()}
+      try{const s=JSON.parse((box&&box.value)||'');if(!s||s.v!==1||!Array.isArray(s.lines)||!Array.isArray(s.funds))throw 0;state=migrate(s);ui.backup='';ui.restoreErr=null;save()}
       catch(x){ui.restoreErr='That does not look like a backup from this app.'}
       break}
   }
   later();
 }
 function lastIndexOf(b){let i=-1;state.lines.forEach((l,k)=>{if(l.bucket===b)i=k});return i}
-function clearActuals(){state.inc1Actual=Array(12).fill(null);state.actuals={};state.entries=[];state.extra=[];state.funds.forEach(f=>f.spent=Array(12).fill(null))}
+function clearActuals(){state.byYear={};state.entries=[];state.extra=[]}
 let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,180)});
 document.addEventListener('change',onChange);
 document.addEventListener('click',onClick);
