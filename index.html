@@ -192,6 +192,12 @@ label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-b
 .tag{white-space:nowrap;display:inline-block;font-size:11.5px;color:var(--muted);background:var(--surface-2);border-radius:6px;padding:1px 6px;margin-left:6px}
 .xbtn{background:none;border:0;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:2px}
 .xbtn:hover{color:var(--bad)}
+.xbtn.ok:hover{color:var(--good)}
+.pencil{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:2px;opacity:.6;flex:none}
+.pencil:hover{opacity:1;color:var(--primary)}
+.brow .nm{display:flex;align-items:center;gap:4px}
+.nm.renaming{display:flex;align-items:center;gap:4px;width:100%}
+.nm.renaming input{flex:1;min-width:0;padding:5px 8px;font-size:13.5px;border:1px solid var(--primary);border-radius:8px;background:var(--surface);color:var(--ink)}
 .addrow{padding:10px 18px 14px;border-top:1px solid var(--line-soft);display:grid;grid-template-columns:1fr 110px auto;gap:8px}
 .linkbtn{background:none;border:0;color:var(--primary);font-weight:650;cursor:pointer;padding:10px 18px 14px}
 @media(max-width:520px){
@@ -254,9 +260,41 @@ footer.foot{max-width:1180px;margin:0 auto;padding:0 20px 40px;color:var(--muted
 .wchip{border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer}
 .wchip:hover{border-color:var(--primary);color:var(--primary)}
 .wchip.filled{background:var(--good-soft);border-color:transparent;color:var(--good)}
+.hist{padding:0 18px 12px}
+.histweek+.histweek{margin-top:10px}
+.histhead{display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--muted);padding:4px 0;border-bottom:1px solid var(--line-soft)}
+.histrow{display:flex;justify-content:space-between;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line-soft);cursor:pointer;font-size:13.5px}
+.histrow:hover{color:var(--primary)}
+.histrow:last-child{border-bottom:0}
+.histrow .amt{font-weight:650;white-space:nowrap}
 .hint{padding:0 18px 8px;margin-top:-2px}
+.modecell{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.modebtn{background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:10.5px;font-weight:700;color:var(--muted);cursor:pointer;letter-spacing:.02em}
+.modebtn:hover{border-color:var(--primary);color:var(--primary)}
+.catgroup{margin-bottom:12px}
+.catlabel{color:var(--muted);font-size:12px;font-weight:600;margin-bottom:6px}
+.catgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cattile{display:flex;flex-direction:column;align-items:center;gap:5px;padding:9px 2px 8px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);cursor:pointer;font-size:11px;font-weight:650;color:var(--ink);line-height:1.15;text-align:center}
+.cattile:hover{border-color:var(--primary)}
+.cattile[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft);color:var(--primary)}
+.cattile.addcat{background:transparent;border-style:dashed;color:var(--muted)}
+.cattile.addcat:hover{color:var(--primary)}
+.cattile.addcat .cicon{font-size:20px;font-weight:700}
+.addcatrow{grid-column:1/-1;display:flex;gap:8px;align-items:center}
+.addcatrow input{flex:1;min-width:0}
+@media(max-width:420px){.addcatrow{flex-wrap:wrap}.addcatrow input{flex:1 1 100%}}
+.cicon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px}
+.amt-input{font-size:30px;font-weight:700;text-align:center;padding:12px}
+@media(max-width:400px){.catgrid{grid-template-columns:repeat(3,1fr)}}
+.donut svg{width:100%;height:auto;display:block;max-width:180px;margin:0 auto}
+.cattile .cpct{font-size:10px;font-weight:700;color:var(--muted)}
+.balbar{display:flex;justify-content:center;align-items:baseline;gap:8px;margin:2px 0 4px;font-size:13px;color:var(--muted);font-weight:600}
+.balbar b{font-family:var(--display);font-size:20px;font-weight:600;color:var(--ink)}
+.balbar b.bad{color:var(--bad)}
 .fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:25;background:var(--primary);color:var(--on-primary);border:0;border-radius:999px;padding:14px 20px;font-weight:700;font-size:14.5px;box-shadow:0 8px 24px rgba(0,0,0,.2);cursor:pointer;display:flex;align-items:center;gap:8px}
 .fab:hover{filter:brightness(1.06)}
+.fab.minus{background:var(--bad);color:#fff}
+.fab.minus .plus{font-size:22px;font-weight:800}
 .fab .plus{font-size:18px;line-height:1}
 @media(max-width:620px){.fab span.lbl{display:none}.fab{padding:0;border-radius:50%;width:54px;height:54px;justify-content:center}}
 .modal-back{position:fixed;inset:0;background:rgba(10,20,18,.45);backdrop-filter:blur(2px);z-index:30;display:flex;align-items:flex-end;justify-content:center;padding:0}
@@ -322,10 +360,10 @@ function defaults(){
       L('f_mob','fixed','Mobile plans',120),
       L('f_sub','fixed','Streaming & subscriptions',60),
       L('f_help','fixed','Babysitter / domestic helper',250),
-      L('f_xtra','fixed','Extracurriculars',100),
+      L('l_kact','fixed',"Kids' activities (football, music, etc.)",250),
       L('v_groc','variable','Groceries',850),
       L('v_elec','variable','Electricity (TNB)',180),
-      L('v_water','variable','Water & sewerage',40),
+      L('v_water','variable','Water (drinking)',40),
       L('v_clin','variable','Clinic, medication, dental',150),
       L('v_kids','variable',"Kids' misc. (clothes, toys, books)",150),
       L('v_house','variable','Household supplies',100),
@@ -334,17 +372,15 @@ function defaults(){
       L('l_take','lifestyle','Takeaway & delivery',120),
       L('l_date','lifestyle','Date nights & family outings',130),
       L('l_care','lifestyle','Personal care & adult clothing',130),
-      L('s_hol','sinking','Holidays (own fund)',300,{fund:'hol'}),
-      L('s_fest','sinking','Festive',150,{fund:'fest'}),
-      L('s_prem','sinking','Annual premiums & renewals',50,{fund:'prem'}),
-      L('s_appl','sinking','Appliances & replacements',100,{fund:'appl'})
+      L('s_hol','sinking','Holidays (Asia)',300,{fund:'hol'}),
+      L('s_vaceu','sinking','Vacations (Europe)',150,{fund:'vaceu'}),
+      L('s_major','sinking','Major Purchases',150,{fund:'major'})
     ],
     extra:[],entries:[],byYear:{},
     funds:[
-      {id:'hol',name:'Holidays',target:3600,opening:0},
-      {id:'fest',name:'Festive',target:1800,opening:0},
-      {id:'prem',name:'Annual premiums',target:600,opening:0},
-      {id:'appl',name:'Appliances',target:1200,opening:0}
+      {id:'hol',name:'Holidays (Asia)',target:3600,opening:0},
+      {id:'vaceu',name:'Vacations (Europe)',target:3000,opening:0},
+      {id:'major',name:'Major Purchases',target:1800,opening:0}
     ]
   };
 }
@@ -376,10 +412,15 @@ function applyDemo(s){
            {id:'x3',date:d(7,9),source:'Freelance job',amount:1500,fund:'hol'}].filter(x=>+x.date.slice(5,7)<=n);
   if(n>5)yd.fundsSpent[s.funds[0].id][5]=1500;
 }
-function planOf(s,l){return l.bucket==='pyf'?s.income1*s.pyfPct*s.pyfSplit[l.share]:num(l.planned)}
+function planOf(s,l){
+  if(l.bucket==='pyf')return s.income1*s.pyfPct*s.pyfSplit[l.share];
+  if(l.mode==='pct')return s.income1*num(l.pctVal);
+  return num(l.planned);
+}
+const canPct=b=>b==='rent'||b==='fixed';
 
 let state=null, storageOk=true;
-const ui={tab:'overview',month:new Date().getMonth(),year:new Date().getFullYear(),scope:'month',addingTo:null,confirm:null,err:null,backup:'',restoreErr:null,modal:null,modalErr:null,expandedLines:{},syncUrlDraft:null,syncErr:null};
+const ui={tab:'overview',month:new Date().getMonth(),year:new Date().getFullYear(),scope:'month',addingTo:null,confirm:null,err:null,backup:'',restoreErr:null,modal:null,modalErr:null,expandedLines:{},syncUrlDraft:null,syncErr:null,renamingLine:null};
 
 /* Brings an older, single-year save (or a backup made before multi-year support) up to the
    current shape: monthly actuals move into byYear[year], and every logged entry gets a year. */
@@ -393,8 +434,98 @@ function migrate(s){
   }
   if(!Array.isArray(s.entries))s.entries=[];
   const fallbackYear=s.year||new Date().getFullYear();
-  s.entries.forEach(e=>{if(e.year===undefined||e.year===null)e.year=fallbackYear;});
+  s.entries.forEach(e=>{
+    if(e.year===undefined||e.year===null)e.year=fallbackYear;
+    if(e.day===undefined||e.day===null){
+      const maxD=new Date(e.year,(e.month||0)+1,0).getDate();
+      e.day=Math.max(1,Math.min(maxD,(num(e.week)||0)*7+1));
+    }
+  });
+  migrateFundsV2(s);
+  migrateKidsActivities(s);
+  const water=s.lines.find(l=>l.id==='v_water');
+  if(water&&water.name==='Water & sewerage')water.name='Water (drinking)';
   return s;
+}
+/* Kids' activities started as a loggable Lifestyle category, then folded together with the
+   old fixed "Extracurriculars" line into one fixed-cost line the family sets a monthly RM
+   value for. This brings any state up to that final shape, keeping history: entries already
+   logged against the lifestyle version become monthly actuals, and Extracurriculars' planned
+   amount and monthly actuals merge in rather than being lost. Safe to run on every load. */
+function migrateKidsActivities(s){
+  let kact=s.lines.find(l=>l.id==='l_kact');
+  if(!kact){
+    kact={id:'l_kact',bucket:'fixed',name:"Kids' activities (football, music, etc.)",planned:150};
+    const idx=s.lines.findIndex(l=>l.id==='f_help');
+    if(idx>=0)s.lines.splice(idx+1,0,kact);else s.lines.push(kact);
+  }
+  if(kact.bucket!=='fixed'){
+    // Was the loggable Lifestyle version: fold any logged entries into monthly actuals, then convert.
+    const kactPlanned=planOf(s,kact);
+    Object.keys(s.byYear||{}).forEach(y=>{
+      const yr=s.byYear[y];
+      if(!yr.actuals)yr.actuals={};
+      if(!Array.isArray(yr.actuals[kact.id]))yr.actuals[kact.id]=Array(12).fill(null);
+      (s.entries||[]).filter(e=>e.line===kact.id&&String(e.year)===String(y)).forEach(e=>{
+        yr.actuals[kact.id][e.month]=num(yr.actuals[kact.id][e.month])+num(e.amount);
+      });
+    });
+    s.entries=(s.entries||[]).filter(e=>e.line!==kact.id);
+    kact.bucket='fixed';delete kact.mode;delete kact.pctVal;kact.planned=kactPlanned;
+  }
+  const xtra=s.lines.find(l=>l.id==='f_xtra');
+  if(xtra){
+    kact.planned=num(planOf(s,kact))+num(planOf(s,xtra));
+    delete kact.mode;delete kact.pctVal;
+    Object.keys(s.byYear||{}).forEach(y=>{
+      const yr=s.byYear[y];
+      if(!yr.actuals)yr.actuals={};
+      if(!Array.isArray(yr.actuals[kact.id]))yr.actuals[kact.id]=Array(12).fill(null);
+      const xa=yr.actuals[xtra.id];
+      if(Array.isArray(xa))for(let m=0;m<12;m++)if(num(xa[m]))yr.actuals[kact.id][m]=num(yr.actuals[kact.id][m])+num(xa[m]);
+      delete yr.actuals[xtra.id];
+    });
+    s.lines=s.lines.filter(l=>l.id!==xtra.id);
+  }
+}
+/* One-time restructure of the sinking funds: Festive, Annual premiums & renewals and
+   Appliances & replacements fold into a single "Major Purchases" fund (their balances,
+   month-by-month history and extra-income top-ups all merge, nothing is lost); Holidays
+   is renamed to "Holidays (Asia)"; a new "Vacations (Europe)" fund is added alongside it. */
+function migrateFundsV2(s){
+  const OLD=['fest','prem','appl'];
+  const hasOld=OLD.some(id=>(s.funds||[]).some(f=>f.id===id));
+  if(!hasOld)return;
+  const hol=s.funds.find(f=>f.id==='hol');
+  if(hol&&hol.name==='Holidays')hol.name='Holidays (Asia)';
+  const holLine=s.lines.find(l=>l.fund==='hol');
+  if(holLine&&/^Holidays\b/.test(holLine.name))holLine.name='Holidays (Asia)';
+
+  const oldFunds=OLD.map(id=>s.funds.find(f=>f.id===id)).filter(Boolean);
+  const oldLines=OLD.map(id=>s.lines.find(l=>l.fund===id)).filter(Boolean);
+  const openingSum=sum(oldFunds.map(f=>num(f.opening)));
+  const targetSum=sum(oldFunds.map(f=>num(f.target)))||1800;
+  const plannedSum=sum(oldLines.map(l=>planOf(s,l)));
+
+  Object.values(s.byYear||{}).forEach(yr=>{
+    if(!yr.fundsSpent)yr.fundsSpent={};
+    const mergedSpent=Array(12).fill(null);
+    OLD.forEach(id=>{const arr=yr.fundsSpent[id];if(Array.isArray(arr))arr.forEach((v,i)=>{if(v!==null&&v!==undefined&&v!=='')mergedSpent[i]=(mergedSpent[i]||0)+num(v)});delete yr.fundsSpent[id]});
+    yr.fundsSpent.major=mergedSpent;
+    if(!yr.actuals)yr.actuals={};
+    const mergedActual=Array(12).fill(null);
+    oldLines.forEach(l=>{const arr=yr.actuals[l.id];if(Array.isArray(arr))arr.forEach((v,i)=>{if(v!==null&&v!==undefined&&v!=='')mergedActual[i]=(mergedActual[i]||0)+num(v)});delete yr.actuals[l.id]});
+    yr.actuals.s_major=mergedActual;
+  });
+  (s.extra||[]).forEach(x=>{if(OLD.indexOf(x.fund)>=0)x.fund='major'});
+
+  s.funds=s.funds.filter(f=>OLD.indexOf(f.id)<0);
+  if(!s.funds.find(f=>f.id==='major'))s.funds.push({id:'major',name:'Major Purchases',target:targetSum,opening:openingSum});
+  s.lines=s.lines.filter(l=>OLD.indexOf(l.fund)<0);
+  if(!s.lines.find(l=>l.fund==='major'))s.lines.push({id:'s_major',bucket:'sinking',name:'Major Purchases',planned:Math.round(plannedSum),fund:'major'});
+
+  if(!s.funds.find(f=>f.id==='vaceu'))s.funds.push({id:'vaceu',name:'Vacations (Europe)',target:3000,opening:0});
+  if(!s.lines.find(l=>l.fund==='vaceu'))s.lines.push({id:'s_vaceu',bucket:'sinking',name:'Vacations (Europe)',planned:0,fund:'vaceu'});
 }
 function load(){try{const raw=localStorage.getItem(KEY);if(raw){const s=JSON.parse(raw);if(s&&s.v===1)return migrate(s)}}catch(e){storageOk=false}return null}
 function localSave(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){storageOk=false}}
@@ -492,18 +623,23 @@ function weeksOf(year,month){
   return arr;
 }
 function entriesFor(lineId,m){return state.entries.filter(e=>e.line===lineId&&e.year===ui.year&&e.month===m)}
-function findEntry(lineId,m,w){return state.entries.find(e=>e.line===lineId&&e.year===ui.year&&e.month===m&&e.week===w)}
-function refreshModal(){
-  if(!ui.modal)return;
-  const e=findEntry(ui.modal.line,ui.modal.month,ui.modal.week);
-  ui.modal.amount=e?e.amount:'';ui.modal.note=e?e.note:'';ui.modal.editingId=e?e.id:null;
+const weekOfDay=day=>Math.floor(((day||1)-1)/7);
+function newEntryId(){return 'e_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+/* Every logged expense is its own transaction now (not one aggregate per week), so this
+   groups a line's transactions for the month into week buckets with a subtotal, then lists
+   each one by day — tap a row to edit or delete that single entry. */
+function historyList(l,m){
+  const es=entriesFor(l.id,m).slice().sort((a,b)=>(a.day||1)-(b.day||1)||(a.id<b.id?-1:1));
+  if(!es.length)return `<p class="muted small hist">Nothing logged yet this month. Tap the amount above to add the first one.</p>`;
+  const wks=weeksOf(ui.year,m), byWeek={};
+  es.forEach(e=>{const w=weekOfDay(e.day);(byWeek[w]=byWeek[w]||[]).push(e)});
+  return `<div class="hist">${wks.filter(w=>byWeek[w.idx]).map(w=>{
+    const items=byWeek[w.idx], sub=sum(items.map(e=>num(e.amount)));
+    return `<div class="histweek"><div class="histhead"><span>${esc(w.label)} (${esc(w.range)} ${MONTHS[m]})</span><span>${fmt(sub)}</span></div>
+      ${items.map(e=>`<div class="histrow" data-click="open-log" data-entry="${e.id}"><span>${e.day||1} ${MONTHS[m]}${e.note?' — '+esc(e.note):''}</span><span class="amt">${fmt(e.amount)}</span></div>`).join('')}
+    </div>`;
+  }).join('')}</div>`;
 }
-function upsertEntry(lineId,m,w,amount,note){
-  const e=findEntry(lineId,m,w);
-  if(e){e.amount=amount;e.note=note||'';}
-  else state.entries.push({id:'e_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),line:lineId,month:m,week:w,year:ui.year,amount,note:note||''});
-}
-function openWeekFor(lineId,m){const wks=weeksOf(ui.year,m),nx=wks.find(w=>!findEntry(lineId,m,w.idx));return nx?nx.idx:wks[wks.length-1].idx}
 function currentWeekIndex(month){
   const now=new Date();
   if(now.getFullYear()!==ui.year||now.getMonth()!==month)return 0;
@@ -512,6 +648,7 @@ function currentWeekIndex(month){
 }
 function lineActualFor(l,year,m){
   if(isItemized(l.bucket))return sum(state.entries.filter(e=>e.line===l.id&&e.year===year&&e.month===m).map(e=>num(e.amount)));
+  if(l.bucket==='pyf'||l.bucket==='sinking')return planOf(state,l);
   return num((ensureYear(year).actuals[l.id]||[])[m]);
 }
 const lineActual=(l,m)=>lineActualFor(l,ui.year,m);
@@ -524,7 +661,11 @@ function bucketActual(b,m){
   if(b==='buffer')return logged(m)?inc1Of(ui.year,m)-sum(NONBUF.map(x=>bucketActual(x,m))):0;
   return sum(linesOf(b).map(l=>lineActual(l,m)));
 }
-function scopeMonths(){return ui.scope==='month'?[ui.month]:[0,1,2,3,4,5,6,7,8,9,10,11].filter(logged)}
+function scopeMonths(){return (ui.scope==='month'||ui.scope==='week')?[ui.month]:[0,1,2,3,4,5,6,7,8,9,10,11].filter(logged)}
+function bucketWeekActual(b,wk){
+  if(!isItemized(b))return 0;
+  return sum(linesOf(b).map(l=>sum(state.entries.filter(e=>e.line===l.id&&e.year===ui.year&&e.month===ui.month&&weekOfDay(e.day)===wk).map(e=>num(e.amount)))));
+}
 const nMonths=()=>ui.scope==='month'?1:scopeMonths().length;
 const isActive=()=>ui.scope==='month'?logged(ui.month):scopeMonths().length>0;
 const bA=b=>sum(scopeMonths().map(m=>bucketActual(b,m)));
@@ -603,6 +744,41 @@ function jarSvg(p){
   <rect x="17" y="6" width="40" height="13" rx="5" fill="var(--c-sinking)"/>
   <rect x="9" y="18" width="56" height="78" rx="14" fill="none" stroke="var(--ink)" stroke-opacity=".25" stroke-width="2"/></svg>`;
 }
+function donutChart(segs,centerLabel,centerSub){
+  const R=54,C=64,STROKE=16,CIRC=2*Math.PI*R,tot=sum(segs.map(s=>s.v))||1;
+  let off=0,arcs='';
+  segs.forEach(s=>{
+    const len=s.v/tot*CIRC;
+    arcs+=`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${cv(s.b.id)}" stroke-width="${STROKE}" stroke-dasharray="${len} ${CIRC-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${C} ${C})"><title>${esc(s.b.name)}: ${fmt(s.v)} (${pct(s.v/tot)})</title></circle>`;
+    off+=len;
+  });
+  return `<svg viewBox="0 0 ${C*2} ${C*2}" role="img" aria-label="Spending by category, total ${esc(centerLabel)}">
+    <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--track)" stroke-width="${STROKE}"/>${arcs}
+    <text x="${C}" y="${C-4}" text-anchor="middle" style="font-family:var(--display);font-size:19px;font-weight:600;fill:var(--ink)">${esc(centerLabel)}</text>
+    <text x="${C}" y="${C+16}" text-anchor="middle" style="font-size:11px;fill:var(--muted)">${esc(centerSub)}</text>
+  </svg>`;
+}
+/* One distinct color per everyday spending category, used for the Budget tab's labeled wheel
+   and its matching category icons, so a slice and its icon always read as the same color. */
+const CAT_COLORS={v_groc:'#e0567a',v_elec:'#f0b83e',v_water:'#4fb0c6',v_clin:'#c65b8c',v_kids:'#8c6fe0',v_house:'#6f9bec',v_grab:'#e0a458',l_eat:'#4caf7d',l_take:'#a4763c',l_date:'#e07b39',l_care:'#5bc6a4'};
+function catColor(l){return CAT_COLORS[l.id]||(l.bucket==='lifestyle'?'#e0709a':'#8a4f9e')}
+/* The Budget tab's "log an expense" wheel: one slice per category (not per bucket), with a
+   short spoke and its share out to any slice that's big enough to read, and the center
+   showing this month's income (top) against its expenses (bottom) — like the reference app. */
+function categoryWheel(segs,incomeAmt,expenseAmt){
+  const R=52,STROKE=17,C=74,CIRC=2*Math.PI*R,tot=sum(segs.map(s=>s.v))||1;
+  let off=0,arcs='';
+  segs.forEach(s=>{
+    const len=s.v/tot*CIRC, color=catColor(s.l), frac=s.v/tot;
+    arcs+=`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${color}" stroke-width="${STROKE}" stroke-dasharray="${len} ${CIRC-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${C} ${C})"><title>${esc(s.l.name)}: ${fmt(s.v)} (${pct(frac)})</title></circle>`;
+    off+=len;
+  });
+  return `<svg viewBox="0 0 ${C*2} ${C*2}" role="img" aria-label="This month: income ${esc(incomeAmt)}, expenses ${esc(expenseAmt)}">
+    <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--track)" stroke-width="${STROKE}"/>${arcs}
+    <text x="${C}" y="${C-6}" text-anchor="middle" style="font-family:var(--display);font-size:16px;font-weight:600;fill:var(--primary)">${esc(incomeAmt)}</text>
+    <text x="${C}" y="${C+15}" text-anchor="middle" style="font-family:var(--display);font-size:18px;font-weight:700;fill:var(--bad)">${esc(expenseAmt)}</text>
+  </svg>`;
+}
 
 /* ------------------------------------------------------------------ views */
 /* Years the year-picker offers: every year that has real data, plus this year and next,
@@ -634,19 +810,24 @@ function syncChip(){
   return `<button class="chip ${t}" data-click="tab" data-t="setup" style="border:0;cursor:pointer" title="Shared with your wife via Google Sheets. Tap to manage.">${label}</button>`;
 }
 function overview(){
+  const weekMode=ui.scope==='week';
+  const wkIdx=currentWeekIndex(ui.month), wkInfo=weeksOf(ui.year,ui.month)[wkIdx];
   const act=isActive(), ms=scopeMonths();
   const spent=sum(['rent','fixed','variable','lifestyle'].map(bA)), saved=bA('pyf')+bA('sinking'), left=bA('buffer');
-  const when=ui.scope==='month'?'In '+FULL[ui.month]:'So far in '+ui.year;
+  const when=ui.scope==='month'?'In '+FULL[ui.month]:weekMode?'In '+wkInfo.label+' of '+FULL[ui.month]:'So far in '+ui.year;
   let head;
   if(!act){
-    head=ui.scope==='month'?`${FULL[ui.month]} has not started yet. Enter Income 1 on the Budget tab to switch it on.`:`Nothing is logged for ${ui.year} yet.`;
+    head=(ui.scope==='month'||weekMode)?`${FULL[ui.month]} has not started yet. Enter Income 1 on the Budget tab to switch it on.`:`Nothing is logged for ${ui.year} yet.`;
+  }else if(weekMode){
+    const wkSpent=sum(['variable','lifestyle'].map(b=>bucketWeekActual(b,wkIdx)));
+    head=`${when}, ${fmt(wkSpent)} of variable and lifestyle spending has been logged (${wkInfo.range} ${FULL[ui.month]}). Rent, fixed costs and savings are only tracked monthly, so they are not part of this weekly total.`;
   }else{
     head=`${when}, ${fmt(spent)} went to living costs, ${fmt(saved)} was put aside and ${left>=0?fmt(left)+' is left over.':'you are '+fmt(-left)+' over.'}`;
   }
   const P=pyfStats(), ex=P.ex, hol=state.funds[0], hb=fundBalance(hol,ui.year,balMonth()), hp=hol.target?hb/hol.target:0;
   const incPlan=state.income1*nMonths();
   const banner=state.demo?`<div class="banner"><p><b>You are looking at demo figures.</b> The plan uses sample amounts for an RM 8,000 income. Clear the demo to start entering your own numbers.</p><button class="btn primary" data-click="clear-demo">Clear demo data</button></div>`:'';
-  const notStarted=(ui.scope==='month'&&!act)?`<div class="banner info"><p>The plan below is what you have budgeted for ${FULL[ui.month]}. Actual figures appear once you enter Income 1 received.</p><button class="btn" data-click="tab" data-t="budget">Open Budget</button></div>`:'';
+  const notStarted=((ui.scope==='month'||weekMode)&&!act)?`<div class="banner info"><p>The plan below is what you have budgeted for ${FULL[ui.month]}. Actual figures appear once you enter Income 1 received.</p><button class="btn" data-click="tab" data-t="budget">Open Budget</button></div>`:'';
 
   // money strip
   const segs=BUCKETS.map(b=>({b,v:act?Math.max(0,bA(b.id)):Math.max(0,bP(b.id))})).filter(s=>s.v>0);
@@ -685,8 +866,22 @@ function overview(){
     <div class="muted small">${pct(hp,0)} of your ${fmt(hol.target)} goal</div><div style="margin-top:8px">${pace}</div>
     <div class="muted small" style="margin-top:8px">Setting aside ${fmt(holPlan)} a month. Needs ${fmt(holNeed)} to reach the goal in a year.</div></div></div></section>`;
 
+  // category donut — real weekly figures for "This week", bucket totals otherwise
+  let donutSec='';
+  if(weekMode){
+    const segsW=['variable','lifestyle'].map(b=>({b:BM[b],v:bucketWeekActual(b,wkIdx)})).filter(s=>s.v>0).sort((x,y)=>y.v-x.v);
+    const totW=sum(segsW.map(s=>s.v));
+    if(totW>0)donutSec=`<section class="donut"><h2 class="sec">${esc(wkInfo.label)} by category</h2>${donutChart(segsW,fmt(totW),wkInfo.label)}
+      <ul class="flist" style="margin-top:10px">${segsW.map(s=>`<li class="frow" style="grid-template-columns:12px minmax(0,1fr) auto"><span class="sw" style="background:${cv(s.b.id)}"></span><span>${esc(s.b.name)}</span><span class="amt">${fmt(s.v)}<small>${pct(s.v/(totW||1))}</small></span></li>`).join('')}</ul></section>`;
+  }else if(act){
+    const segsM=BUCKETS.filter(b=>b.id!=='buffer').map(b=>({b,v:Math.max(0,bA(b.id))})).filter(s=>s.v>0).sort((x,y)=>y.v-x.v);
+    const totM=sum(segsM.map(s=>s.v));
+    if(totM>0)donutSec=`<section class="donut"><h2 class="sec">${ui.scope==='month'?FULL[ui.month]:ui.year} by category</h2>${donutChart(segsM,fmt(totM),ui.scope==='month'?FULL[ui.month]:String(ui.year))}
+      <ul class="flist" style="margin-top:10px">${segsM.map(s=>`<li class="frow" style="grid-template-columns:12px minmax(0,1fr) auto"><span class="sw" style="background:${cv(s.b.id)}"></span><span>${esc(s.b.name)}</span><span class="amt">${fmt(s.v)}<small>${pct(s.v/(totM||1))}</small></span></li>`).join('')}</ul></section>`;
+  }
+
   const notes=insights();
-  const rail=`<div class="rail">${jar}<section><h2 class="sec">Worth a look</h2><ul class="notes">${notes.map(n=>`<li class="${n.t}"><b>${esc(n.h)}</b><span>${esc(n.p)}</span></li>`).join('')}</ul></section></div>`;
+  const rail=`<div class="rail">${donutSec}${jar}<section><h2 class="sec">Worth a look</h2><ul class="notes">${notes.map(n=>`<li class="${n.t}"><b>${esc(n.h)}</b><span>${esc(n.p)}</span></li>`).join('')}</ul></section></div>`;
 
   // year chart
   const chart=`<section class="section"><div class="panel"><div class="panel-h"><h2>The year so far</h2><span class="muted small">Tap a month to open it</span></div>
@@ -700,13 +895,13 @@ function overview(){
   }).join('');
   const recent=state.extra.slice().sort((a,b)=>a.date<b.date?1:-1).slice(0,5);
   const rl=recent.length?recent.map(x=>{const f=state.funds.find(z=>z.id===x.fund);return `<li class="frow" style="grid-template-columns:minmax(0,1fr) auto"><span><b>${esc(x.source||'Extra income')}</b><br><span class="muted small">${MONTHS[monthOf(x.date)]} ${+x.date.slice(8,10)}, sinking share to ${esc(f?f.name:'a fund')}</span></span><span class="amt">${fmt(x.amount)}</span></li>`}).join(''):`<li class="muted small" style="padding:8px 0">No extra income logged yet.</li>`;
-  const recentSpend=state.entries.slice().sort((x,y)=>(y.year-x.year)||(y.month-x.month)||(y.week-x.week)).slice(0,5);
-  const rs=recentSpend.length?recentSpend.map(x=>{const ln=state.lines.find(z=>z.id===x.line);const wk=weeksOf(x.year,x.month).find(w=>w.idx===x.week);return `<li class="frow" style="grid-template-columns:minmax(0,1fr) auto"><span><b>${esc(ln?ln.name:'Spending')}</b><br><span class="muted small">${MONTHS[x.month]}${x.year!==ui.year?' \u2019'+String(x.year).slice(2):''}, ${wk?wk.label:''}${x.note?' \u2014 '+esc(x.note):''}</span></span><span class="amt">${fmt(x.amount)}</span></li>`}).join(''):`<li class="muted small" style="padding:8px 0">No spending logged yet.</li>`;
+  const recentSpend=state.entries.slice().sort((x,y)=>(y.year-x.year)||(y.month-x.month)||((y.day||1)-(x.day||1))).slice(0,5);
+  const rs=recentSpend.length?recentSpend.map(x=>{const ln=state.lines.find(z=>z.id===x.line);return `<li class="frow" style="grid-template-columns:minmax(0,1fr) auto"><span><b>${esc(ln?ln.name:'Spending')}</b><br><span class="muted small">${x.day||1} ${MONTHS[x.month]}${x.year!==ui.year?' \u2019'+String(x.year).slice(2):''}${x.note?' \u2014 '+esc(x.note):''}</span></span><span class="amt">${fmt(x.amount)}</span></li>`}).join(''):`<li class="muted small" style="padding:8px 0">No spending logged yet.</li>`;
   const lower=`<section class="section three"><div><h2 class="sec">Sinking funds</h2><ul class="flist">${fl}</ul></div><div><h2 class="sec">Recent spending</h2><ul class="flist">${rs}</ul></div><div><h2 class="sec">Recent extra income</h2><ul class="flist">${rl}</ul>
     <p class="muted small" style="margin-top:10px">Each payment is split ${pct(state.extraSplit.pyf,0)} PYF top-up, ${pct(state.extraSplit.sink,0)} sinking funds and ${pct(state.extraSplit.free,0)} guilt-free.</p></div></section>`;
 
   return `${banner}${notStarted}
-    <div class="scope" role="group" aria-label="Time range"><button data-click="scope" data-s="month" aria-pressed="${ui.scope==='month'}">${FULL[ui.month]}</button><button data-click="scope" data-s="ytd" aria-pressed="${ui.scope==='ytd'}">Year to date</button></div>
+    <div class="scope" role="group" aria-label="Time range"><button data-click="scope" data-s="week" aria-pressed="${ui.scope==='week'}">This week</button><button data-click="scope" data-s="month" aria-pressed="${ui.scope==='month'}">${FULL[ui.month]}</button><button data-click="scope" data-s="ytd" aria-pressed="${ui.scope==='ytd'}">Year to date</button></div>
     <h1 class="headline ${act?'wide':''}">${esc(head)}</h1>${strip}${facts}
     <div class="cols"><div>${ledger}</div>${rail}</div>${chart}${lower}`;
 }
@@ -737,7 +932,66 @@ function insights(){
 }
 
 function inp(k,act,val,attrs,label){return `<input class="num" inputmode="decimal" data-k="${k}" data-act="${act}" ${attrs||''} value="${val===null||val===undefined||val===''?'':+(+val).toFixed(2)}" aria-label="${esc(label||k)}">`}
+function nameCell(l){
+  if(ui.renamingLine===l.id){
+    return `<span class="nm renaming"><input class="txt" id="rn-${l.id}" data-k="rn-${l.id}" value="${esc(l.name)}" maxlength="60" aria-label="Rename category"><button class="xbtn ok" data-click="save-rename" data-line="${l.id}" aria-label="Save name">✓</button><button class="xbtn" data-click="cancel-rename" aria-label="Cancel rename">✕</button></span>`;
+  }
+  return `<span class="nm">${esc(l.name)}<button type="button" class="pencil" data-click="rename-line" data-line="${l.id}" aria-label="Rename ${esc(l.name)}">✎</button></span>`;
+}
+function modeCell(l){
+  const isPct=l.mode==='pct', pl=planned(l);
+  return `<span class="modecell">
+    <button type="button" class="modebtn" data-click="line-mode" data-line="${l.id}" aria-label="${esc(l.name)}: switch between fixed RM and % of income">${isPct?'%':'RM'}</button>
+    ${isPct
+      ?`<span class="pct" style="display:block;width:100%"><input class="num" inputmode="decimal" data-k="pp_${l.id}" data-act="linePct" data-line="${l.id}" value="${+(num(l.pctVal)*100).toFixed(2)}" aria-label="${esc(l.name)} percent of Income 1"></span><small class="muted" style="font-size:10.5px">${fmt(pl)}</small>`
+      :inp('p_'+l.id,'planned',pl,`data-line="${l.id}"`,l.name+' planned')}
+  </span>`;
+}
 
+function fixedLineRow(l,m){
+  const on=logged(m);
+  const pl=planned(l), ac=lineActualFor(l,ui.year,m), raw=(yd().actuals[l.id]||[])[m];
+  const d=on?(pl-ac):null, custom=/^c_/.test(l.id);
+  return `<div class="brow">${nameCell(l)}
+    <span>${canPct(l.bucket)?modeCell(l):inp('p_'+l.id,'planned',pl,`data-line="${l.id}"`,l.name+' planned')}</span>
+    <span>${inp('a_'+l.id+'_'+m,'actual',raw,`data-line="${l.id}"`,l.name+' actual in '+FULL[m])}</span>
+    <span class="diff ${d===null||Math.round(d)===0?'zero':d>0?'good':'bad'}">${d===null?'':signed(d)}</span>
+    <span>${custom?`<button class="xbtn" data-click="del-line" data-line="${l.id}" aria-label="Remove ${esc(l.name)}">×</button>`:''}</span></div>`;
+}
+function setupFixedSection(){
+  const m=ui.month;
+  const rows=[...linesOf('rent'),...linesOf('fixed')].map(l=>fixedLineRow(l,m)).join('');
+  return `<section class="panel" style="margin-top:22px"><div class="shead"><h3>Rent & other fixed costs</h3><p>Planned as RM or % of Income 1. Actual is what you paid in ${FULL[m]} — change the month at the top of the app to log a different one.</p></div>
+    <div class="cols-h"><span>Line</span><span class="right">Planned</span><span class="right">Actual</span><span class="right">Diff</span><span></span></div>
+    ${rows}
+    ${ui.addingTo==='fixed'?`<div class="addrow"><input class="txt" id="al-name" placeholder="Line name" maxlength="40"><input class="num" id="al-amt" inputmode="decimal" placeholder="Planned" style="max-width:none"><span style="display:flex;gap:6px"><button class="btn sm primary" data-click="save-line" data-b="fixed">Add</button><button class="btn sm ghost" data-click="cancel-line">Cancel</button></span></div>${ui.err?`<div class="err">${esc(ui.err)}</div>`:''}`
+      :`<button class="linkbtn" data-click="add-line" data-b="fixed">Add a line</button>`}
+  </section>`;
+}
+function quickLogPanel(m){
+  const segs=state.lines.filter(l=>isItemized(l.bucket)).map(l=>({l,v:lineActual(l,m)})).filter(s=>s.v>0).sort((x,y)=>y.v-x.v);
+  const expenses=sum(['rent','fixed','variable','lifestyle'].map(b=>bucketActual(b,m)));
+  const setAside=bucketActual('pyf',m)+bucketActual('sinking',m);
+  const incomeThisMonth=(logged(m)?inc1Of(ui.year,m):state.income1)+extraAggFor(ui.year,[m]).total;
+  const balance=incomeThisMonth-setAside-expenses;
+  const donut=`<div class="donut" style="margin:4px 0 6px">${categoryWheel(segs,fmt(incomeThisMonth),fmt(expenses))}</div>`;
+  const balBar=`<div class="balbar"><span>Available to spend</span><b class="${balance<0?'bad':''}">${fmt(balance)}</b></div>
+    <p class="muted small" style="margin:0 0 6px">Income and extra income, minus ${fmt(setAside)} already spoken for (PYF + sinking funds).</p>`;
+  const note=segs.length===0?`<p class="muted small" style="padding:0 4px">Tap a category below to log your first expense this month.</p>`:'';
+  const wheelTot=sum(segs.map(s=>s.v))||1;
+  const shareOf=id=>{const s=segs.find(x=>x.l.id===id);return s?pct(s.v/wheelTot):''};
+  const PINNED=['v_groc','l_take','v_grab','l_eat','v_house'];
+  const itemizedLines=state.lines.filter(l=>isItemized(l.bucket));
+  const orderedLines=[...PINNED.map(id=>itemizedLines.find(l=>l.id===id)).filter(Boolean),...itemizedLines.filter(l=>PINNED.indexOf(l.id)<0)];
+  const tiles=orderedLines.map(l=>{const sh=shareOf(l.id);return `<button type="button" class="cattile" data-click="open-log" data-line="${l.id}" aria-label="Log ${esc(l.name)}${sh?', '+sh+' of this month’s spending so far':''}">
+     <span class="cicon" style="background:${catColor(l)}">${catIcon(l)}</span>${esc(l.name)}${sh?`<span class="cpct">${sh}</span>`:''}
+  </button>`}).join('');
+  return `<section class="panel" style="padding:18px 16px 16px;text-align:center;margin-bottom:22px">
+    <h2 class="sec" style="text-align:left">Log an expense</h2>
+    ${donut}${balBar}${note}
+    <div class="catgrid" style="margin-top:10px">${tiles}</div>
+  </section>`;
+}
 function budget(){
   const m=ui.month, on=logged(m);
   const incRaw=yd().inc1Actual[m];
@@ -758,14 +1012,14 @@ function budget(){
       body+=lines.map(l=>{
         const pl=planned(l),ac=lineActual(l,m),raw=(yd().actuals[l.id]||[])[m];
         const d=on?(good?ac-pl:pl-ac):null, custom=/^c_/.test(l.id);
-        const wks=itemized?weeksOf(ui.year,m):null, logged=itemized?entriesFor(l.id,m).length:0, expanded=itemized&&!!ui.expandedLines[l.id];
+        const cnt=itemized?entriesFor(l.id,m).length:0, expanded=itemized&&!!ui.expandedLines[l.id];
         const actualCell=itemized
-          ?`<div class="rowrap"><button class="ro" data-click="open-log" data-line="${l.id}" data-month="${m}" data-week="${openWeekFor(l.id,m)}" aria-label="Log ${esc(l.name)} spending, so far ${fmt(ac)}">${fmt(ac)}</button>
-             <button class="wtoggle" data-click="toggle-weeks" data-line="${l.id}" aria-expanded="${expanded}" aria-label="${expanded?'Hide':'Show'} the weekly breakdown for ${esc(l.name)}">${logged} of ${wks.length} wks ${expanded?'\u25b4':'\u25be'}</button></div>`
+          ?`<div class="rowrap"><button class="ro" data-click="open-log" data-line="${l.id}" aria-label="Log ${esc(l.name)} spending, so far ${fmt(ac)}">${fmt(ac)}</button>
+             <button class="wtoggle" data-click="toggle-weeks" data-line="${l.id}" aria-expanded="${expanded}" aria-label="${expanded?'Hide':'Show'} the spending history for ${esc(l.name)}">${cnt} log${cnt===1?'':'s'} ${expanded?'\u25b4':'\u25be'}</button></div>`
           :inp('a_'+l.id+'_'+m,'actual',raw,`data-line="${l.id}"`,l.name+' actual in '+FULL[m]);
-        const chips=(itemized&&expanded)?`<div class="wchips">${wks.map(w=>{const e=findEntry(l.id,m,w.idx);return `<button class="wchip ${e?'filled':''}" data-click="open-log" data-line="${l.id}" data-month="${m}" data-week="${w.idx}" aria-label="${esc(l.name)} ${w.label}${e?', logged '+fmt(e.amount):', not logged'}">${w.label}${e?': '+fmt(e.amount):''}</button>`}).join('')}</div>`:'';
-        return `<div class="brow"><span class="nm">${esc(l.name)}${l.bucket==='pyf'?'<span class="tag">auto</span>':''}</span>
-          <span>${l.bucket==='pyf'?`<span class="amt">${fmt(pl)}</span>`:inp('p_'+l.id,'planned',pl,`data-line="${l.id}"`,l.name+' planned')}</span>
+        const chips=(itemized&&expanded)?historyList(l,m):'';
+        return `<div class="brow">${l.bucket==='pyf'?`<span class="nm">${esc(l.name)}<span class="tag">auto</span></span>`:nameCell(l)}
+          <span>${l.bucket==='pyf'?`<span class="amt">${fmt(pl)}</span>`:canPct(l.bucket)?modeCell(l):inp('p_'+l.id,'planned',pl,`data-line="${l.id}"`,l.name+' planned')}</span>
           <span>${actualCell}</span>
           <span class="diff ${d===null||Math.round(d)===0?'zero':d>0?'good':'bad'}">${d===null?'':signed(d)}</span>
           <span>${custom?`<button class="xbtn" data-click="del-line" data-line="${l.id}" aria-label="Remove ${esc(l.name)}">\u00d7</button>`:''}</span></div>${chips}`;
@@ -780,9 +1034,9 @@ function budget(){
       <div class="tot">${on?fmt(a):'\u2013'} <span class="muted">of ${fmt(p)}</span><small>${on?pct(shareA)+' of Income 1 actual':pct(state.income1?p/state.income1:0)+' of Income 1 planned'}</small></div></div>
       <div class="cols-h"><span>Line</span><span class="right">Planned</span><span class="right">Actual</span><span class="right">Diff</span><span></span></div>${body}</section>`;
   };
-  const left=['pyf','rent','fixed'].map(id=>card(BM[id])).join('<div style="height:22px"></div>');
-  const right=['variable','lifestyle','sinking','buffer'].map(id=>card(BM[id])).join('<div style="height:22px"></div>');
-  return `<h1 class="headline" style="font-size:clamp(24px,3.6vw,34px);max-width:none;margin-bottom:20px">${FULL[m]} budget</h1>${head}<div class="bgrid"><div>${left}</div><div>${right}</div></div>`;
+  const left=['variable'].map(id=>card(BM[id])).join('<div style="height:22px"></div>');
+  const right=['lifestyle','buffer'].map(id=>card(BM[id])).join('<div style="height:22px"></div>');
+  return `<h1 class="headline" style="font-size:clamp(24px,3.6vw,34px);max-width:none;margin-bottom:20px">${FULL[m]} budget</h1>${quickLogPanel(m)}${head}<div class="section"><div class="bgrid"><div>${left}</div><div>${right}</div></div></div>`;
 }
 
 function extraView(){
@@ -826,12 +1080,11 @@ function sinkingView(){
         <div><div class="k">Annual target</div>${inp('ft_'+f.id,'fundTarget',f.target,`data-fund="${f.id}"`,f.name+' annual target')}</div>
         <div><div class="k">Starting balance (one-time, before tracking began)</div>${inp('fo_'+f.id,'fundOpening',f.opening,`data-fund="${f.id}"`,f.name+' opening balance')}</div>
         <div><div class="k">Spent in ${FULL[m]}</div>${inp('fs_'+f.id+'_'+m,'fundSpent',ensureYear(ui.year).fundsSpent[f.id][m],`data-fund="${f.id}"`,f.name+' spent in '+FULL[m])}</div>
-        <div><div class="k">Set aside each month</div><div class="v">${fmt(pl)}</div></div>
-        <div><div class="k">Needed each month</div><div class="v">${fmt(need)}</div></div>
-        <div><div class="k">Against the target</div><div class="v"><span class="chip ${gap>=-.5?'good':'warn'}">${gap>=-.5?'On plan':fmt(-gap)+' a month short'}</span></div></div></div>${led}</article>`;
+        <div><div class="k">Set aside each month</div>${ln?inp('sp_'+f.id,'planned',pl,`data-line="${ln.id}"`,f.name+' set aside each month'):`<div class="v">${fmt(pl)}</div>`}</div>
+        <div><div class="k">Against the target</div><div class="v"><span class="chip ${gap>=-.5?'good':'warn'}">${gap>=-.5?'On plan':fmt(-gap)+' a month short of '+fmt(need)}</span></div></div></div>${led}</article>`;
   }).join('');
   return `<h1 class="headline" style="font-size:clamp(24px,3.6vw,34px);max-width:none;margin-bottom:8px">Sinking funds</h1>
-  <p class="muted" style="max-width:66ch;margin-bottom:22px">Set-asides come from the Budget tab and top-ups from extra income. You only enter what you spend from each fund. Holidays sits in its own fund, apart from festive, renewals and appliances.</p>${cards}`;
+  <p class="muted" style="max-width:66ch;margin-bottom:22px">Set how much to set aside each month for each fund below; top-ups also come from extra income. Holidays sits in its own fund, apart from festive, renewals and appliances.</p>${cards}`;
 }
 
 function agoStr(ms){
@@ -874,6 +1127,7 @@ function setupView(){
     <div class="srow"><span>PYF share of Income 1</span>${P('pyfPct','pyfPct',state.pyfPct)}</div>
     <div class="srow"><span>Rent comfort limit</span>${P('rentLimit','rentLimit',state.rentLimit)}</div>
     <div class="stot"><span>PYF per month</span><span>${fmt(state.income1*state.pyfPct)}</span></div></section>
+   ${setupFixedSection()}
    <section class="panel" style="margin-top:22px"><div class="shead"><h3>How PYF is split</h3><p>Emergency fund first, until it covers three to six months of essentials.</p></div>
     ${Object.keys(ps).map(k=>`<div class="srow"><span>${names[k]}</span>${P('ps_'+k,'splitPyf',ps[k],`data-key="${k}"`)}</div>`).join('')}
     <div class="stot"><span>Total</span>${chk(sum(Object.values(ps)))}</div></section>
@@ -901,30 +1155,40 @@ function view(){
 
 function fab(){
   if(ui.tab!=='overview'&&ui.tab!=='budget')return '';
-  return `<button class="fab" data-click="open-log" aria-label="Log an expense"><span class="plus">+</span><span class="lbl">Log expense</span></button>`;
+  return `<button class="fab minus" data-click="open-log" aria-label="Log an expense"><span class="plus">−</span><span class="lbl">Log expense</span></button>`;
 }
+const CAT_ICONS={v_groc:'\ud83d\uded2',v_elec:'\ud83d\udca1',v_water:'\ud83d\udca7',v_clin:'\ud83d\udc8a',v_kids:'\ud83e\uddf8',v_house:'\ud83e\uddf9',v_grab:'\ud83d\ude95',l_eat:'\ud83c\udf5c',l_take:'\ud83e\udd61',l_date:'\ud83c\udfac',l_care:'\ud83e\uddf4'};
+function catIcon(l){return CAT_ICONS[l.id]||(l.bucket==='lifestyle'?'\u2728':'\ud83c\udff7\ufe0f')}
 function modalHtml(){
   if(!ui.modal)return '';
   const md=ui.modal, itemLines=state.lines.filter(l=>isItemized(l.bucket));
   const groups=[['variable','Variable essentials'],['lifestyle','Lifestyle']];
-  const lineOptions=groups.map(([b,n])=>`<optgroup label="${n}">${itemLines.filter(l=>l.bucket===b).map(l=>`<option value="${l.id}" ${l.id===md.line?'selected':''}>${esc(l.name)}</option>`).join('')}</optgroup>`).join('');
-  const wks=weeksOf(ui.year,md.month);
-  const weekOptions=wks.map(w=>`<option value="${w.idx}" ${w.idx===md.week?'selected':''}>${w.label} (${esc(w.range)} ${MONTHS[md.month]})</option>`).join('');
-  const monthOptions=FULL.map((n,i)=>`<option value="${i}" ${i===md.month?'selected':''}>${n}</option>`).join('');
+  const grid=groups.map(([b,n])=>{
+    const tiles=itemLines.filter(l=>l.bucket===b).map(l=>{
+      const sel=l.id===md.line;
+      return `<button type="button" class="cattile" data-click="pick-cat" data-line="${l.id}" aria-pressed="${sel}">
+        <span class="cicon" style="background:${catColor(l)}">${catIcon(l)}</span>${esc(l.name)}
+      </button>`;
+    }).join('');
+    const addTile=md.addingCat===b
+      ?`<div class="addcatrow"><input class="txt" id="mc-name" placeholder="Category name" maxlength="40" autofocus><button class="btn sm primary" type="button" data-click="save-cat-inline" data-b="${b}">Add</button><button class="btn sm ghost" type="button" data-click="cancel-cat-inline">Cancel</button></div>`
+      :`<button type="button" class="cattile addcat" data-click="add-cat-inline" data-b="${b}" aria-label="Add a new ${n} category"><span class="cicon" style="background:var(--surface-2);color:var(--muted)">+</span>Add category</button>`;
+    return `<div class="catgroup"><div class="catlabel">${n}</div><div class="catgrid">${tiles}${addTile}</div></div>`;
+  }).join('');
   const editing=!!md.editingId;
-  return `<div class="modal-back" data-click="close-modal"><div class="modal" role="dialog" aria-modal="true" aria-label="Log a week's spending">
-    <h2 class="sec" style="margin-bottom:14px">${editing?'Edit':'Log'} a week\u2019s spending</h2>
-    <div class="mrow"><label class="f" for="lm-line">Category</label><select class="txt" id="lm-line" data-k="lm-line" data-act="logLine">${lineOptions}</select></div>
-    <div class="mrow two-col"><div><label class="f" for="lm-month">Month</label><select class="txt" id="lm-month" data-k="lm-month" data-act="logMonth">${monthOptions}</select></div>
-    <div><label class="f" for="lm-week">Week</label><select class="txt" id="lm-week" data-k="lm-week" data-act="logWeek">${weekOptions}</select></div></div>
-    <div class="mrow"><label class="f" for="lm-amount">Amount spent this week (RM)</label><input class="txt" id="lm-amount" data-k="lm-amount" data-act="logAmount" inputmode="decimal" value="${md.amount===''||md.amount===null||md.amount===undefined?'':md.amount}" placeholder="0"></div>
-    <div class="mrow"><label class="f" for="lm-note">Note (optional)</label><input class="txt" id="lm-note" data-k="lm-note" data-act="logNote" maxlength="60" value="${esc(md.note||'')}" placeholder="e.g. Tesco run + wet market"></div>
+  const dateVal=md.year+'-'+String(md.month+1).padStart(2,'0')+'-'+String(md.day||1).padStart(2,'0');
+  return `<div class="modal-back" data-click="close-modal"><div class="modal" role="dialog" aria-modal="true" aria-label="Log an expense">
+    <h2 class="sec" style="margin-bottom:14px">${editing?'Edit':'Log'} an expense</h2>
+    <div class="mrow"><label class="f" for="lm-amount">Amount (RM)</label><input class="txt amt-input" id="lm-amount" data-k="lm-amount" data-act="logAmount" inputmode="decimal" value="${md.amount===''||md.amount===null||md.amount===undefined?'':md.amount}" placeholder="0"></div>
     ${ui.modalErr?`<div class="err" style="padding:0 0 10px">${esc(ui.modalErr)}</div>`:''}
-    <div class="actions" style="padding:4px 0 0">
-      <button class="btn primary" data-click="save-entry">Save</button>
+    <div class="actions" style="padding:2px 0 14px">
+      <button class="btn primary" data-click="save-entry">Save${editing?'':' (add new)'}</button>
       ${editing?`<button class="btn danger" data-click="delete-entry">Delete</button>`:''}
       <button class="btn ghost" data-click="close-modal">Cancel</button>
     </div>
+    <div class="mrow"><label class="f">Category</label>${grid}</div>
+    <div class="mrow"><label class="f" for="lm-date">Date</label><input class="txt" type="date" id="lm-date" data-k="lm-date" data-act="logDate" value="${dateVal}" min="${md.year}-01-01" max="${md.year}-12-31"></div>
+    <div class="mrow"><label class="f" for="lm-note">Note (optional)</label><input class="txt" id="lm-note" data-k="lm-note" data-act="logNote" maxlength="60" value="${esc(md.note||'')}" placeholder="e.g. Tesco run + wet market"></div>
   </div></div>`;
 }
 
@@ -958,14 +1222,13 @@ function onChange(e){
     case 'splitExtra':state.extraSplit[d.key]=clamp((v||0)/100,0,1);break;
     case 'target':state.targets[d.key]=clamp((v||0)/100,0,1);break;
     case 'planned':{const l=state.lines.find(x=>x.id===d.line);if(l)l.planned=Math.max(0,v||0);break}
+    case 'linePct':{const l=state.lines.find(x=>x.id===d.line);if(l)l.pctVal=clamp((v||0)/100,0,1);break}
     case 'actual':setActual(d.line,ui.month,v);break;
     case 'inc1a':yd().inc1Actual[ui.month]=v>0?v:null;break;
     case 'fundTarget':{const f=state.funds.find(x=>x.id===d.fund);if(f)f.target=Math.max(0,v||0);break}
     case 'fundOpening':{const f=state.funds.find(x=>x.id===d.fund);if(f)f.opening=v||0;break}
     case 'fundSpent':{const f=state.funds.find(x=>x.id===d.fund);if(f)yd().fundsSpent[f.id][ui.month]=v>0?v:null;break}
-    case 'logLine':if(ui.modal){ui.modal.line=t.value;refreshModal();}break;
-    case 'logMonth':if(ui.modal){ui.modal.month=+t.value;const wks=weeksOf(ui.year,ui.modal.month);if(!wks.find(w=>w.idx===ui.modal.week))ui.modal.week=0;refreshModal();}break;
-    case 'logWeek':if(ui.modal){ui.modal.week=+t.value;refreshModal();}break;
+    case 'logDate':if(ui.modal&&t.value){const[yy,mm,dd]=t.value.split('-').map(Number);if(yy&&mm&&dd){ui.modal.year=yy;ui.modal.month=mm-1;ui.modal.day=dd;}}break;
     case 'logAmount':if(ui.modal)ui.modal.amount=v===null?'':v;break;
     case 'logNote':if(ui.modal)ui.modal.note=t.value;break;
     case 'syncUrlDraft':ui.syncUrlDraft=t.value;break;
@@ -989,6 +1252,29 @@ function onClick(e){
       state.lines.splice(lastIndexOf(d.b)+1,0,{id:'c_'+Date.now().toString(36),bucket:d.b,name:n.trim(),planned:Math.max(0,p||0)});
       ui.addingTo=null;ui.err=null;save();break}
     case 'del-line':state.lines=state.lines.filter(l=>l.id!==d.line);Object.values(state.byYear||{}).forEach(yr=>{delete yr.actuals[d.line]});delete ui.expandedLines[d.line];state.entries=state.entries.filter(e=>e.line!==d.line);save();break;
+    case 'rename-line':ui.renamingLine=d.line;break;
+    case 'cancel-rename':ui.renamingLine=null;break;
+    case 'save-rename':{
+      const l=state.lines.find(x=>x.id===ui.renamingLine);
+      const box=$('#rn-'+ui.renamingLine);
+      const v=box?box.value.trim():'';
+      if(l&&v)l.name=v;
+      ui.renamingLine=null;save();break}
+    case 'line-mode':{
+      const l=state.lines.find(x=>x.id===d.line);if(!l)break;
+      if(l.mode==='pct'){l.planned=Math.round(planOf(state,l));l.mode='fixed'}
+      else{l.pctVal=state.income1?num(l.planned)/state.income1:0;l.mode='pct'}
+      save();break}
+    case 'pick-cat':if(ui.modal){ui.modal.line=d.line;}break;
+    case 'add-cat-inline':if(ui.modal){ui.modal.addingCat=d.b;ui.modalErr=null;}break;
+    case 'cancel-cat-inline':if(ui.modal){ui.modal.addingCat=null;}break;
+    case 'save-cat-inline':{
+      if(!ui.modal)break;
+      const n=($('#mc-name')||{}).value||'';
+      if(!n.trim()){ui.modalErr='Give the category a name.';break}
+      const id='c_'+Date.now().toString(36);
+      state.lines.splice(lastIndexOf(d.b)+1,0,{id,bucket:d.b,name:n.trim(),planned:0});
+      ui.modal.line=id;ui.modal.addingCat=null;ui.modalErr=null;save();break}
     case 'add-extra':{
       const date=($('#x-date')||{}).value,amt=parseNum(($('#x-amt')||{}).value);
       if(!date){ui.err='Pick the date the money arrived.';break}
@@ -997,12 +1283,17 @@ function onClick(e){
       ui.err=null;save();break}
     case 'del-extra':state.extra=state.extra.filter(x=>x.id!==d.id);save();break;
     case 'open-log':{
+      if(d.entry){
+        const ex=state.entries.find(x=>x.id===d.entry);
+        if(!ex)break;
+        ui.modal={line:ex.line,year:ex.year,month:ex.month,day:ex.day||1,amount:ex.amount,note:ex.note||'',editingId:ex.id,_fresh:true};
+        ui.modalErr=null;break;
+      }
       const line=d.line||(state.lines.find(l=>isItemized(l.bucket))||{}).id;
       if(!line)break;
-      const month=d.month!==undefined?+d.month:ui.month;
-      const week=d.week!==undefined?+d.week:currentWeekIndex(month);
-      const existing=findEntry(line,month,week);
-      ui.modal={line,month,week,amount:existing?existing.amount:'',note:existing?existing.note:'',editingId:existing?existing.id:null,_fresh:true};
+      const today=new Date();
+      const day=(ui.year===today.getFullYear()&&ui.month===today.getMonth())?today.getDate():1;
+      ui.modal={line,year:ui.year,month:ui.month,day,amount:'',note:'',editingId:null,_fresh:true};
       ui.modalErr=null;break}
     case 'close-modal':if(el===e.target){ui.modal=null;ui.modalErr=null;}break;
     case 'toggle-weeks':ui.expandedLines[d.line]=!ui.expandedLines[d.line];break;
@@ -1010,7 +1301,13 @@ function onClick(e){
       const md=ui.modal;if(!md)break;
       const amt=parseNum(($('#lm-amount')||{}).value);
       if(!(amt>0)){ui.modalErr='Enter an amount above zero.';break}
-      upsertEntry(md.line,md.month,md.week,amt,($('#lm-note')||{}).value||'');
+      const note=($('#lm-note')||{}).value||'';
+      if(md.editingId){
+        const ex=state.entries.find(x=>x.id===md.editingId);
+        if(ex){ex.line=md.line;ex.year=md.year;ex.month=md.month;ex.day=md.day;ex.amount=amt;ex.note=note;}
+      }else{
+        state.entries.push({id:newEntryId(),line:md.line,year:md.year,month:md.month,day:md.day,amount:amt,note});
+      }
       ui.modal=null;ui.modalErr=null;save();break}
     case 'delete-entry':{
       if(ui.modal&&ui.modal.editingId)state.entries=state.entries.filter(x=>x.id!==ui.modal.editingId);
@@ -1039,7 +1336,18 @@ function clearActuals(){state.byYear={};state.entries=[];state.extra=[]}
 let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,180)});
 document.addEventListener('change',onChange);
 document.addEventListener('click',onClick);
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('num'))e.target.blur()});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('num'))e.target.blur();
+  if(e.target.id&&e.target.id.indexOf('rn-')===0){
+    if(e.key==='Enter'){
+      e.preventDefault();
+      const l=state.lines.find(x=>x.id===ui.renamingLine);
+      const v=e.target.value.trim();
+      if(l&&v)l.name=v;
+      ui.renamingLine=null;save();
+    }else if(e.key==='Escape'){ui.renamingLine=null;later();}
+  }
+});
 
 /* ------------------------------------------------------------------ boot */
 try{localStorage.setItem(KEY+'-t','1');localStorage.removeItem(KEY+'-t')}catch(e){storageOk=false}
