@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <title>Family Budget</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f7b6c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Budget">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Fraunces:opsz,wght@9..144,500..700&display=swap" rel="stylesheet">
@@ -13,6 +21,7 @@
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light dark;
   --bg:#edf2ef; --surface:#fbfdfc; --surface-2:#f2f6f4; --line:#d9e2de; --line-soft:#e6ede9;
   --ink:#13302b; --muted:#5d716b; --primary:#0f7b6c; --primary-soft:#d6ede8; --on-primary:#ffffff;
   --good:#12805f; --bad:#c8402f; --warn:#b7791f; --bad-soft:#fbe4df; --good-soft:#d9f0e6; --warn-soft:#fbefd2;
@@ -24,6 +33,7 @@
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
+    color-scheme:dark;
     --bg:#0e1a17; --surface:#15251f; --surface-2:#1a2d27; --line:#28403a; --line-soft:#203530;
     --ink:#e5f0ec; --muted:#93aaa3; --primary:#39c2ad; --primary-soft:#173d36; --on-primary:#06231e;
     --good:#4fd1a3; --bad:#ff8a78; --warn:#f0bf62; --bad-soft:#3c1f1b; --good-soft:#153a2e; --warn-soft:#3a2e14;
@@ -32,7 +42,9 @@
     --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.25);
   }
 }
+:root[data-theme="light"]{color-scheme:light}
 :root[data-theme="dark"]{
+  color-scheme:dark;
   --bg:#0e1a17; --surface:#15251f; --surface-2:#1a2d27; --line:#28403a; --line-soft:#203530;
   --ink:#e5f0ec; --muted:#93aaa3; --primary:#39c2ad; --primary-soft:#173d36; --on-primary:#06231e;
   --good:#4fd1a3; --bad:#ff8a78; --warn:#f0bf62; --bad-soft:#3c1f1b; --good-soft:#153a2e; --warn-soft:#3a2e14;
@@ -188,20 +200,24 @@ label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-b
 .cols-h,.brow{display:grid;grid-template-columns:minmax(0,1.5fr) 92px 92px 66px 26px;gap:8px;align-items:center;padding:7px 18px}
 .cols-h{color:var(--muted);font-size:12.5px;font-weight:600;padding-top:2px;padding-bottom:2px}
 .brow{border-top:1px solid var(--line-soft)}
-.brow .nm{overflow-wrap:anywhere}
+.brow .nm{overflow-wrap:break-word;min-width:0}
 .tag{white-space:nowrap;display:inline-block;font-size:11.5px;color:var(--muted);background:var(--surface-2);border-radius:6px;padding:1px 6px;margin-left:6px}
-.xbtn{background:none;border:0;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:2px}
+.xbtn{background:none;border:0;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:9px;margin:-7px}
 .xbtn:hover{color:var(--bad)}
 .xbtn.ok:hover{color:var(--good)}
-.pencil{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:2px;opacity:.6;flex:none}
+.pencil{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:9px 7px;margin:-9px -5px;opacity:.6;flex:none}
 .pencil:hover{opacity:1;color:var(--primary)}
-.brow .nm{display:flex;align-items:center;gap:4px}
+/* Name and pencil flow as text, so long names wrap between words ("Clinic, medication,
+   dental") instead of mid-word ("Grocerie|s") on narrow phones. */
+.brow .nm{display:block}
+.brow .nm .pencil{display:inline-block;vertical-align:1px;margin-left:2px}
 .nm.renaming{display:flex;align-items:center;gap:4px;width:100%}
 .nm.renaming input{flex:1;min-width:0;padding:5px 8px;font-size:13.5px;border:1px solid var(--primary);border-radius:8px;background:var(--surface);color:var(--ink)}
 .addrow{padding:10px 18px 14px;border-top:1px solid var(--line-soft);display:grid;grid-template-columns:1fr 110px auto;gap:8px}
 .linkbtn{background:none;border:0;color:var(--primary);font-weight:650;cursor:pointer;padding:10px 18px 14px}
 @media(max-width:520px){
-  .cols-h,.brow{grid-template-columns:minmax(0,1fr) 78px 78px 22px;gap:6px}
+  .cols-h,.brow{grid-template-columns:minmax(0,1fr) 64px 78px 22px;gap:6px;padding-left:14px;padding-right:12px}
+  .brow .nm{font-size:14px;line-height:1.3}
   .cols-h span:nth-child(4),.brow .diff{display:none}
 }
 .incbox{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 20px;margin-bottom:22px}
@@ -254,7 +270,7 @@ footer.foot{max-width:1180px;margin:0 auto;padding:0 20px 40px;color:var(--muted
 .rowrap{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
 .ro{width:100%;min-width:70px;max-width:120px;text-align:right;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;color:inherit;cursor:pointer;font-variant-numeric:tabular-nums;font-weight:650}
 .ro:hover{border-color:var(--primary);color:var(--primary)}
-.wtoggle{background:none;border:0;padding:0;color:var(--muted);font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.wtoggle{background:none;border:0;padding:9px 4px;margin:-9px -4px;color:var(--muted);font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap}
 .wtoggle:hover{color:var(--primary)}
 .wchips{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 12px}
 .wchip{border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer}
@@ -302,6 +318,33 @@ footer.foot{max-width:1180px;margin:0 auto;padding:0 20px 40px;color:var(--muted
 .mrow{margin-bottom:14px}
 .mrow.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(min-width:620px){.modal-back{align-items:center;padding:20px}.modal{border-radius:16px;max-height:80vh}}
+.toast{position:fixed;left:16px;right:86px;bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:60;display:flex;align-items:center;gap:12px;justify-content:space-between;background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600;box-shadow:var(--shadow);max-width:520px}
+.toast-undo{background:none;border:0;color:var(--primary-soft);font-weight:800;cursor:pointer;padding:6px 8px;margin:-6px -8px;text-transform:uppercase;letter-spacing:.04em;font-size:13px}
+@media(min-width:620px){.toast{left:50%;right:auto;transform:translateX(-50%)}}
+.balwhy{margin:0 0 6px;font-size:12.5px}.balwhy summary{cursor:pointer;color:var(--muted);font-weight:600;padding:6px 0;list-style-position:inside}.balwhy p{margin-top:4px;text-align:left}
+.sp-head{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;background:none;border:0;padding:16px 18px;cursor:pointer;text-align:left;color:var(--ink)}
+.sp-head b{font-family:var(--display);font-size:18px;font-weight:600;display:block}.sp-head small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.sp-tot{font-weight:700;white-space:nowrap}
+.sp-body{padding:0 18px 14px}
+.sp-group{margin-top:6px}.sp-gh{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding:10px 0 4px;border-bottom:1px solid var(--line-soft)}
+.sp-row{display:grid;grid-template-columns:minmax(0,1fr) 96px 30px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line-soft)}
+.sp-name{font-size:14px;line-height:1.3;overflow-wrap:break-word}.sp-plan{display:block;font-size:11.5px;color:var(--warn);font-weight:600}
+.sp-in .num{width:100%;max-width:none}
+.early{background:var(--primary-soft);color:var(--ink);border-radius:10px;padding:9px 12px;margin:4px 0 8px;font-size:13px;text-align:left;line-height:1.4}
+.tagrow{display:flex;flex-wrap:wrap;gap:8px}
+.tagchip{background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:8px 13px;font-size:13.5px;font-weight:650;color:var(--ink);cursor:pointer;min-height:36px}
+.tagchip[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.tagchip.ghost{background:transparent;border-style:dashed;color:var(--muted)}
+.addtagrow{display:flex;gap:8px;align-items:center;width:100%}.addtagrow input{flex:1;min-width:0}
+@media(max-width:420px){.addtagrow{flex-wrap:wrap}.addtagrow input{flex:1 1 100%}}
+.f .opt{font-weight:500;color:var(--muted);font-size:12px;margin-left:4px}
+.where{margin-bottom:4px}
+.wrow{padding:9px 0;border-bottom:1px solid var(--line-soft)}
+.wtop{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px}
+.wname{min-width:0;overflow-wrap:break-word;font-weight:600}
+.wname .nm.renaming{display:flex}
+.wbar{height:6px;background:var(--track);border-radius:3px;margin:6px 0 5px;overflow:hidden}.wbar span{display:block;height:100%;border-radius:3px}
+.wsub{font-size:12px;color:var(--muted)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -325,7 +368,9 @@ const BUCKETS=[
 ];
 const BM=Object.fromEntries(BUCKETS.map(b=>[b.id,b]));
 const NONBUF=['pyf','rent','fixed','variable','lifestyle','sinking'];
-const KEY='penang-family-budget-v1';
+const KEY='penang-family-budget-v1', THEME_KEY=KEY+'-theme';
+function getTheme(){try{return localStorage.getItem(THEME_KEY)||''}catch(e){return ''}}
+function setTheme(t){try{if(t)localStorage.setItem(THEME_KEY,t);else localStorage.removeItem(THEME_KEY)}catch(e){}}
 
 /* ------------------------------------------------------------------ helpers */
 const $=(s,el)=>(el||document).querySelector(s);
@@ -345,7 +390,7 @@ function defaults(){
   const L=(id,bucket,name,planned,extra)=>Object.assign({id,bucket,name,planned},extra||{});
   return {
     v:1,year:new Date().getFullYear(),demo:false,theme:null,
-    income1:8000,pyfPct:.15,rentLimit:.35,
+    income1:10000,pyfPct:.15,rentLimit:.35,
     pyfSplit:{emergency:.5,prs:.15,invest:.2,edu:.15},
     extraSplit:{pyf:.5,sink:.3,free:.2},
     targets:{rent:.32,fixed:.12,variable:.2,lifestyle:.085,sinking:.075,buffer:.05},
@@ -354,33 +399,33 @@ function defaults(){
       L('p_prs','pyf','Retirement savings (PRS)',0,{share:'prs'}),
       L('p_inv','pyf','Investments',0,{share:'invest'}),
       L('p_edu','pyf',"Kids' education fund",0,{share:'edu'}),
-      L('rent','rent','Rent',2560),
-      L('f_med','fixed','Medical / hospitalisation insurance',300),
-      L('f_net','fixed','Internet / fibre',130),
-      L('f_mob','fixed','Mobile plans',120),
-      L('f_sub','fixed','Streaming & subscriptions',60),
-      L('f_help','fixed','Babysitter / domestic helper',250),
-      L('l_kact','fixed',"Kids' activities (football, music, etc.)",250),
-      L('v_groc','variable','Groceries',850),
-      L('v_elec','variable','Electricity (TNB)',180),
-      L('v_water','variable','Water (drinking)',40),
-      L('v_clin','variable','Clinic, medication, dental',150),
-      L('v_kids','variable',"Kids' misc. (clothes, toys, books)",150),
+      L('rent','rent','Rent',100),
+      L('f_med','fixed','Medical / hospitalisation insurance',100),
+      L('f_net','fixed','Internet / fibre',100),
+      L('f_mob','fixed','Mobile plans',100),
+      L('f_sub','fixed','Streaming & subscriptions',100),
+      L('f_help','fixed','Babysitter / domestic helper',100),
+      L('l_kact','fixed',"Kids' activities (football, music, etc.)",100),
+      L('v_elec','fixed','Electricity (TNB)',100),
+      L('v_water','fixed','Water (drinking)',100),
+      L('v_groc','variable','Groceries',100),
+      L('v_clin','variable','Clinic, medication, dental',100),
+      L('v_kids','variable',"Kids' misc. (clothes, toys, books)",100),
       L('v_house','variable','Household supplies',100),
-      L('v_grab','variable','Grab / e-hailing',130),
-      L('l_eat','lifestyle','Eating out & hawker food',300),
-      L('l_take','lifestyle','Takeaway & delivery',120),
-      L('l_date','lifestyle','Date nights & family outings',130),
-      L('l_care','lifestyle','Personal care & adult clothing',130),
-      L('s_hol','sinking','Holidays (Asia)',300,{fund:'hol'}),
-      L('s_vaceu','sinking','Vacations (Europe)',150,{fund:'vaceu'}),
-      L('s_major','sinking','Major Purchases',150,{fund:'major'})
+      L('v_grab','variable','Grab / e-hailing',100),
+      L('l_eat','lifestyle','Eating out & hawker food',100),
+      L('l_take','lifestyle','Takeaway & delivery',100),
+      L('l_date','lifestyle','Date nights & family outings',100),
+      L('l_care','lifestyle','Personal care & adult clothing',100),
+      L('s_hol','sinking','Holidays (Asia)',100,{fund:'hol'}),
+      L('s_vaceu','sinking','Vacations (Europe)',100,{fund:'vaceu'}),
+      L('s_major','sinking','Major Purchases',100,{fund:'major'})
     ],
     extra:[],entries:[],byYear:{},
     funds:[
-      {id:'hol',name:'Holidays (Asia)',target:3600,opening:0},
-      {id:'vaceu',name:'Vacations (Europe)',target:3000,opening:0},
-      {id:'major',name:'Major Purchases',target:1800,opening:0}
+      {id:'hol',name:'Holidays (Asia)',target:1000,opening:0},
+      {id:'vaceu',name:'Vacations (Europe)',target:1000,opening:0},
+      {id:'major',name:'Major Purchases',target:1000,opening:0}
     ]
   };
 }
@@ -407,10 +452,10 @@ function applyDemo(s){
     });
   }
   const d=(m,dd)=>y+'-'+String(m).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
-  s.extra=[{id:'x1',date:d(2,12),source:'Freelance job',amount:1200,fund:'hol'},
+  s.extra=[{id:'x1',date:d(2,12),source:'Freelance job',amount:1000,fund:'hol'},
            {id:'x2',date:d(4,20),source:'One-off gig',amount:800,fund:'fest'},
-           {id:'x3',date:d(7,9),source:'Freelance job',amount:1500,fund:'hol'}].filter(x=>+x.date.slice(5,7)<=n);
-  if(n>5)yd.fundsSpent[s.funds[0].id][5]=1500;
+           {id:'x3',date:d(7,9),source:'Freelance job',amount:1000,fund:'hol'}].filter(x=>+x.date.slice(5,7)<=n);
+  if(n>5)yd.fundsSpent[s.funds[0].id][5]=500;
 }
 function planOf(s,l){
   if(l.bucket==='pyf')return s.income1*s.pyfPct*s.pyfSplit[l.share];
@@ -420,10 +465,47 @@ function planOf(s,l){
 const canPct=b=>b==='rent'||b==='fixed';
 
 let state=null, storageOk=true;
-const ui={tab:'overview',month:new Date().getMonth(),year:new Date().getFullYear(),scope:'month',addingTo:null,confirm:null,err:null,backup:'',restoreErr:null,modal:null,modalErr:null,expandedLines:{},syncUrlDraft:null,syncErr:null,renamingLine:null};
+const ui={tab:'budget',month:new Date().getMonth(),year:new Date().getFullYear(),scope:'month',addingTo:null,confirm:null,err:null,backup:'',restoreErr:null,modal:null,modalErr:null,expandedLines:{},syncUrlDraft:null,syncErr:null,renamingLine:null};
 
 /* Brings an older, single-year save (or a backup made before multi-year support) up to the
    current shape: monthly actuals move into byYear[year], and every logged entry gets a year. */
+/* Electricity and Water are monthly bills now: taken off from day 1 at their planned amount,
+   with the real bill typed in for that month. Anything already logged for them becomes that
+   month's bill amount, so no history is lost. Safe to run more than once. */
+function migrateBills(s){
+  ['v_elec','v_water'].forEach(id=>{
+    const l=s.lines.find(x=>x.id===id);
+    if(!l||l.bucket!=='variable')return;
+    (s.entries||[]).filter(e=>e.line===id).forEach(e=>{
+      const y=String(e.year);
+      if(!s.byYear[y])s.byYear[y]={inc1Actual:Array(12).fill(null),actuals:{},fundsSpent:{}};
+      const yr=s.byYear[y];if(!yr.actuals)yr.actuals={};
+      if(!Array.isArray(yr.actuals[id]))yr.actuals[id]=Array(12).fill(null);
+      yr.actuals[id][e.month]=num(yr.actuals[id][e.month])+num(e.amount);
+    });
+    s.entries=(s.entries||[]).filter(e=>e.line!==id);
+    s.lines=s.lines.filter(x=>x!==l);
+    l.bucket='fixed';
+    let at=-1;s.lines.forEach((x,i)=>{if(x.bucket==='fixed'||x.bucket==='rent')at=i});
+    s.lines.splice(at+1,0,l);
+  });
+}
+/* "Where" tags: an optional one-tap label on each expense (the shop, restaurant or site), so
+   each category can show where its money went. Starting buttons per category; '*' ones show
+   in every category (Shopee sells a bit of everything). Anything you add becomes a button
+   for both phones. */
+const TAG_SEEDS={
+  v_groc:['Jaya Grocer',"SAM's Groceria","Lotus's",'Village Grocer'],
+  l_eat:["Nando's",'Din Tai Fung','Rockafellers','Otto Pizza','Luigi Pizzeria'],
+  l_take:["Nando's",'Din Tai Fung','Rockafellers','Otto Pizza','Luigi Pizzeria'],
+  '*':['Shopee']
+};
+function seedTags(s){
+  if(!s.tagLists||typeof s.tagLists!=='object')s.tagLists={};
+  if(s.tagsSeeded)return;
+  Object.keys(TAG_SEEDS).forEach(k=>{const L=s.tagLists[k]||(s.tagLists[k]=[]);TAG_SEEDS[k].forEach(t=>{if(L.indexOf(t)<0)L.push(t)})});
+  s.tagsSeeded=1;
+}
 function migrate(s){
   if(!s.byYear){
     const y=s.year||new Date().getFullYear();
@@ -443,8 +525,27 @@ function migrate(s){
   });
   migrateFundsV2(s);
   migrateKidsActivities(s);
+  migrateBills(s);
   const water=s.lines.find(l=>l.id==='v_water');
   if(water&&water.name==='Water & sewerage')water.name='Water (drinking)';
+  /* Synced data arrives from a shared sheet, so anything that later lands inside HTML attributes
+     (ids, dates, day numbers) is checked here. The app itself only ever creates ids of this
+     shape, so this never drops real data. */
+  const okId=x=>typeof x==='string'&&/^[\w.-]{1,60}$/.test(x);
+  s.lines=s.lines.filter(l=>okId(l.id));
+  s.funds=(s.funds||[]).filter(f=>okId(f.id));
+  s.entries=s.entries.filter(e=>okId(e.id)&&okId(e.line)).map(e=>{e.year=parseInt(e.year,10)||fallbackYear;e.month=Math.max(0,Math.min(11,parseInt(e.month,10)||0));e.day=Math.max(1,Math.min(31,parseInt(e.day,10)||1));return e});
+  s.extra=(s.extra||[]).filter(x=>okId(x.id)&&typeof x.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x.date));
+  if(!s.deleted||typeof s.deleted!=='object')s.deleted={};
+  if(typeof s.resetAt!=='number')s.resetAt=0;
+  if(!Array.isArray(s.planHistory))s.planHistory=[];
+  seedTags(s);
+  Object.keys(s.tagLists).forEach(k=>{s.tagLists[k]=(Array.isArray(s.tagLists[k])?s.tagLists[k]:[]).filter(t=>typeof t==='string'&&t.trim()).map(t=>t.trim().slice(0,30))});
+  s.entries.forEach(e=>{if(e.tag!==undefined&&(typeof e.tag!=='string'||!e.tag.trim()))delete e.tag;else if(e.tag)e.tag=e.tag.trim().slice(0,30)});
+  s.planHistory=s.planHistory.filter(h=>h&&typeof h.until==='number'&&h.plan&&typeof h.plan==='object').sort((a,b)=>a.until-b.until);
+  /* The light/dark choice used to live in the shared state, which flipped both phones at once.
+     It's now kept per device; carry the old choice over the first time. */
+  if(s.theme!==undefined){try{if(localStorage.getItem(THEME_KEY)===null&&s.theme)localStorage.setItem(THEME_KEY,s.theme)}catch(e){}delete s.theme}
   return s;
 }
 /* Kids' activities started as a loggable Lifestyle category, then folded together with the
@@ -455,7 +556,7 @@ function migrate(s){
 function migrateKidsActivities(s){
   let kact=s.lines.find(l=>l.id==='l_kact');
   if(!kact){
-    kact={id:'l_kact',bucket:'fixed',name:"Kids' activities (football, music, etc.)",planned:150};
+    kact={id:'l_kact',bucket:'fixed',name:"Kids' activities (football, music, etc.)",planned:100};
     const idx=s.lines.findIndex(l=>l.id==='f_help');
     if(idx>=0)s.lines.splice(idx+1,0,kact);else s.lines.push(kact);
   }
@@ -504,7 +605,7 @@ function migrateFundsV2(s){
   const oldFunds=OLD.map(id=>s.funds.find(f=>f.id===id)).filter(Boolean);
   const oldLines=OLD.map(id=>s.lines.find(l=>l.fund===id)).filter(Boolean);
   const openingSum=sum(oldFunds.map(f=>num(f.opening)));
-  const targetSum=sum(oldFunds.map(f=>num(f.target)))||1800;
+  const targetSum=sum(oldFunds.map(f=>num(f.target)))||1000;
   const plannedSum=sum(oldLines.map(l=>planOf(s,l)));
 
   Object.values(s.byYear||{}).forEach(yr=>{
@@ -524,81 +625,307 @@ function migrateFundsV2(s){
   s.lines=s.lines.filter(l=>OLD.indexOf(l.fund)<0);
   if(!s.lines.find(l=>l.fund==='major'))s.lines.push({id:'s_major',bucket:'sinking',name:'Major Purchases',planned:Math.round(plannedSum),fund:'major'});
 
-  if(!s.funds.find(f=>f.id==='vaceu'))s.funds.push({id:'vaceu',name:'Vacations (Europe)',target:3000,opening:0});
+  if(!s.funds.find(f=>f.id==='vaceu'))s.funds.push({id:'vaceu',name:'Vacations (Europe)',target:1000,opening:0});
   if(!s.lines.find(l=>l.fund==='vaceu'))s.lines.push({id:'s_vaceu',bucket:'sinking',name:'Vacations (Europe)',planned:0,fund:'vaceu'});
 }
 function load(){try{const raw=localStorage.getItem(KEY);if(raw){const s=JSON.parse(raw);if(s&&s.v===1)return migrate(s)}}catch(e){storageOk=false}return null}
 function localSave(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){storageOk=false}}
 
 /* ------------------------------------------------------------------ shared sync (Google Sheet via Apps Script) */
-const SYNC_URL_KEY=KEY+'-sync-url', SYNC_AT_KEY=KEY+'-sync-at';
+const SYNC_URL_KEY=KEY+'-sync-url', SYNC_AT_KEY=KEY+'-sync-at', SYNC_DIRTY_KEY=KEY+'-sync-dirty';
 let sync={
   url:(function(){try{return localStorage.getItem(SYNC_URL_KEY)||''}catch(e){return ''}})(),
   status:'idle', // idle | syncing | synced | error
   lastSyncedAt:(function(){try{return parseInt(localStorage.getItem(SYNC_AT_KEY)||'0',10)||0}catch(e){return 0}})(),
-  lastSyncedWhen:0, dirty:false, pollTimer:null, pushTimer:null
+  lastSyncedWhen:0,
+  /* dirty survives a reload, so edits made offline (or just before the app was closed) are
+     merged into the sheet next time instead of being overwritten by it. */
+  dirty:(function(){try{return localStorage.getItem(SYNC_DIRTY_KEY)==='1'}catch(e){return false}})(),
+  seq:0, pollTimer:null, pushTimer:null, retryTimer:null, busy:false, again:false,
+  need:null // {env, at}: the sheet is locked and this phone doesn't have the passphrase yet
 };
+/* ---- Passphrase lock (end-to-end encryption)
+   With a lock on, the sheet only ever holds scrambled text: the budget is encrypted on the
+   phone (AES-GCM, 256-bit) with a key made from the family passphrase (PBKDF2, 600,000
+   rounds, random salt). Google, and anyone who gets hold of the sheet link, sees nothing
+   readable. The passphrase itself is never stored or sent anywhere: each phone keeps only
+   the key made from it, so it's typed once per phone. A wrong passphrase simply fails to
+   decrypt (AES-GCM's built-in check), which is how the app knows it's wrong.
+   lock = {salt, it, key, confirmed, prev, removing}
+     confirmed: the sheet is known to be encrypted with this key (false right after setting
+                or changing the passphrase, until the first encrypted upload succeeds)
+     prev:      the previous key while a passphrase change is on its way to the sheet
+     removing:  "Remove lock" was tapped; the next upload is plain and tells the sheet so */
+const LOCK_KEY=KEY+'-lock', PBKDF2_IT=600000, LOCKED={locked:1};
+const cryptoOk=!!(window.crypto&&crypto.subtle&&window.TextEncoder&&window.isSecureContext!==false);
+let lock=null;
+function b64(u8){let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s)}
+function unb64(t){const b=atob(t),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u}
+const normPass=p=>String(p||'').normalize('NFC').trim();
+async function deriveKey(pass,salt,it){
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(normPass(pass)),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt:unb64(salt),iterations:it||PBKDF2_IT,hash:'SHA-256'},base,{name:'AES-GCM',length:256},true,['encrypt','decrypt']);
+}
+const importKey=k=>crypto.subtle.importKey('raw',unb64(k),{name:'AES-GCM'},true,['encrypt','decrypt']);
+const exportKey=async k=>b64(new Uint8Array(await crypto.subtle.exportKey('raw',k)));
+async function encryptText(txt){
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},lock.key,new TextEncoder().encode(txt)));
+  return JSON.stringify({enc:1,kdf:'PBKDF2-SHA256',it:lock.it,salt:lock.salt,iv:b64(iv),ct:b64(ct)});
+}
+async function decryptEnv(env,key){
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(env.iv)},key,unb64(env.ct));
+  return new TextDecoder().decode(pt);
+}
+function keyFor(salt){if(!lock)return null;if(lock.salt===salt)return lock.key;if(lock.prev&&lock.prev.salt===salt)return lock.prev.key;return null}
+async function saveLock(){
+  try{
+    if(!lock){localStorage.removeItem(LOCK_KEY);return}
+    localStorage.setItem(LOCK_KEY,JSON.stringify({salt:lock.salt,it:lock.it,k:await exportKey(lock.key),confirmed:!!lock.confirmed,removing:!!lock.removing,
+      prev:lock.prev?{salt:lock.prev.salt,k:await exportKey(lock.prev.key)}:null}));
+  }catch(e){}
+}
+const lockReady=(async()=>{
+  await null;
+  try{
+    const raw=localStorage.getItem(LOCK_KEY);if(!raw||!cryptoOk)return;
+    const o=JSON.parse(raw);
+    lock={salt:o.salt,it:o.it||PBKDF2_IT,key:await importKey(o.k),confirmed:!!o.confirmed,removing:!!o.removing,
+      prev:o.prev?{salt:o.prev.salt,key:await importKey(o.prev.k)}:null};
+  }catch(e){lock=null}
+  try{later()}catch(e){}
+})();
+/* Unlock this phone: the passphrase is right if it decrypts what the sheet sent. */
+async function unlockWith(pass){
+  const env=sync.need&&sync.need.env;if(!env)return false;
+  let key;try{key=await deriveKey(pass,env.salt,env.it);await decryptEnv(env,key)}catch(e){return false}
+  lock={salt:env.salt,it:env.it||PBKDF2_IT,key,confirmed:true,prev:null,removing:false};
+  await saveLock();
+  sync.need=null;sync.lastSyncedAt=0;try{localStorage.removeItem(SYNC_AT_KEY)}catch(e){}
+  syncNow();
+  return true;
+}
+/* Set or change the passphrase. The next sync uploads the budget encrypted with it. */
+async function setPassphrase(pass){
+  const salt=b64(crypto.getRandomValues(new Uint8Array(16)));
+  const key=await deriveKey(pass,salt,PBKDF2_IT);
+  const prev=lock?(lock.confirmed?{salt:lock.salt,key:lock.key}:lock.prev):null;
+  lock={salt,it:PBKDF2_IT,key,confirmed:false,prev,removing:false};
+  await saveLock();
+  syncNow();
+}
+async function removeLock(){if(!lock)return;lock.removing=true;await saveLock();syncNow()}
+function setDirty(v){sync.dirty=v;try{if(v)localStorage.setItem(SYNC_DIRTY_KEY,'1');else localStorage.removeItem(SYNC_DIRTY_KEY)}catch(e){}}
 function setSyncUrl(u){
-  sync.url=(u||'').trim();
+  const nu=(u||'').trim();
+  /* Linking to a sheet (first time, or a different one): fetch it in full and take it as it is.
+     Whatever this phone had before linking — the sample figures, a test entry — must not be
+     merged into the shared budget. (If the sheet is empty, this phone's budget is uploaded.) */
+  if(nu!==sync.url){sync.lastSyncedAt=0;try{localStorage.removeItem(SYNC_AT_KEY)}catch(e){}setDirty(false);sync.need=null;lock=null;saveLock()}
+  sync.url=nu;
   try{if(sync.url)localStorage.setItem(SYNC_URL_KEY,sync.url);else localStorage.removeItem(SYNC_URL_KEY)}catch(e){}
   stopPolling();
-  if(sync.url){sync.status='syncing';cloudPull(false).then(()=>startPolling())}
+  if(sync.url){sync.status='syncing';syncNow().then(()=>startPolling())}
   else{sync.status='idle'}
 }
-function startPolling(){stopPolling();sync.pollTimer=setInterval(()=>{if(!sync.dirty)cloudPull(true)},20000)}
+function startPolling(){stopPolling();sync.pollTimer=setInterval(()=>{if(!document.hidden)syncNow()},20000)}
 function stopPolling(){if(sync.pollTimer)clearInterval(sync.pollTimer);sync.pollTimer=null}
-async function cloudPull(onlyIfNewer){
+
+/* ---- merging two copies of the budget (this phone's + the sheet's)
+   Both of you log expenses on your own phones, so a plain "last save wins" would let one
+   phone wipe the other's new entries. Instead:
+   - expenses and extra-income payments are combined by id; an edited one keeps the newer
+     version; one deleted on either phone stays deleted (state.deleted remembers the ids);
+   - categories either of you added are kept;
+   - monthly figures (Income 1 received, fixed-cost actuals, fund spending) are filled in
+     cell by cell, this phone's value first;
+   - plan settings (income, splits, names, planned amounts) follow this phone, since this is
+     the phone that made the unsynced change;
+   - "Clear" / "Reset" / "Restore from backup" set resetAt, so the other copy's older records
+     don't sneak back in afterwards. */
+function mergeStates(local,remote){
+  const out=JSON.parse(JSON.stringify(local));
+  const lR=num(local.resetAt), rR=num(remote.resetAt);
+  out.resetAt=Math.max(lR,rR);
+  const del=Object.assign({},remote.deleted||{},local.deleted||{});
+  out.deleted=del;
+  const mergeList=(L,Rm)=>{
+    const byId=new Map(), order=[];
+    (L||[]).forEach(x=>{if(!del[x.id]&&!(num(x.ts)<rR&&lR<rR)){byId.set(x.id,x);order.push(x.id)}});
+    (Rm||[]).forEach(x=>{
+      if(del[x.id])return;
+      const mine=byId.get(x.id);
+      if(mine){if(num(x.ts)>num(mine.ts))byId.set(x.id,x);return}
+      if(num(x.ts)<lR)return; // cleared/reset on this phone after it was made
+      byId.set(x.id,x);order.push(x.id);
+    });
+    return order.map(id=>byId.get(id));
+  };
+  out.entries=mergeList(local.entries,remote.entries);
+  out.tagLists=JSON.parse(JSON.stringify(local.tagLists||{}));
+  Object.keys(remote.tagLists||{}).forEach(k=>{const L=out.tagLists[k]||(out.tagLists[k]=[]);(remote.tagLists[k]||[]).forEach(t=>{if(L.indexOf(t)<0&&!del['tag:'+k+':'+String(t).toLowerCase()])L.push(t)})});
+  const ph=new Map();(remote.planHistory||[]).forEach(h=>ph.set(h.until,h));(local.planHistory||[]).forEach(h=>ph.set(h.until,h));
+  out.planHistory=[...ph.values()].sort((a,b)=>a.until-b.until);
+  out.extra=mergeList(local.extra,remote.extra);
+  const have=new Set(out.lines.map(l=>l.id));
+  (remote.lines||[]).forEach(l=>{
+    if(have.has(l.id)||del['line:'+l.id])return;
+    const i=(function(){let k=-1;out.lines.forEach((x,j)=>{if(x.bucket===l.bucket)k=j});return k})();
+    out.lines.splice(i+1,0,l);have.add(l.id);
+  });
+  if(rR>lR){out.byYear=JSON.parse(JSON.stringify(remote.byYear||{}))}
+  else if(lR===rR){
+    const empty=v=>v===null||v===undefined||v==='';
+    const fill=(A,B)=>{if(!Array.isArray(B))return A;if(!Array.isArray(A))return B.slice();for(let i=0;i<12;i++)if(empty(A[i])&&!empty(B[i]))A[i]=B[i];return A};
+    Object.keys(remote.byYear||{}).forEach(y=>{
+      const R=remote.byYear[y]; if(!out.byYear[y]){out.byYear[y]=JSON.parse(JSON.stringify(R));return}
+      const O=out.byYear[y];
+      O.inc1Actual=fill(O.inc1Actual,R.inc1Actual);
+      O.actuals=O.actuals||{};Object.keys(R.actuals||{}).forEach(k=>{if(!del['line:'+k])O.actuals[k]=fill(O.actuals[k],R.actuals[k])});
+      O.fundsSpent=O.fundsSpent||{};Object.keys(R.fundsSpent||{}).forEach(k=>{O.fundsSpent[k]=fill(O.fundsSpent[k],R.fundsSpent[k])});
+    });
+  }
+  return out;
+}
+async function fetchRemote(){
+  /* since= lets the sheet answer "nothing new" without sending the whole budget (script v2);
+     an older script just ignores it and sends everything, which still works. */
+  const at=sync.need?sync.need.at:sync.lastSyncedAt, since=at?'&since='+at:'';
+  const res=await fetch(sync.url+'?t='+Date.now()+since,{method:'GET'});
+  const j=await res.json();
+  if(!j||!j.ok)throw new Error('bad response');
+  return j;
+}
+/* One entry point for every kind of sync: pull, merge if needed, push if needed. */
+async function syncNow(){
   if(!sync.url)return;
+  if(sync.busy){sync.again=true;return}
+  sync.busy=true;clearTimeout(sync.retryTimer);
+  await lockReady;
   sync.status='syncing';render();
   try{
-    const res=await fetch(sync.url+'?t='+Date.now(),{method:'GET'});
-    const j=await res.json();
-    if(j&&j.ok&&j.data){
-      const isNewer=j.updatedAt>sync.lastSyncedAt;
-      if(!onlyIfNewer||isNewer){
-        if(onlyIfNewer&&sync.dirty){/* local unpushed edits take priority; a push is already scheduled */}
-        else{
-          const parsed=JSON.parse(j.data);
-          if(parsed&&parsed.v===1){
-            state=migrate(parsed);
-            sync.lastSyncedAt=j.updatedAt;try{localStorage.setItem(SYNC_AT_KEY,String(j.updatedAt))}catch(e){}
-            localSave();
-          }
-        }
+    const j=await fetchRemote();
+    if(j.unchanged&&sync.need)throw LOCKED; // still locked, nothing new
+    let raw=null;
+    if(j.data&&!j.unchanged){
+      const outer=JSON.parse(j.data);
+      if(outer&&outer.enc){
+        const k=cryptoOk?keyFor(outer.salt):null;
+        let txt=null;
+        if(k){try{txt=await decryptEnv(outer,k)}catch(e){txt=null}}
+        if(txt===null){sync.need={env:outer,at:j.updatedAt||0};throw LOCKED}
+        if(lock&&outer.salt===lock.salt&&!lock.confirmed){lock.confirmed=true;lock.prev=null;await saveLock()}
+        raw=txt;
+      }else{
+        /* Plain budget in the sheet while this phone holds a confirmed lock: the lock was
+           removed on the other phone. (The sheet refuses plain uploads over a locked budget
+           unless it's a deliberate "Remove lock", so this can't be an accident.) */
+        if(lock&&lock.confirmed&&!lock.removing){lock=null;await saveLock();ui.lockMsg='The passphrase lock was removed on the other phone.'}
+        raw=j.data;
       }
-    }else if(j&&j.ok&&!j.data){
-      sync.lastSyncedAt=j.updatedAt||0;
-      cloudPush();return;
+      sync.need=null;
+    }
+    if(raw){
+      const parsed=JSON.parse(raw);
+      if(parsed&&parsed.v===1){
+        const remote=migrate(parsed);
+        if(sync.dirty){state=mergeStates(state,remote);localSave()}
+        else if(j.updatedAt>sync.lastSyncedAt){state=remote;localSave()}
+      }
+    }
+    sync.lastSyncedAt=j.updatedAt||0;try{localStorage.setItem(SYNC_AT_KEY,String(sync.lastSyncedAt))}catch(e){}
+    const lockPending=!!(lock&&(!lock.confirmed||lock.removing));
+    if(sync.dirty||lockPending||(!j.data&&!j.unchanged)){
+      const seqAtSend=sync.seq, plain=JSON.stringify(state);
+      const body={data:(lock&&!lock.removing)?await encryptText(plain):plain};
+      if(lock&&lock.removing)body.unlock=true;
+      const res=await fetch(sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
+      const p=await res.json();
+      if(p&&p.locked){ // the other phone locked the budget a moment ago: go and fetch it
+        sync.lastSyncedAt=0;try{localStorage.removeItem(SYNC_AT_KEY)}catch(e){}
+        sync.again=true;throw new Error('locked');
+      }
+      if(!p||!p.ok)throw new Error('push failed');
+      sync.lastSyncedAt=p.updatedAt;try{localStorage.setItem(SYNC_AT_KEY,String(p.updatedAt))}catch(e){}
+      if(sync.seq===seqAtSend)setDirty(false); // anything edited mid-flight stays dirty and goes next
+      if(lock&&lock.removing){lock=null;await saveLock();ui.lockMsg='Lock removed. The sheet now holds the budget as plain text again.'}
+      else if(lock&&!lock.confirmed){lock.confirmed=true;lock.prev=null;await saveLock();ui.lockMsg='Locked. The sheet now holds only scrambled text.'}
     }
     sync.status='synced';sync.lastSyncedWhen=Date.now();
-  }catch(e){sync.status='error'}
+  }catch(e){
+    if(e===LOCKED){sync.status='locked'}
+    else{
+      sync.status='error';
+      if(!sync.again)sync.retryTimer=setTimeout(syncNow,15000); // keep trying; nothing is lost meanwhile
+    }
+  }
+  sync.busy=false;
+  if(sync.again||(sync.dirty&&sync.status==='synced')){sync.again=false;scheduleCloudPush()}
   render();
 }
 function scheduleCloudPush(){
   if(!sync.url)return;
   clearTimeout(sync.pushTimer);
-  sync.pushTimer=setTimeout(cloudPush,1200);
-}
-async function cloudPush(){
-  if(!sync.url)return;
-  sync.status='syncing';render();
-  try{
-    const res=await fetch(sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({data:JSON.stringify(state)})});
-    const j=await res.json();
-    if(j&&j.ok){
-      sync.dirty=false;sync.lastSyncedAt=j.updatedAt;try{localStorage.setItem(SYNC_AT_KEY,String(j.updatedAt))}catch(e){}
-      sync.status='synced';sync.lastSyncedWhen=Date.now();
-    }else{sync.status='error'}
-  }catch(e){sync.status='error'}
-  render();
+  sync.pushTimer=setTimeout(syncNow,1200);
 }
 function save(){
   localSave();
-  if(sync.url){sync.dirty=true;scheduleCloudPush()}
+  if(sync.url){sync.seq++;setDirty(true);scheduleCloudPush()}
 }
+/* Phones pause background tabs, so sync the moment the app comes back to the screen, and
+   try to get unsynced edits out when it's being hidden. */
+document.addEventListener('visibilitychange',()=>{if(sync.url&&(!document.hidden||sync.dirty))syncNow()});
+window.addEventListener('online',()=>{if(sync.url)syncNow()});
 
 /* ------------------------------------------------------------------ calculations */
 const planned=l=>planOf(state,l);
+/* ---- The plan, month by month
+   The plan in Setup is the plan for this month onward. Before any change to it, the plan as
+   it stood is saved in state.planHistory as "the plan for every month before this one", so
+   past months keep the amounts they actually had and the carry-over never shifts afterwards.
+   Each entry is {until: year*12+month (exclusive), plan: snapshot}. */
+const monthKey=(y,m)=>y*12+m;
+const nowKey=()=>{const d=new Date();return monthKey(d.getFullYear(),d.getMonth())};
+function planSnapshot(){
+  const lines={};state.lines.forEach(l=>{lines[l.id]={bucket:l.bucket,share:l.share,name:l.name,planned:num(l.planned),mode:l.mode||'fixed',pctVal:num(l.pctVal)}});
+  return {income1:num(state.income1),pyfPct:num(state.pyfPct),pyfSplit:Object.assign({},state.pyfSplit),extraSplit:Object.assign({},state.extraSplit),lines};
+}
+/* Call just BEFORE changing anything in the plan. */
+function beforePlanChange(){
+  if(!Array.isArray(state.planHistory))state.planHistory=[];
+  const cur=nowKey(), h=state.planHistory;
+  const last=h.length?h[h.length-1].until:-Infinity;
+  if(last>=cur)return; // this month's earlier edit already froze the past
+  h.push({until:cur,plan:planSnapshot()});
+}
+/* The saved plan that applied to (year,m), or null when it's the live plan in Setup. */
+function planAt(year,m){
+  const k=monthKey(year,m), h=state.planHistory||[];
+  for(let i=0;i<h.length;i++)if(k<h[i].until)return h[i].plan;
+  return null;
+}
+function planOfAt(l,year,m){
+  const P=planAt(year,m);
+  if(!P)return planOf(state,l);
+  const sl=P.lines&&P.lines[l.id];
+  if(!sl)return 0; // this line didn't exist yet back then
+  if(l.bucket==='pyf')return num(P.income1)*num(P.pyfPct)*num((P.pyfSplit||{})[l.share]);
+  if(sl.mode==='pct')return num(P.income1)*num(sl.pctVal);
+  return num(sl.planned);
+}
+const plannedIncomeAt=(year,m)=>{const P=planAt(year,m);return P?num(P.income1):num(state.income1)};
+const extraSplitAt=(year,m)=>{const P=planAt(year,m);return (P&&P.extraSplit)||state.extraSplit};
+/* Lines that are taken off every month from day 1 at their planned amount, unless you type
+   a different amount for that particular month. */
+const isMonthly=b=>b==='rent'||b==='fixed'||b==='pyf'||b==='sinking';
+/* The day-1 lines as they stood in (year,m) — from the saved plan for past months, so a line
+   removed later still counts in the months it existed. */
+function monthlyLinesAt(year,m){
+  const P=planAt(year,m);
+  if(!P)return state.lines.filter(l=>isMonthly(l.bucket));
+  return Object.keys(P.lines||{}).map(id=>{const x=P.lines[id];return {id,bucket:x.bucket,share:x.share,name:x.name}}).filter(l=>isMonthly(l.bucket));
+}
+const monthOverride=(l,year,m)=>{const raw=((state.byYear&&state.byYear[year]&&state.byYear[year].actuals)||{})[l.id];const v=raw?raw[m]:null;return (v===null||v===undefined||v==='')?null:num(v)};
 /* Every year the app has touched gets its own bucket of monthly actuals, so 2026 and 2027
    (and beyond) never overwrite each other. ensureYear/yd() lazily create + fetch that bucket
    for whichever year is currently on screen (ui.year). */
@@ -628,15 +955,42 @@ function newEntryId(){return 'e_'+Date.now().toString(36)+Math.random().toString
 /* Every logged expense is its own transaction now (not one aggregate per week), so this
    groups a line's transactions for the month into week buckets with a subtotal, then lists
    each one by day — tap a row to edit or delete that single entry. */
+/* "Where it went": this category's month split by shop/restaurant, biggest first — with trips,
+   average per trip, this week (when looking at the current month) and last month, since
+   how often and how much per trip is where the savings usually are. */
+function whereReport(l,m){
+  const es=entriesFor(l.id,m);
+  if(!es.length)return '';
+  const total=sum(es.map(e=>num(e.amount)))||1;
+  const now=new Date(), isNow=now.getFullYear()===ui.year&&now.getMonth()===m, wk=Math.floor((now.getDate()-1)/7);
+  const [py,pm]=m===0?[ui.year-1,11]:[ui.year,m-1];
+  const prev=state.entries.filter(e=>e.line===l.id&&e.year===py&&e.month===pm);
+  const g={};
+  es.forEach(e=>{const k=e.tag||'';const x=g[k]||(g[k]={t:0,n:0,w:0});x.t+=num(e.amount);x.n++;if(isNow&&weekOfDay(e.day)===wk)x.w+=num(e.amount)});
+  const rows=Object.keys(g).sort((a,b)=>(a===''?1:0)-(b===''?1:0)||g[b].t-g[a].t).map(k=>{
+    const x=g[k], lm=sum(prev.filter(e=>(e.tag||'')===k).map(e=>num(e.amount)));
+    const renaming=ui.renamingTag&&ui.renamingTag.line===l.id&&ui.renamingTag.tag===k;
+    const name=k===''?'<span class="muted">No shop picked</span>'
+      :renaming?`<span class="nm renaming"><input class="txt" id="rt-name" data-k="rt-name" value="${esc(k)}" maxlength="30" aria-label="Rename ${esc(k)}"><button class="xbtn ok" data-click="save-tag-rename" aria-label="Save name">\u2713</button><button class="xbtn" data-click="cancel-tag-rename" aria-label="Cancel">\u2715</button></span>`
+      :`${esc(k)}<button type="button" class="pencil" data-click="rename-tag" data-line="${l.id}" data-tag="${esc(k)}" aria-label="Rename ${esc(k)} (renames it on every ${esc(l.name)} expense; use an existing name to merge)">\u270e</button>`;
+    const bits=[`${x.n} ${x.n===1?'time':'times'}`,`avg ${fmt(x.t/x.n)}`];
+    if(isNow)bits.push(`this week ${fmt(x.w)}`);
+    if(lm)bits.push(`${MONTHS[pm]} ${fmt(lm)}`);
+    return `<div class="wrow"><div class="wtop"><span class="wname">${name}</span><b>${fmt(x.t)}</b></div>
+      <div class="wbar"><span style="width:${Math.max(2,x.t/total*100)}%;background:${catColor(l)}"></span></div>
+      <div class="wsub">${bits.join(' \u00b7 ')}</div></div>`;
+  }).join('');
+  return `<div class="where"><div class="histhead"><span>Where it went in ${FULL[m]}</span><span>${fmt(total)}</span></div>${rows}</div>`;
+}
 function historyList(l,m){
   const es=entriesFor(l.id,m).slice().sort((a,b)=>(a.day||1)-(b.day||1)||(a.id<b.id?-1:1));
   if(!es.length)return `<p class="muted small hist">Nothing logged yet this month. Tap the amount above to add the first one.</p>`;
   const wks=weeksOf(ui.year,m), byWeek={};
   es.forEach(e=>{const w=weekOfDay(e.day);(byWeek[w]=byWeek[w]||[]).push(e)});
-  return `<div class="hist">${wks.filter(w=>byWeek[w.idx]).map(w=>{
+  return `<div class="hist">${whereReport(l,m)}<div class="histhead" style="margin-top:12px"><span>Every expense</span><span></span></div>${wks.filter(w=>byWeek[w.idx]).map(w=>{
     const items=byWeek[w.idx], sub=sum(items.map(e=>num(e.amount)));
     return `<div class="histweek"><div class="histhead"><span>${esc(w.label)} (${esc(w.range)} ${MONTHS[m]})</span><span>${fmt(sub)}</span></div>
-      ${items.map(e=>`<div class="histrow" data-click="open-log" data-entry="${e.id}"><span>${e.day||1} ${MONTHS[m]}${e.note?' — '+esc(e.note):''}</span><span class="amt">${fmt(e.amount)}</span></div>`).join('')}
+      ${items.map(e=>`<div class="histrow" data-click="open-log" data-entry="${e.id}"><span>${e.day||1} ${MONTHS[m]}${e.tag?' \u00b7 <b>'+esc(e.tag)+'</b>':''}${e.note?' — '+esc(e.note):''}</span><span class="amt">${fmt(e.amount)}</span></div>`).join('')}
     </div>`;
   }).join('')}</div>`;
 }
@@ -648,8 +1002,8 @@ function currentWeekIndex(month){
 }
 function lineActualFor(l,year,m){
   if(isItemized(l.bucket))return sum(state.entries.filter(e=>e.line===l.id&&e.year===year&&e.month===m).map(e=>num(e.amount)));
-  if(l.bucket==='pyf'||l.bucket==='sinking')return planOf(state,l);
-  return num((ensureYear(year).actuals[l.id]||[])[m]);
+  const o=monthOverride(l,year,m);
+  return o!==null?o:planOfAt(l,year,m);
 }
 const lineActual=(l,m)=>lineActualFor(l,ui.year,m);
 const linesOf=b=>state.lines.filter(l=>l.bucket===b);
@@ -676,8 +1030,8 @@ function extraAggFor(year,ms){
   const o={total:0,pyf:0,sink:0,free:0,byFund:{}};
   state.extra.forEach(x=>{
     if(yearOf(x.date)!==year||ms.indexOf(monthOf(x.date))<0)return;
-    const a=num(x.amount);o.total+=a;o.pyf+=a*state.extraSplit.pyf;o.sink+=a*state.extraSplit.sink;o.free+=a*state.extraSplit.free;
-    o.byFund[x.fund]=(o.byFund[x.fund]||0)+a*state.extraSplit.sink;
+    const a=num(x.amount), sp=extraSplitAt(year,monthOf(x.date));o.total+=a;o.pyf+=a*sp.pyf;o.sink+=a*sp.sink;o.free+=a*sp.free;
+    o.byFund[x.fund]=(o.byFund[x.fund]||0)+a*sp.sink;
   });
   return o;
 }
@@ -700,6 +1054,47 @@ function fundBalance(f,year,m){
     for(let k=0;k<=lastM;k++){const x=fundFlow(f,y,k);b+=x.aside+x.top-x.spent}
   }
   return b;
+}
+const loggedFor=(year,m)=>inc1Of(year,m)>0;
+/* What "Available to spend" is built from, for any month:
+   - income: Income 1 as received, or the planned Income 1 until it's entered (flagged, so the
+     screen can say it's an estimate);
+   - extra income: only its guilt-free share — the PYF and sinking shares are already counted
+     as money set aside (they top up PYF and the funds), so adding the whole payment would
+     count those shares twice;
+   - set aside: PYF + sinking set-asides;
+   - rent and other fixed costs: what you entered as paid, or the planned amount until you
+     do — they are due every month whether or not anyone has typed them in;
+   - spending: every expense logged in the everyday categories.
+   `idx` is an optional pre-built index of logged expenses (see entryIndex) so walking many
+   months for the rollover stays fast on a phone. */
+function entryIndex(){const ix=new Map();state.entries.forEach(e=>{const k=e.year+'|'+e.month+'|'+e.line;ix.set(k,(ix.get(k)||0)+num(e.amount))});return ix}
+function monthBreakdown(year,m,idx){
+  const ix=idx||entryIndex();
+  const incomeLogged=loggedFor(year,m);
+  const income=incomeLogged?inc1Of(year,m):plannedIncomeAt(year,m);
+  const extraFree=extraAggFor(year,[m]).free;
+  const ml=monthlyLinesAt(year,m), amt=l=>{const o=monthOverride(l,year,m);return o!==null?o:planOfAt(l,year,m)};
+  const setAside=sum(ml.filter(l=>l.bucket==='pyf'||l.bucket==='sinking').map(amt));
+  const fixedCosts=sum(ml.filter(l=>l.bucket==='rent'||l.bucket==='fixed').map(amt));
+  const spending=sum(state.lines.filter(l=>isItemized(l.bucket)).map(l=>ix.get(year+'|'+m+'|'+l.id)||0));
+  return {income,incomeLogged,extraFree,setAside,fixedCosts,spending,net:income+extraFree-setAside-fixedCosts-spending};
+}
+const monthNet=(year,m,idx)=>monthBreakdown(year,m,idx).net;
+/* The running balance carried INTO (year,m): the net of every month from the first one with
+   any activity (Income 1 entered, an expense logged, or extra income) up to the month before.
+   Quiet months in between still count — rent and bills were still due. Months before you
+   started using the app add nothing. */
+function rolloverInto(year,m){
+  const idx=entryIndex(), active=new Set();
+  Object.keys(state.byYear||{}).forEach(y=>{(state.byYear[y].inc1Actual||[]).forEach((v,k)=>{if(num(v)>0)active.add(+y*12+k)})});
+  state.entries.forEach(e=>active.add(e.year*12+e.month));
+  state.extra.forEach(x=>active.add(yearOf(x.date)*12+monthOf(x.date)));
+  const upto=year*12+m;
+  if(!active.size)return 0;
+  let total=0;
+  for(let k=Math.min(...active);k<upto;k++)total+=monthNet(Math.floor(k/12),k%12,idx);
+  return total;
 }
 function lastLogged(){let l=-1;for(let m=0;m<12;m++)if(logged(m))l=m;return l}
 const balMonth=()=>ui.scope==='month'?ui.month:Math.max(lastLogged(),0);
@@ -791,7 +1186,7 @@ function yearOptions(){
   return arr;
 }
 function header(){
-  const tabs=[['overview','Overview'],['budget','Budget'],['extra','Extra income'],['sinking','Sinking funds'],['setup','Setup']];
+  const tabs=[['budget','Budget'],['overview','Overview'],['extra','Extra income'],['sinking','Sinking funds'],['setup','Setup']];
   return `<header class="topbar"><div class="topbar-in">
     <div class="brand"><b>Family Budget</b><small>${ui.year}</small></div>
     <nav class="tabs" aria-label="Sections">${tabs.map(t=>`<button class="tab" data-click="tab" data-t="${t[0]}" ${ui.tab===t[0]?'aria-current="page"':''}>${t[1]}</button>`).join('')}</nav>
@@ -805,7 +1200,7 @@ function header(){
 
 function syncChip(){
   if(!sync.url)return '';
-  const map={syncing:['info','Syncing…'],synced:['good','Synced'],error:['bad','Sync error'],idle:['mute','Not synced']};
+  const map={syncing:['info','Syncing…'],synced:['good',lock&&lock.confirmed?'Synced \u00b7 locked':'Synced'],error:['bad','Sync error'],idle:['mute','Not synced'],locked:['bad','Locked']};
   const[t,label]=map[sync.status]||map.idle;
   return `<button class="chip ${t}" data-click="tab" data-t="setup" style="border:0;cursor:pointer" title="Shared with your wife via Google Sheets. Tap to manage.">${label}</button>`;
 }
@@ -826,7 +1221,7 @@ function overview(){
   }
   const P=pyfStats(), ex=P.ex, hol=state.funds[0], hb=fundBalance(hol,ui.year,balMonth()), hp=hol.target?hb/hol.target:0;
   const incPlan=state.income1*nMonths();
-  const banner=state.demo?`<div class="banner"><p><b>You are looking at demo figures.</b> The plan uses sample amounts for an RM 8,000 income. Clear the demo to start entering your own numbers.</p><button class="btn primary" data-click="clear-demo">Clear demo data</button></div>`:'';
+  const banner=state.demo?`<div class="banner"><p><b>You are looking at demo figures.</b> Every amount here is a made-up placeholder. Clear the demo to start entering your own numbers.</p><button class="btn primary" data-click="clear-demo">Clear demo data</button></div>`:'';
   const notStarted=((ui.scope==='month'||weekMode)&&!act)?`<div class="banner info"><p>The plan below is what you have budgeted for ${FULL[ui.month]}. Actual figures appear once you enter Income 1 received.</p><button class="btn" data-click="tab" data-t="budget">Open Budget</button></div>`:'';
 
   // money strip
@@ -951,18 +1346,18 @@ function modeCell(l){
 function fixedLineRow(l,m){
   const on=logged(m);
   const pl=planned(l), ac=lineActualFor(l,ui.year,m), raw=(yd().actuals[l.id]||[])[m];
-  const d=on?(pl-ac):null, custom=/^c_/.test(l.id);
+  const d=on?(planOfAt(l,ui.year,m)-ac):null, custom=/^c_/.test(l.id);
   return `<div class="brow">${nameCell(l)}
     <span>${canPct(l.bucket)?modeCell(l):inp('p_'+l.id,'planned',pl,`data-line="${l.id}"`,l.name+' planned')}</span>
-    <span>${inp('a_'+l.id+'_'+m,'actual',raw,`data-line="${l.id}"`,l.name+' actual in '+FULL[m])}</span>
+    <span>${inp('a_'+l.id+'_'+m,'actual',raw,`data-line="${l.id}" placeholder="${Math.round(planOfAt(l,ui.year,m))}"`,l.name+' in '+FULL[m])}</span>
     <span class="diff ${d===null||Math.round(d)===0?'zero':d>0?'good':'bad'}">${d===null?'':signed(d)}</span>
     <span>${custom?`<button class="xbtn" data-click="del-line" data-line="${l.id}" aria-label="Remove ${esc(l.name)}">×</button>`:''}</span></div>`;
 }
 function setupFixedSection(){
   const m=ui.month;
   const rows=[...linesOf('rent'),...linesOf('fixed')].map(l=>fixedLineRow(l,m)).join('');
-  return `<section class="panel" style="margin-top:22px"><div class="shead"><h3>Rent & other fixed costs</h3><p>Planned as RM or % of Income 1. Actual is what you paid in ${FULL[m]} — change the month at the top of the app to log a different one.</p></div>
-    <div class="cols-h"><span>Line</span><span class="right">Planned</span><span class="right">Actual</span><span class="right">Diff</span><span></span></div>
+  return `<section class="panel" style="margin-top:22px"><div class="shead"><h3>Rent & other fixed costs</h3><p>The plan, as RM or % of Income 1 — changes here apply from this month onward; past months keep what they had. "${MONTHS[m]}" is the amount for ${FULL[m]} only: blank means the plan amount (you can also change it on the Budget tab).</p></div>
+    <div class="cols-h"><span>Line</span><span class="right">Planned</span><span class="right">${MONTHS[m]}</span><span class="right">Diff</span><span></span></div>
     ${rows}
     ${ui.addingTo==='fixed'?`<div class="addrow"><input class="txt" id="al-name" placeholder="Line name" maxlength="40"><input class="num" id="al-amt" inputmode="decimal" placeholder="Planned" style="max-width:none"><span style="display:flex;gap:6px"><button class="btn sm primary" data-click="save-line" data-b="fixed">Add</button><button class="btn sm ghost" data-click="cancel-line">Cancel</button></span></div>${ui.err?`<div class="err">${esc(ui.err)}</div>`:''}`
       :`<button class="linkbtn" data-click="add-line" data-b="fixed">Add a line</button>`}
@@ -970,13 +1365,35 @@ function setupFixedSection(){
 }
 function quickLogPanel(m){
   const segs=state.lines.filter(l=>isItemized(l.bucket)).map(l=>({l,v:lineActual(l,m)})).filter(s=>s.v>0).sort((x,y)=>y.v-x.v);
-  const expenses=sum(['rent','fixed','variable','lifestyle'].map(b=>bucketActual(b,m)));
-  const setAside=bucketActual('pyf',m)+bucketActual('sinking',m);
-  const incomeThisMonth=(logged(m)?inc1Of(ui.year,m):state.income1)+extraAggFor(ui.year,[m]).total;
-  const balance=incomeThisMonth-setAside-expenses;
+  const bd=monthBreakdown(ui.year,m);
+  const expenses=bd.fixedCosts+bd.spending, setAside=bd.setAside;
+  const incomeThisMonth=bd.income+bd.extraFree;
+  const rollover=rolloverInto(ui.year,m);
+  const balance=bd.net+rollover;
   const donut=`<div class="donut" style="margin:4px 0 6px">${categoryWheel(segs,fmt(incomeThisMonth),fmt(expenses))}</div>`;
+  /* Salary often lands a week or so before the month it's meant for, and spending from it
+     starts straight away. Log it under the month it's for; the early spending shows here as
+     a negative that carries into that month. Once next month's salary is entered, show what
+     both months have left together, which is the number that matters in that last week. */
+  const nx=m===11?[ui.year+1,0]:[ui.year,m+1];
+  let early='';
+  if(loggedFor(nx[0],nx[1])){
+    const both=balance+monthNet(nx[0],nx[1]);
+    early=`<div class="early"><b>${fmt(both)}</b> left for the rest of ${FULL[m]} and all of ${FULL[nx[1]]}, now that ${FULL[nx[1]]}'s salary is in (after its bills and set-asides).</div>`;
+  }else if(balance<0){
+    early=`<div class="early">Below zero usually means you've started spending ${FULL[nx[1]]}'s salary early. That's fine: enter it under ${FULL[nx[1]]} when it arrives and this shortfall carries over into it.</div>`;
+  }
+  const parts=[];
+  parts.push(`${bd.incomeLogged?'Income 1':'Planned Income 1 (enter what arrived below)'} ${fmt(bd.income)}`);
+  if(bd.extraFree)parts.push(`guilt-free extra income +${fmt(bd.extraFree)}`);
+  if(rollover)parts.push(`${rollover>0?'carried over':'shortfall carried over'} ${rollover>0?'+':'−'}${fmt(Math.abs(rollover))}`);
+  parts.push(`set aside (PYF + sinking) −${fmt(setAside)}`);
+  parts.push(`rent & bills −${fmt(bd.fixedCosts)}`);
+  parts.push(`spent −${fmt(bd.spending)}`);
   const balBar=`<div class="balbar"><span>Available to spend</span><b class="${balance<0?'bad':''}">${fmt(balance)}</b></div>
-    <p class="muted small" style="margin:0 0 6px">Income and extra income, minus ${fmt(setAside)} already spoken for (PYF + sinking funds).</p>`;
+    ${(rollover||!bd.incomeLogged)?`<p class="muted small" style="margin:0 0 4px">${rollover?`Includes ${rollover>0?fmt(rollover)+' carried over':fmt(-rollover)+' shortfall carried over'} from earlier months.`:''}${!bd.incomeLogged?` Estimate: uses planned Income 1 until you enter what arrived.`:''}</p>`:''}
+    ${early}
+    <details class="balwhy"><summary>How this is worked out</summary><p class="muted small">${parts.join(' · ')}. Bills and set-asides count at their planned amount unless you change them for this month (starting point below). The carry-over is the running total of every earlier month's leftover.</p></details>`;
   const note=segs.length===0?`<p class="muted small" style="padding:0 4px">Tap a category below to log your first expense this month.</p>`:'';
   const wheelTot=sum(segs.map(s=>s.v))||1;
   const shareOf=id=>{const s=segs.find(x=>x.l.id===id);return s?pct(s.v/wheelTot):''};
@@ -992,13 +1409,39 @@ function quickLogPanel(m){
     <div class="catgrid" style="margin-top:10px">${tiles}</div>
   </section>`;
 }
+/* The month's starting point: everything that comes off from the 1st — rent, bills, other
+   fixed costs, PYF and sinking set-asides — at the planned amount. Any of them can be changed
+   for this month only (e.g. this month's TNB bill); clearing the box goes back to the plan. */
+function startPanel(m){
+  const y=ui.year, ml=monthlyLinesAt(y,m);
+  const groups=[['Rent & bills',ml.filter(l=>l.bucket==='rent'||l.bucket==='fixed')],['Set aside',ml.filter(l=>l.bucket==='pyf'||l.bucket==='sinking')]];
+  let total=0, changed=0;
+  const rows=groups.map(([title,ls])=>{
+    const sub=sum(ls.map(l=>lineActualFor(l,y,m)));
+    return `<div class="sp-group"><div class="sp-gh"><span>${title}</span><span>${fmt(sub)}</span></div>${ls.map(l=>{
+      const pl=planOfAt(l,y,m), o=monthOverride(l,y,m), eff=o!==null?o:pl;
+      total+=eff; if(o!==null&&Math.round(o)!==Math.round(pl))changed++;
+      const diff=o!==null&&Math.round(o)!==Math.round(pl);
+      return `<div class="sp-row"><span class="sp-name">${esc(l.name)}${diff?`<span class="sp-plan">plan ${fmt(pl)}</span>`:''}</span>
+        <span class="sp-in">${inp('mo_'+l.id+'_'+m,'actual',Math.round(eff*100)/100,`data-line="${l.id}"`,l.name+' for '+FULL[m])}</span>
+        <span>${o!==null?`<button class="xbtn" data-click="reset-month-line" data-line="${l.id}" aria-label="Use the planned amount for ${esc(l.name)}" title="Back to plan">↺</button>`:''}</span></div>`;
+    }).join('')}</div>`;
+  }).join('');
+  const open=!!ui.startOpen;
+  return `<section class="panel startpt" style="margin-bottom:22px">
+    <button class="sp-head" data-click="toggle-start" aria-expanded="${open}">
+      <span><b>${FULL[m]} starting point</b><small>Bills and set-asides taken off from the 1st${changed?` · ${changed} changed this month`:''}</small></span>
+      <span class="sp-tot">${fmt(total)} <span aria-hidden="true">${open?'▴':'▾'}</span></span></button>
+    ${open?`<div class="sp-body">${rows}<p class="muted small" style="padding:10px 2px 2px">Each line starts at its planned amount. When the real amount is known — say this month's TNB bill — type it here; it changes ${FULL[m]} only. ↺ goes back to the plan. To change every month from now on, edit the plan in Setup.</p></div>`:''}
+  </section>`;
+}
 function budget(){
   const m=ui.month, on=logged(m);
   const incRaw=yd().inc1Actual[m];
   const head=`<div class="panel incbox"><div><div class="muted small">Income 1 received in ${FULL[m]}</div><div class="muted small">Entering this switches the month on.</div></div>
     ${inp('inc1a','inc1a',incRaw,'','Income 1 received in '+FULL[m])}
     <span class="chip ${on?'good':'mute'}">${on?'Month is on':'Month is off'}</span>
-    <span class="muted small" style="margin-left:auto">Planned ${fmt(state.income1)}. Buffer is whatever the plan leaves.</span></div>`;
+    <span class="muted small" style="margin-left:auto">Planned ${fmt(plannedIncomeAt(ui.year,m))}. Salary paid early for next month? Enter it under next month.</span></div>`;
   const card=b=>{
     const lines=linesOf(b.id), p=bucketPlanned(b.id), a=bucketActual(b.id,m);
     const good=b.good, diff=on?(good?a-p:p-a):null;
@@ -1008,7 +1451,7 @@ function budget(){
       <p class="muted small" style="padding:8px 18px 16px">Planned is the balancing line, so every ringgit has a job. Actual is what is really left after everything you logged. Overspends shrink it.</p>`;
     }else{
       const itemized=isItemized(b.id);
-      if(itemized)body+=`<p class="muted small hint">Tap the total to log this week. Tap the week count to see or edit past weeks.</p>`;
+      if(itemized)body+=`<p class="muted small hint">Tap an amount to log an expense. Tap the log count to see where the money went, and to edit or delete past expenses.</p>`;
       body+=lines.map(l=>{
         const pl=planned(l),ac=lineActual(l,m),raw=(yd().actuals[l.id]||[])[m];
         const d=on?(good?ac-pl:pl-ac):null, custom=/^c_/.test(l.id);
@@ -1031,18 +1474,18 @@ function budget(){
     }
     const shareA=on&&inc1Of(ui.year,m)?a/inc1Of(ui.year,m):0;
     return `<section class="panel"><div class="bhead"><span class="sw" style="background:${cv(b.id)}"></span><h3>${b.name}</h3>
-      <div class="tot">${on?fmt(a):'\u2013'} <span class="muted">of ${fmt(p)}</span><small>${on?pct(shareA)+' of Income 1 actual':pct(state.income1?p/state.income1:0)+' of Income 1 planned'}</small></div></div>
+      <div class="tot">${(on||isItemized(b.id))?fmt(a):'\u2013'} <span class="muted">of ${fmt(p)}</span><small>${on?pct(shareA)+' of Income 1 actual':pct(state.income1?p/state.income1:0)+' of Income 1 planned'}</small></div></div>
       <div class="cols-h"><span>Line</span><span class="right">Planned</span><span class="right">Actual</span><span class="right">Diff</span><span></span></div>${body}</section>`;
   };
   const left=['variable'].map(id=>card(BM[id])).join('<div style="height:22px"></div>');
   const right=['lifestyle','buffer'].map(id=>card(BM[id])).join('<div style="height:22px"></div>');
-  return `<h1 class="headline" style="font-size:clamp(24px,3.6vw,34px);max-width:none;margin-bottom:20px">${FULL[m]} budget</h1>${quickLogPanel(m)}${head}<div class="section"><div class="bgrid"><div>${left}</div><div>${right}</div></div></div>`;
+  return `<h1 class="headline" style="font-size:clamp(24px,3.6vw,34px);max-width:none;margin-bottom:20px">${FULL[m]} budget</h1>${quickLogPanel(m)}${head}${startPanel(m)}<div class="section"><div class="bgrid"><div>${left}</div><div>${right}</div></div></div>`;
 }
 
 function extraView(){
   const yr=state.extra.filter(x=>yearOf(x.date)===ui.year).sort((a,b)=>a.date<b.date?1:-1);
   const T=extraAgg([0,1,2,3,4,5,6,7,8,9,10,11]);
-  const today=new Date().toISOString().slice(0,10);
+  const nd=new Date(), today=nd.getFullYear()+'-'+String(nd.getMonth()+1).padStart(2,'0')+'-'+String(nd.getDate()).padStart(2,'0'); // local date, not UTC
   const s=state.extraSplit;
   const rows=yr.length?yr.map(x=>{
     const a=num(x.amount),f=state.funds.find(z=>z.id===x.fund);
@@ -1096,12 +1539,36 @@ function agoStr(ms){
   const h=Math.round(m/60);if(h<48)return h+' hr ago';
   return Math.round(h/24)+' days ago';
 }
+/* A setup link is the app's own address with the sheet link after #sync= — opening it links a
+   phone in one tap. The part after # never leaves the phone (it isn't sent to GitHub). */
+const SCRIPT_RE=/^https:\/\/script\.google(usercontent)?\.com\//;
+function extractSyncUrl(text){
+  const t=String(text||'').trim();
+  const m=t.match(/#sync=([^&\s]+)/);
+  let v=t;
+  if(m){try{v=decodeURIComponent(m[1])}catch(e){v=''}}
+  return SCRIPT_RE.test(v)?v:'';
+}
+const setupLink=()=>location.origin+location.pathname+'#sync='+encodeURIComponent(sync.url);
+const isStandalone=()=>(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let installPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;later()});
+window.addEventListener('appinstalled',()=>{installPrompt=null;later()});
+function installSection(){
+  let body;
+  if(isStandalone())body=`<p class="muted small" style="padding:0 18px 14px">Installed \u2014 you're using the app from the home screen. Updates arrive by themselves the next time it opens with internet.</p>`;
+  else if(installPrompt)body=`<div class="actions" style="padding-top:0"><button class="btn primary" data-click="install-app">Install on this phone</button></div><p class="muted small" style="padding:0 18px 14px">Adds a Budget icon to your home screen. It opens full-screen and works without signal.</p>`;
+  else if(isIOS())body=`<p class="muted small" style="padding:0 18px 14px">On iPhone: tap Safari's <b>Share</b> button, then <b>Add to Home Screen</b>. Then open Budget from the home screen and connect it below (paste the setup link) \u2014 the home-screen app keeps its own storage, separate from Safari.</p>`;
+  else body=`<p class="muted small" style="padding:0 18px 14px">In Chrome, open the \u22ee menu and choose <b>Add to Home screen</b> or <b>Install app</b>.</p>`;
+  return `<div class="shead"><h3>App on this phone</h3></div>${body}`;
+}
 function syncSection(){
-  const statusMap={syncing:['info','Syncing…'],synced:['good','Synced'],error:['bad','Could not reach the sheet — check the link and your connection'],idle:['mute','Not connected']};
+  const statusMap={syncing:['info','Syncing…'],synced:['good','Synced'],error:['bad','Could not reach the sheet — check the link and your connection'],idle:['mute','Not connected'],locked:['bad','Locked \u2014 enter the passphrase']};
   if(!sync.url){
     const draft=ui.syncUrlDraft===null?'':ui.syncUrlDraft;
-    return `<div class="shead"><h3>Share with your wife (live sync)</h3><p>Paste your Google Apps Script Web App URL to sync this budget between both your phones, for free. See the setup guide for how to create it.</p></div>
-    <div class="form-row"><div style="grid-column:1/-1"><label class="f" for="sync-url">Apps Script Web App URL</label><input class="txt" id="sync-url" data-k="sync-url" data-act="syncUrlDraft" placeholder="https://script.google.com/macros/s/.../exec" value="${esc(draft)}"></div></div>
+    return `<div class="shead"><h3>Share with your wife (live sync)</h3><p>Paste the setup link (from the other phone: Setup \u2192 Share setup link) or your Google Apps Script Web App URL.</p></div>
+    <div class="form-row"><div style="grid-column:1/-1"><label class="f" for="sync-url">Setup link or Apps Script URL</label><input class="txt" id="sync-url" data-k="sync-url" data-act="syncUrlDraft" placeholder="https://script.google.com/macros/s/.../exec" value="${esc(draft)}"></div></div>
     ${ui.syncErr?`<div class="err">${esc(ui.syncErr)}</div>`:''}
     <div class="actions" style="padding-top:0"><button class="btn primary" data-click="connect-sync">Connect</button></div>`;
   }
@@ -1110,8 +1577,50 @@ function syncSection(){
   return `<div class="shead"><h3>Share with your wife (live sync)</h3><p>This budget is linked to a shared Google Sheet, so both of you see the same numbers.</p></div>
     <div class="srow"><span>Status</span><span class="right"><span class="chip ${t}">${label}</span></span></div>
     ${when?`<div class="srow"><span>Last synced</span><span class="right muted small">${when}</span></div>`:''}
-    <div class="actions"><button class="btn primary" data-click="sync-now">Sync now</button><button class="btn danger" data-click="disconnect-sync">Disconnect</button></div>
+    <div class="actions"><button class="btn primary" data-click="sync-now">Sync now</button><button class="btn" data-click="share-setup">${navigator.share?'Share setup link':'Copy setup link'}</button><button class="btn danger" data-click="disconnect-sync">Disconnect</button></div>
+    ${ui.shareMsg?`<p class="muted small" style="padding:0 18px 8px">${esc(ui.shareMsg)}</p>`:''}
+    <p class="muted small" style="padding:0 18px 6px">The setup link links another phone in one tap. ${lock?'With the lock on, the link alone opens nothing \u2014 the passphrase is needed too, so never send the two together.':'It works like a key to your budget, so only send it privately (e.g. WhatsApp to your wife), or turn on the passphrase lock below.'}</p>
     <p class="muted small" style="padding:0 18px 14px">Disconnecting only stops this device from syncing — your data stays in the sheet and in this browser.</p>`;
+}
+/* ---- passphrase lock: Setup section + the unlock screen */
+const passInput=(id,label,act,val,ph)=>`<label class="f" for="${id}">${label}</label><input class="txt" type="password" id="${id}" data-k="${id}" data-act="${act}" value="${esc(val||'')}" placeholder="${ph||''}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">`;
+function lockForm(btnLabel){
+  return `<div class="form-row"><div style="grid-column:1/-1">${passInput('lk-p1','Family passphrase','lockP1',ui.lockP1,'e.g. four random words')}</div>
+    <div style="grid-column:1/-1">${passInput('lk-p2','Type it again','lockP2',ui.lockP2)}</div></div>
+    ${ui.lockErr?`<div class="err">${esc(ui.lockErr)}</div>`:''}
+    <div class="actions" style="padding-top:0"><button class="btn primary" data-click="lock-set" ${ui.lockBusy?'disabled':''}>${ui.lockBusy?'Working…':btnLabel}</button>${lock?`<button class="btn" data-click="lock-cancel">Cancel</button>`:''}</div>`;
+}
+function lockSection(){
+  if(!sync.url)return '';
+  const head=`<div class="shead"><h3>Passphrase lock</h3>`;
+  if(!cryptoOk)return head+`<p>The lock needs the app opened from its https:// address.</p></div>`;
+  const msg=ui.lockMsg?`<p class="muted small" style="padding:0 18px 8px">${esc(ui.lockMsg)}</p>`:'';
+  if(!lock){
+    return head+`<p>Encrypts the budget on this phone before it goes to Google, so the sheet (and anyone who gets the setup link) only sees scrambled text. You choose the passphrase; it's typed once per phone and never sent anywhere.</p></div>
+    ${msg}${lockForm('Lock the budget')}
+    <p class="muted small" style="padding:0 18px 14px">There is no reset: if both of you forget it, the sheet can't be read. Pick something you'll both remember, at least 8 characters — four random words is ideal. Letters are case-sensitive.</p>`;
+  }
+  const state_=lock.removing?'Removing\u2026':!lock.confirmed?'Locking\u2026':'On';
+  const note=lock.removing||!lock.confirmed?'Finishes at the next sync.':'This phone remembers the passphrase.';
+  return head+`<p>The sheet only holds scrambled text. Your wife types the same passphrase once on her phone (tell her in person — don't send it with the setup link).</p></div>
+    <div class="srow"><span>Lock</span><span class="right"><span class="chip ${lock.confirmed&&!lock.removing?'good':'info'}">${state_}</span></span></div>
+    <p class="muted small" style="padding:0 18px 8px">${note}</p>
+    ${msg}
+    ${ui.lockOpen?lockForm('Change passphrase'):`<div class="actions">
+      <button class="btn" data-click="lock-open">Change passphrase</button>
+      ${ui.confirm==='unlock'?`<button class="btn danger" data-click="lock-remove">Tap again to remove the lock</button>`:`<button class="btn" data-click="ask" data-id="unlock">Remove lock</button>`}
+    </div>`}
+    <p class="muted small" style="padding:0 18px 14px">Changing the passphrase asks the other phone for the new one once.</p>`;
+}
+function lockScreen(){
+  return `<main class="wrap" style="max-width:520px"><section class="panel" style="margin-top:28px">
+    <div class="shead"><h3>Budget locked</h3><p>The shared budget is protected with your family passphrase. Type it once and this phone will remember it.</p></div>
+    <div class="form-row"><div style="grid-column:1/-1">${passInput('unlock-pass','Family passphrase','unlockDraft',ui.unlockDraft)}</div></div>
+    ${ui.unlockErr?`<div class="err">${esc(ui.unlockErr)}</div>`:''}
+    <div class="actions" style="padding-top:0"><button class="btn primary" data-click="unlock" ${ui.unlockBusy?'disabled':''}>${ui.unlockBusy?'Checking…':'Unlock'}</button></div>
+    <p class="muted small" style="padding:0 18px 8px">It's the passphrase you and your wife chose. Letters are case-sensitive.</p>
+    <div class="actions" style="padding-top:0">${ui.confirm==='unlink'?`<button class="btn danger" data-click="disconnect-sync">Tap again to unlink this phone</button>`:`<button class="btn" data-click="ask" data-id="unlink">Unlink this phone instead</button>`}</div>
+  </section></main>`;
 }
 function setupView(){
   const P=(k,act,val,attrs)=>`<span class="pct"><input class="num" inputmode="decimal" data-k="${k}" data-act="${act}" ${attrs||''} value="${+(val*100).toFixed(2)}" aria-label="${esc(k)}"></span>`;
@@ -1121,6 +1630,7 @@ function setupView(){
   const tsum=state.pyfPct+sum(Object.values(tg));
   const conf=(id,label,act)=>ui.confirm===id?`<button class="btn danger" data-click="${act}">Tap again to confirm</button>`:`<button class="btn" data-click="ask" data-id="${id}">${label}</button>`;
   return `<h1 class="headline" style="font-size:clamp(24px,3.6vw,34px);max-width:none;margin-bottom:20px">Setup</h1>
+  <section class="panel" style="margin-bottom:22px">${installSection()}${syncSection()}${lockSection()}</section>
   <div class="sgrid"><div>
    <section class="panel"><div class="shead"><h3>Income and PYF</h3><p>Everything is planned from Income 1 alone.</p></div>
     <div class="srow"><span>Income 1, fixed monthly take-home (RM)</span>${inp('income1','income1',state.income1,'','Income 1 monthly take-home')}</div>
@@ -1145,7 +1655,6 @@ function setupView(){
     <div class="actions"><button class="btn primary" data-click="export">Create backup</button><button class="btn" data-click="import">Restore from backup</button></div>
     ${ui.backup!==''?`<div style="padding:0 18px 18px"><textarea class="bk" id="bk" spellcheck="false" placeholder="Paste a backup here, then choose Restore from backup">${esc(ui.backup==='paste'?'':ui.backup)}</textarea>${ui.restoreErr?`<div class="err" style="padding:8px 0 0">${esc(ui.restoreErr)}</div>`:''}<div class="muted small" style="margin-top:6px">${ui.backup==='paste'?'Paste your backup text above.':'Select all and copy this text somewhere safe.'}</div></div>`:''}
     <div class="actions">${conf('clear','Clear all logged spending and extra income (every year)','clear-actuals')}${conf('reset','Reset everything to the sample plan','reset-all')}</div></section>
-   <section class="panel" style="margin-top:22px">${syncSection()}</section>
   </div></div>`;
 }
 
@@ -1176,10 +1685,22 @@ function modalHtml(){
     return `<div class="catgroup"><div class="catlabel">${n}</div><div class="catgrid">${tiles}${addTile}</div></div>`;
   }).join('');
   const editing=!!md.editingId;
+  /* Where: one tap, optional, right under the amount so the quick path is amount → shop → Save. */
+  const curLine=state.lines.find(l=>l.id===md.line);
+  const all=tagsFor(md.line), SHOW=8;
+  let shown=md.allTags?all:all.slice(0,SHOW);
+  if(md.tag&&shown.indexOf(md.tag)<0)shown=[md.tag,...shown];
+  const chips=shown.map(t=>`<button type="button" class="tagchip" data-click="pick-tag" data-tag="${esc(t)}" aria-pressed="${md.tag===t}">${esc(t)}</button>`).join('');
+  const more=(!md.allTags&&all.length>SHOW)?`<button type="button" class="tagchip ghost" data-click="more-tags">More (${all.length-SHOW})</button>`:'';
+  const addT=md.addingTag
+    ?`<div class="addtagrow"><input class="txt" id="mt-name" data-k="mt-name" placeholder="Shop, restaurant or website" maxlength="30" enterkeyhint="done"><button class="btn sm primary" type="button" data-click="save-tag-inline">Add</button><button class="btn sm ghost" type="button" data-click="cancel-tag-inline">Cancel</button></div>`
+    :`<button type="button" class="tagchip ghost" data-click="add-tag-inline">+ New</button>`;
+  const whereRow=`<div class="mrow"><label class="f">Where \u2014 ${esc(curLine?curLine.name:'')} <span class="opt">optional</span></label><div class="tagrow">${chips}${more}${addT}</div></div>`;
   const dateVal=md.year+'-'+String(md.month+1).padStart(2,'0')+'-'+String(md.day||1).padStart(2,'0');
   return `<div class="modal-back" data-click="close-modal"><div class="modal" role="dialog" aria-modal="true" aria-label="Log an expense">
     <h2 class="sec" style="margin-bottom:14px">${editing?'Edit':'Log'} an expense</h2>
-    <div class="mrow"><label class="f" for="lm-amount">Amount (RM)</label><input class="txt amt-input" id="lm-amount" data-k="lm-amount" data-act="logAmount" inputmode="decimal" value="${md.amount===''||md.amount===null||md.amount===undefined?'':md.amount}" placeholder="0"></div>
+    <div class="mrow"><label class="f" for="lm-amount">Amount (RM)</label><input class="txt amt-input" id="lm-amount" data-k="lm-amount" data-act="logAmount" inputmode="decimal" enterkeyhint="done" value="${md.amount===''||md.amount===null||md.amount===undefined?'':md.amount}" placeholder="0"></div>
+    ${whereRow}
     ${ui.modalErr?`<div class="err" style="padding:0 0 10px">${esc(ui.modalErr)}</div>`:''}
     <div class="actions" style="padding:2px 0 14px">
       <button class="btn primary" data-click="save-entry">Save${editing?'':' (add new)'}</button>
@@ -1187,7 +1708,7 @@ function modalHtml(){
       <button class="btn ghost" data-click="close-modal">Cancel</button>
     </div>
     <div class="mrow"><label class="f">Category</label>${grid}</div>
-    <div class="mrow"><label class="f" for="lm-date">Date</label><input class="txt" type="date" id="lm-date" data-k="lm-date" data-act="logDate" value="${dateVal}" min="${md.year}-01-01" max="${md.year}-12-31"></div>
+    <div class="mrow"><label class="f" for="lm-date">Date</label><input class="txt" type="date" id="lm-date" data-k="lm-date" data-act="logDate" value="${dateVal}"></div>
     <div class="mrow"><label class="f" for="lm-note">Note (optional)</label><input class="txt" id="lm-note" data-k="lm-note" data-act="logNote" maxlength="60" value="${esc(md.note||'')}" placeholder="e.g. Tesco run + wet market"></div>
   </div></div>`;
 }
@@ -1195,13 +1716,25 @@ function modalHtml(){
 /* ------------------------------------------------------------------ render */
 function render(){
   const ae=document.activeElement, key=ae&&ae.dataset?ae.dataset.k:null, y=window.scrollY;
+  /* A background sync can re-render while someone is mid-way through typing. Keep exactly
+     what they typed and where the cursor was, instead of resetting or selecting it. */
+  let typed=null;
+  if(key&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA')&&ae.type!=='date'){
+    let ss=null,se=null;try{ss=ae.selectionStart;se=ae.selectionEnd}catch(e){}
+    typed={v:ae.value,ss,se};
+  }
   const keepBk=$('#bk')?$('#bk').value:null;
-  document.documentElement.dataset.theme=state.theme||'';
-  if(!state.theme)document.documentElement.removeAttribute('data-theme');
+  const th=getTheme();
+  if(th)document.documentElement.dataset.theme=th;else document.documentElement.removeAttribute('data-theme');
   const footNote=!storageOk?'Saving is switched off in this browser. Use Setup to create a backup.':sync.url?'Shared live with your wife via Google Sheets.':'Your figures live in this browser only. Set up sharing in Setup to sync with your wife.';
-  $('#app').innerHTML=header()+`<main class="wrap">${view()}</main><footer class="foot">${footNote}</footer>`+fab()+modalHtml();
+  if(sync.need&&sync.url){$('#app').innerHTML=lockScreen()}
+  else $('#app').innerHTML=header()+`<main class="wrap">${view()}</main><footer class="foot">${footNote}</footer>`+fab()+modalHtml()+toastHtml();
   if(keepBk!==null&&$('#bk')&&ui.backup==='paste')$('#bk').value=keepBk;
-  if(key){const el=document.querySelector(`[data-k="${key}"]`);if(el){el.focus();try{el.select()}catch(e){}}}
+  if(key){const el=document.querySelector(`[data-k="${key}"]`);if(el){
+    if(typed&&el.value!==typed.v)el.value=typed.v;
+    el.focus({preventScroll:true});
+    try{if(typed&&typed.ss!==null)el.setSelectionRange(typed.ss,typed.se)}catch(e){}
+  }}
   else if(ui.modal&&ui.modal._fresh){delete ui.modal._fresh;const af=$('#lm-amount');if(af){af.focus();try{af.select()}catch(e){}}}
   window.scrollTo(0,y);
 }
@@ -1212,9 +1745,10 @@ function setActual(id,m,v){const yr=yd(),a=yr.actuals[id]||(yr.actuals[id]=Array
 function onChange(e){
   const t=e.target,act=t.dataset&&t.dataset.act;if(!act)return;
   const v=parseNum(t.value),d=t.dataset;
+  if(['income1','pyfPct','splitPyf','splitExtra','planned','linePct'].indexOf(act)>=0)beforePlanChange();
   switch(act){
     case 'month':ui.month=+t.value;break;
-    case 'year':{ui.year=+t.value;const ll=lastLogged();ui.month=ll>=0?ll:new Date().getMonth();break}
+    case 'year':{ui.year=+t.value;const now=new Date();if(ui.year===now.getFullYear())ui.month=now.getMonth();else{const ll=lastLogged();ui.month=ll>=0?ll:0}break}
     case 'income1':state.income1=Math.max(0,v||0);break;
     case 'pyfPct':state.pyfPct=clamp((v||0)/100,0,1);break;
     case 'rentLimit':state.rentLimit=clamp((v||0)/100,0,1);break;
@@ -1232,8 +1766,14 @@ function onChange(e){
     case 'logAmount':if(ui.modal)ui.modal.amount=v===null?'':v;break;
     case 'logNote':if(ui.modal)ui.modal.note=t.value;break;
     case 'syncUrlDraft':ui.syncUrlDraft=t.value;break;
+    case 'lockP1':ui.lockP1=t.value;break;
+    case 'lockP2':ui.lockP2=t.value;break;
+    case 'unlockDraft':ui.unlockDraft=t.value;break;
   }
-  save();later();
+  /* Picking a month/year or typing in the log form only changes what's on screen here —
+     it isn't budget data, so it shouldn't count as an edit or trigger a sync. */
+  if(['month','year','logDate','logAmount','logNote','syncUrlDraft','lockP1','lockP2','unlockDraft'].indexOf(act)<0)save();
+  later();
 }
 function onClick(e){
   const el=e.target.closest('[data-click]');if(!el)return;
@@ -1242,17 +1782,21 @@ function onClick(e){
     case 'tab':ui.tab=d.t;ui.err=null;ui.addingTo=null;ui.confirm=null;ui.modal=null;window.scrollTo(0,0);break;
     case 'scope':ui.scope=d.s;break;
     case 'pick-month':ui.month=+d.m;ui.scope='month';break;
-    case 'theme':{const cur=document.documentElement.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');state.theme=cur==='dark'?'light':'dark';save();break}
-    case 'clear-demo':clearActuals();state.demo=false;save();break;
+    case 'theme':{const cur=document.documentElement.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');setTheme(cur==='dark'?'light':'dark');break}
+    case 'clear-demo':clearActuals();state.demo=false;state.resetAt=Date.now();save();break;
     case 'add-line':ui.addingTo=d.b;ui.err=null;break;
     case 'cancel-line':ui.addingTo=null;ui.err=null;break;
     case 'save-line':{
       const n=($('#al-name')||{}).value||'',p=parseNum(($('#al-amt')||{}).value);
       if(!n.trim()){ui.err='Give the line a name.';break}
+      beforePlanChange();
       state.lines.splice(lastIndexOf(d.b)+1,0,{id:'c_'+Date.now().toString(36),bucket:d.b,name:n.trim(),planned:Math.max(0,p||0)});
       ui.addingTo=null;ui.err=null;save();break}
-    case 'del-line':state.lines=state.lines.filter(l=>l.id!==d.line);Object.values(state.byYear||{}).forEach(yr=>{delete yr.actuals[d.line]});delete ui.expandedLines[d.line];state.entries=state.entries.filter(e=>e.line!==d.line);save();break;
+    case 'del-line':beforePlanChange();tomb('line:'+d.line);state.lines=state.lines.filter(l=>l.id!==d.line);delete ui.expandedLines[d.line];state.entries.filter(e=>e.line===d.line).forEach(e=>tomb(e.id));state.entries=state.entries.filter(e=>e.line!==d.line);save();break;
     case 'rename-line':ui.renamingLine=d.line;break;
+    case 'rename-tag':ui.renamingTag={line:d.line,tag:d.tag};setTimeout(()=>{const x=$('#rt-name');if(x){x.focus();x.select()}},0);break;
+    case 'cancel-tag-rename':ui.renamingTag=null;break;
+    case 'save-tag-rename':{const r=ui.renamingTag,x=$('#rt-name');if(r&&x&&x.value.trim()){renameTag(r.line,r.tag,x.value);save()}ui.renamingTag=null;break}
     case 'cancel-rename':ui.renamingLine=null;break;
     case 'save-rename':{
       const l=state.lines.find(x=>x.id===ui.renamingLine);
@@ -1262,10 +1806,20 @@ function onClick(e){
       ui.renamingLine=null;save();break}
     case 'line-mode':{
       const l=state.lines.find(x=>x.id===d.line);if(!l)break;
+      beforePlanChange();
       if(l.mode==='pct'){l.planned=Math.round(planOf(state,l));l.mode='fixed'}
       else{l.pctVal=state.income1?num(l.planned)/state.income1:0;l.mode='pct'}
       save();break}
-    case 'pick-cat':if(ui.modal){ui.modal.line=d.line;}break;
+    case 'pick-cat':if(ui.modal){ui.modal.line=d.line;ui.modal.allTags=false;ui.modal.addingTag=false;}break;
+    case 'pick-tag':if(ui.modal){ui.modal.tag=ui.modal.tag===d.tag?'':d.tag;}break;
+    case 'more-tags':if(ui.modal)ui.modal.allTags=true;break;
+    case 'add-tag-inline':if(ui.modal){ui.modal.addingTag=true;ui.modalErr=null;setTimeout(()=>{const x=$('#mt-name');if(x)x.focus()},0)}break;
+    case 'cancel-tag-inline':if(ui.modal)ui.modal.addingTag=false;break;
+    case 'save-tag-inline':{
+      if(!ui.modal)break;
+      const n=addTag(ui.modal.line,($('#mt-name')||{}).value||'');
+      if(!n){ui.modalErr='Type the name of the shop, restaurant or website.';break}
+      ui.modal.tag=n;ui.modal.addingTag=false;ui.modalErr=null;save();break}
     case 'add-cat-inline':if(ui.modal){ui.modal.addingCat=d.b;ui.modalErr=null;}break;
     case 'cancel-cat-inline':if(ui.modal){ui.modal.addingCat=null;}break;
     case 'save-cat-inline':{
@@ -1279,23 +1833,25 @@ function onClick(e){
       const date=($('#x-date')||{}).value,amt=parseNum(($('#x-amt')||{}).value);
       if(!date){ui.err='Pick the date the money arrived.';break}
       if(!(amt>0)){ui.err='Enter an amount above zero.';break}
-      state.extra.push({id:'x'+Date.now().toString(36),date,source:($('#x-src')||{}).value||'',amount:amt,fund:($('#x-fund')||{}).value||'hol'});
+      state.extra.push({id:'x'+Date.now().toString(36),ts:Date.now(),date,source:($('#x-src')||{}).value||'',amount:amt,fund:($('#x-fund')||{}).value||'hol'});
       ui.err=null;save();break}
-    case 'del-extra':state.extra=state.extra.filter(x=>x.id!==d.id);save();break;
+    case 'del-extra':tomb(d.id);state.extra=state.extra.filter(x=>x.id!==d.id);save();break;
     case 'open-log':{
       if(d.entry){
         const ex=state.entries.find(x=>x.id===d.entry);
         if(!ex)break;
-        ui.modal={line:ex.line,year:ex.year,month:ex.month,day:ex.day||1,amount:ex.amount,note:ex.note||'',editingId:ex.id,_fresh:true};
+        ui.modal={line:ex.line,year:ex.year,month:ex.month,day:ex.day||1,amount:ex.amount,note:ex.note||'',tag:ex.tag||'',editingId:ex.id,_fresh:true};
         ui.modalErr=null;break;
       }
       const line=d.line||(state.lines.find(l=>isItemized(l.bucket))||{}).id;
       if(!line)break;
       const today=new Date();
       const day=(ui.year===today.getFullYear()&&ui.month===today.getMonth())?today.getDate():1;
-      ui.modal={line,year:ui.year,month:ui.month,day,amount:'',note:'',editingId:null,_fresh:true};
+      ui.modal={line,year:ui.year,month:ui.month,day,amount:'',note:'',tag:'',editingId:null,_fresh:true};
       ui.modalErr=null;break}
     case 'close-modal':if(el===e.target){ui.modal=null;ui.modalErr=null;}break;
+    case 'toggle-start':ui.startOpen=!ui.startOpen;break;
+    case 'reset-month-line':setActual(d.line,ui.month,null);save();break;
     case 'toggle-weeks':ui.expandedLines[d.line]=!ui.expandedLines[d.line];break;
     case 'save-entry':{
       const md=ui.modal;if(!md)break;
@@ -1304,40 +1860,130 @@ function onClick(e){
       const note=($('#lm-note')||{}).value||'';
       if(md.editingId){
         const ex=state.entries.find(x=>x.id===md.editingId);
-        if(ex){ex.line=md.line;ex.year=md.year;ex.month=md.month;ex.day=md.day;ex.amount=amt;ex.note=note;}
+        if(!ex){ui.modalErr='This expense was deleted on the other phone, so there is nothing to edit. Cancel, then log it again if you still need it.';break}
+        ex.line=md.line;ex.year=md.year;ex.month=md.month;ex.day=md.day;ex.amount=amt;ex.note=note;ex.ts=Date.now();if(md.tag)ex.tag=md.tag;else delete ex.tag;
       }else{
-        state.entries.push({id:newEntryId(),line:md.line,year:md.year,month:md.month,day:md.day,amount:amt,note});
+        const nid=newEntryId();
+        const ne={id:nid,ts:Date.now(),line:md.line,year:md.year,month:md.month,day:md.day,amount:amt,note};if(md.tag)ne.tag=md.tag;
+        state.entries.push(ne);
+        const ln=state.lines.find(l=>l.id===md.line);
+        showToast(`Logged ${fmt(amt)} to ${ln?ln.name:'expense'}${md.tag?' ('+md.tag+')':''} · ${md.day} ${MONTHS[md.month]}${md.year!==ui.year?' '+md.year:''}`,nid);
       }
       ui.modal=null;ui.modalErr=null;save();break}
     case 'delete-entry':{
-      if(ui.modal&&ui.modal.editingId)state.entries=state.entries.filter(x=>x.id!==ui.modal.editingId);
+      if(ui.modal&&ui.modal.editingId){tomb(ui.modal.editingId);state.entries=state.entries.filter(x=>x.id!==ui.modal.editingId);}
       ui.modal=null;save();break}
+    case 'undo-entry':if(ui.toast&&ui.toast.undoId){tomb(ui.toast.undoId);state.entries=state.entries.filter(x=>x.id!==ui.toast.undoId);ui.toast=null;save();}break;
     case 'ask':ui.confirm=d.id;break;
-    case 'clear-actuals':clearActuals();state.demo=false;ui.confirm=null;save();break;
-    case 'reset-all':{const th=state.theme;state=defaults();state.theme=th;ui.confirm=null;save();break}
+    case 'clear-actuals':clearActuals();state.demo=false;state.resetAt=Date.now();ui.confirm=null;save();break;
+    case 'reset-all':{const del=Object.assign({},state.deleted);state=defaults();seedTags(state);state.deleted=del;state.resetAt=Date.now();ui.confirm=null;save();break}
     case 'connect-sync':{
-      const v=(($('#sync-url')||{}).value||'').trim();
-      if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(v)){ui.syncErr='That does not look like an Apps Script Web App URL. It should start with https://script.google.com/ and end in /exec.';break}
+      const v=extractSyncUrl(($('#sync-url')||{}).value);
+      if(!v){ui.syncErr='That does not look like a setup link or an Apps Script Web App URL (it should start with https://script.google.com/ and end in /exec).';break}
       ui.syncErr=null;ui.syncUrlDraft=null;setSyncUrl(v);break}
-    case 'sync-now':(sync.dirty?cloudPush():cloudPull(true));break;
-    case 'disconnect-sync':setSyncUrl('');break;
+    case 'sync-now':syncNow();break;
+    case 'lock-open':ui.lockOpen=true;ui.lockErr=null;ui.lockMsg=null;ui.confirm=null;break;
+    case 'lock-cancel':ui.lockOpen=false;ui.lockErr=null;ui.lockP1=ui.lockP2='';break;
+    case 'lock-set':{
+      const p1=normPass(($('#lk-p1')||{}).value), p2=normPass(($('#lk-p2')||{}).value);
+      if(p1.length<8){ui.lockErr='Use at least 8 characters (four random words is ideal).';break}
+      if(p1!==p2){ui.lockErr="The two passphrases don't match.";break}
+      if(sync.need){ui.lockErr='Unlock the budget first.';break}
+      ui.lockErr=null;ui.lockMsg=null;ui.lockBusy=true;
+      setPassphrase(p1).then(()=>{ui.lockBusy=false;ui.lockOpen=false;ui.lockP1=ui.lockP2='';render()},()=>{ui.lockBusy=false;ui.lockErr='Something went wrong. Try again.';render()});
+      break}
+    case 'lock-remove':ui.confirm=null;ui.lockMsg=null;removeLock();break;
+    case 'unlock':{
+      const pw=normPass(($('#unlock-pass')||{}).value);
+      if(!pw){ui.unlockErr='Type the passphrase first.';break}
+      ui.unlockErr=null;ui.unlockBusy=true;
+      unlockWith(pw).then(ok=>{ui.unlockBusy=false;if(ok){ui.unlockDraft='';ui.unlockErr=null}else{ui.unlockErr="That passphrase doesn't open this budget. Check capital letters and spaces."}render()});
+      break}
+
+    case 'install-app':if(installPrompt){installPrompt.prompt();installPrompt.userChoice.finally(()=>{installPrompt=null;later()})}break;
+    case 'share-setup':{
+      const link=setupLink();
+      if(navigator.share){navigator.share({title:'Family Budget',text:'Open this to link the budget app on your phone:',url:link}).catch(()=>{})}
+      else if(navigator.clipboard){navigator.clipboard.writeText(link).then(()=>{ui.shareMsg='Setup link copied \u2014 paste it into a private message.';render()},()=>{ui.shareMsg=link;render()})}
+      else ui.shareMsg=link;
+      break}
+    case 'disconnect-sync':ui.confirm=null;setSyncUrl('');break;
     case 'export':ui.backup=JSON.stringify(state);ui.restoreErr=null;break;
     case 'import':{
       const box=$('#bk');
       if(ui.backup!=='paste'&&!(box&&ui.backup==='paste')){ui.backup='paste';ui.restoreErr=null;break}
-      try{const s=JSON.parse((box&&box.value)||'');if(!s||s.v!==1||!Array.isArray(s.lines)||!Array.isArray(s.funds))throw 0;state=migrate(s);ui.backup='';ui.restoreErr=null;save()}
+      try{const s=JSON.parse((box&&box.value)||'');if(!s||s.v!==1||!Array.isArray(s.lines)||!Array.isArray(s.funds))throw 0;state=migrate(s);state.resetAt=Date.now();ui.backup='';ui.restoreErr=null;save()}
       catch(x){ui.restoreErr='That does not look like a backup from this app.'}
       break}
   }
   later();
 }
+/* A short confirmation after logging, with Undo — so a mis-tap on a phone is one tap to fix,
+   and an expense logged to another month doesn't just silently vanish from the screen. */
+let toastTimer=null;
+function showToast(text,undoId){ui.toast={text,undoId};clearTimeout(toastTimer);toastTimer=setTimeout(()=>{ui.toast=null;render()},5000)}
+function toastHtml(){return ui.toast?`<div class="toast" role="status">${esc(ui.toast.text)}${ui.toast.undoId?`<button class="toast-undo" data-click="undo-entry">Undo</button>`:''}</div>`:''}
+/* Buttons for a category: the ones you use most first, then the starting list, then the
+   everywhere ones (Shopee). */
+function tagsFor(lineId){
+  const del=state.deleted||{}, cnt={};
+  state.entries.forEach(e=>{if(e.line===lineId&&e.tag)cnt[e.tag]=(cnt[e.tag]||0)+1});
+  const used=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]);
+  const out=[];
+  [...used,...((state.tagLists||{})[lineId]||[]),...((state.tagLists||{})['*']||[])].forEach(t=>{
+    if(!t||del['tag:'+lineId+':'+t.toLowerCase()]&&!cnt[t])return;
+    if(!out.some(x=>x.toLowerCase()===t.toLowerCase()))out.push(t);
+  });
+  return out;
+}
+/* Add a new button to a category; returns the name actually used (an existing one if it
+   matches apart from capitals, so "jaya grocer" doesn't become a second Jaya Grocer). */
+function addTag(lineId,name){
+  const n=String(name||'').trim().slice(0,30);if(!n)return '';
+  const hit=tagsFor(lineId).find(t=>t.toLowerCase()===n.toLowerCase());if(hit)return hit;
+  if(!state.tagLists)state.tagLists={};
+  (state.tagLists[lineId]||(state.tagLists[lineId]=[])).push(n);
+  if(state.deleted)delete state.deleted['tag:'+lineId+':'+n.toLowerCase()];
+  return n;
+}
+/* Rename a tag within one category, on every expense in it, any month. Renaming to a name
+   that already exists merges the two. */
+function renameTag(lineId,from,to){
+  const n=String(to||'').trim().slice(0,30);if(!n||n===from)return;
+  const target=tagsFor(lineId).find(t=>t.toLowerCase()===n.toLowerCase()&&t!==from)||n;
+  const now=Date.now();
+  state.entries.forEach(e=>{if(e.line===lineId&&e.tag===from){e.tag=target;e.ts=now}});
+  const L=(state.tagLists||{})[lineId]||[];
+  const i=L.indexOf(from);if(i>=0)L.splice(i,1);
+  if(L.indexOf(target)<0&&!((state.tagLists||{})['*']||[]).includes(target))L.push(target);
+  if(!state.tagLists[lineId])state.tagLists[lineId]=L;
+  if(!((state.tagLists||{})['*']||[]).includes(from))tomb('tag:'+lineId+':'+from.toLowerCase());
+}
+function tomb(id){if(!state.deleted)state.deleted={};state.deleted[id]=Date.now()}
 function lastIndexOf(b){let i=-1;state.lines.forEach((l,k)=>{if(l.bucket===b)i=k});return i}
 function clearActuals(){state.byYear={};state.entries=[];state.extra=[]}
 let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,180)});
 document.addEventListener('change',onChange);
 document.addEventListener('click',onClick);
 document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.id==='unlock-pass'){e.preventDefault();const b=document.querySelector('[data-click="unlock"]');if(b)b.click();}
+  if(e.key==='Enter'&&e.target.id==='lk-p2'){e.preventDefault();const b=document.querySelector('[data-click="lock-set"]');if(b)b.click();}
   if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('num'))e.target.blur();
+  /* In the log form, the keyboard's Enter/"Go" key saves, so a quick log is: type, Enter. */
+  if(ui.modal&&e.key==='Enter'&&(e.target.id==='lm-amount'||e.target.id==='lm-note')){
+    e.preventDefault();const b=document.querySelector('[data-click="save-entry"]');if(b)b.click();
+  }
+  if(e.target.id==='rt-name'){
+    if(e.key==='Enter'){e.preventDefault();const b=document.querySelector('[data-click="save-tag-rename"]');if(b)b.click();}
+    else if(e.key==='Escape'){ui.renamingTag=null;later();}
+  }
+  if(ui.modal&&e.key==='Enter'&&e.target.id==='mt-name'){
+    e.preventDefault();const b=document.querySelector('[data-click="save-tag-inline"]');if(b)b.click();
+  }
+  if(ui.modal&&e.key==='Enter'&&e.target.id==='mc-name'){
+    e.preventDefault();const b=document.querySelector('[data-click="save-cat-inline"]');if(b)b.click();
+  }
+  if(ui.modal&&e.key==='Escape'&&!(e.target.id&&e.target.id.indexOf('rn-')===0)){ui.modal=null;ui.modalErr=null;later();}
   if(e.target.id&&e.target.id.indexOf('rn-')===0){
     if(e.key==='Enter'){
       e.preventDefault();
@@ -1353,9 +1999,28 @@ document.addEventListener('keydown',e=>{
 try{localStorage.setItem(KEY+'-t','1');localStorage.removeItem(KEY+'-t')}catch(e){storageOk=false}
 state=load();
 if(!state){state=defaults();applyDemo(state);localSave()}
-const ll=lastLogged();ui.month=ll>=0?ll:new Date().getMonth();
+seedTags(state);
+/* Always open on today's month: that's where a quick "log an expense" should land. */
+ui.month=new Date().getMonth();
 render();
-if(sync.url){cloudPull(false).then(()=>startPolling())}
+/* Opened from a setup link? Link this phone, then tidy the address bar. */
+/* Also when a setup link is opened in a tab that already has the app open. */
+window.addEventListener('hashchange',()=>{
+  const u=extractSyncUrl(location.hash);if(!u)return;
+  try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+  if(u!==sync.url){ui.tab='budget';setSyncUrl(u)}
+});
+(function(){
+  const fromLink=extractSyncUrl(location.hash);
+  if(fromLink){
+    try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+    if(fromLink!==sync.url){setSyncUrl(fromLink);ui.tab='budget';return}
+  }
+  if(sync.url){syncNow().then(()=>startPolling())}
+})();
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})});
+}
 })();
 </script>
 </body>
