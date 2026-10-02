@@ -348,9 +348,6 @@ footer.foot{max-width:1180px;margin:0 auto;padding:0 20px 40px;color:var(--muted
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
 /* spending view (Overview → Spending) */
-.ovtoggle{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:99px;padding:3px;margin-bottom:16px}
-.ovtoggle button{border:0;background:none;border-radius:99px;padding:7px 16px;font:inherit;font-weight:650;color:var(--muted);cursor:pointer}
-.ovtoggle button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
 .rchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .rchips::-webkit-scrollbar{display:none}
 .rchip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 13px;font:inherit;font-size:13.5px;font-weight:650;color:var(--muted);cursor:pointer;white-space:nowrap}
@@ -386,7 +383,7 @@ footer.foot{max-width:1180px;margin:0 auto;padding:0 20px 40px;color:var(--muted
 .splog .w small{color:var(--muted)}
 .splog .a{font-weight:700;font-variant-numeric:tabular-nums}
 .spempty{padding:6px 20px 20px;color:var(--muted)}
-.spwrap{max-width:780px}
+.spwrap{max-width:780px;margin-bottom:34px}
 @media (max-width:560px){.spopen{margin-left:4px}.rchip{padding:6px 11px;font-size:13px}}
 </style>
 </head>
@@ -507,7 +504,7 @@ function planOf(s,l){
 const canPct=b=>b==='rent'||b==='fixed';
 
 let state=null, storageOk=true;
-const ui={ov:'spend',range:'month',rFrom:'',rTo:'',openCat:null,catAll:null,tab:'budget',month:new Date().getMonth(),year:new Date().getFullYear(),scope:'month',addingTo:null,confirm:null,err:null,backup:'',restoreErr:null,modal:null,modalErr:null,expandedLines:{},syncUrlDraft:null,syncErr:null,renamingLine:null};
+const ui={range:'month',rFrom:'',rTo:'',openCat:null,catAll:null,tab:'budget',month:new Date().getMonth(),year:new Date().getFullYear(),scope:'month',addingTo:null,confirm:null,err:null,backup:'',restoreErr:null,modal:null,modalErr:null,expandedLines:{},syncUrlDraft:null,syncErr:null,renamingLine:null};
 
 /* Brings an older, single-year save (or a backup made before multi-year support) up to the
    current shape: monthly actuals move into byYear[year], and every logged entry gets a year. */
@@ -1335,7 +1332,7 @@ function spendingView(){
       <span class="track" aria-hidden="true"><span class="fill" style="width:${g.total/max*100}%;background:${catColor(l)}"></span></span>${dl}
     </button>${body}</li>`;
   }).join('');
-  return `<div class="spwrap"><div class="rchips" role="group" aria-label="Time range">${chips}</div>${custom}
+  return `<div class="spwrap spsec"><div class="rchips" role="group" aria-label="Time range">${chips}</div>${custom}
     <section class="panel">
       <div class="sptop"><div><div class="lbl">${esc(R.label)}</div><div class="big">${fmt(cur.total)}</div></div>
         <button class="cmpbtn" data-click="toggle-cmp" aria-pressed="${cmpOn}">${cmpOn?'Comparing \u2713':'Compare'}</button></div>
@@ -1345,10 +1342,6 @@ function spendingView(){
     </section></div>`;
 }
 function overview(){
-  const tog=`<div class="ovtoggle" role="group" aria-label="Overview"><button data-click="ov" data-v="spend" aria-pressed="${ui.ov!=='plan'}">Spending</button><button data-click="ov" data-v="plan" aria-pressed="${ui.ov==='plan'}">Plan vs actual</button></div>`;
-  return tog+(ui.ov==='plan'?planOverview():spendingView());
-}
-function planOverview(){
   const weekMode=ui.scope==='week';
   const wkIdx=currentWeekIndex(ui.month), wkInfo=weeksOf(ui.year,ui.month)[wkIdx];
   const act=isActive(), ms=scopeMonths();
@@ -1439,7 +1432,7 @@ function planOverview(){
   const lower=`<section class="section three"><div><h2 class="sec">Sinking funds</h2><ul class="flist">${fl}</ul></div><div><h2 class="sec">Recent spending</h2><ul class="flist">${rs}</ul></div><div><h2 class="sec">Recent extra income</h2><ul class="flist">${rl}</ul>
     <p class="muted small" style="margin-top:10px">Each payment is split ${pct(state.extraSplit.pyf,0)} PYF top-up, ${pct(state.extraSplit.sink,0)} sinking funds and ${pct(state.extraSplit.free,0)} guilt-free.</p></div></section>`;
 
-  return `${banner}${notStarted}
+  return `${spendingView()}${banner}${notStarted}
     <div class="scope" role="group" aria-label="Time range"><button data-click="scope" data-s="week" aria-pressed="${ui.scope==='week'}">This week</button><button data-click="scope" data-s="month" aria-pressed="${ui.scope==='month'}">${FULL[ui.month]}</button><button data-click="scope" data-s="ytd" aria-pressed="${ui.scope==='ytd'}">Year to date</button></div>
     <h1 class="headline ${act?'wide':''}">${esc(head)}</h1>${strip}${facts}
     <div class="cols"><div>${ledger}</div>${rail}</div>${chart}${lower}`;
@@ -2057,7 +2050,6 @@ function onClick(e){
       if(!v){ui.syncErr='That does not look like a setup link or an Apps Script Web App URL (it should start with https://script.google.com/ and end in /exec).';break}
       ui.syncErr=null;ui.syncUrlDraft=null;setSyncUrl(v);break}
     case 'sync-now':syncNow();break;
-    case 'ov':ui.ov=d.v;break;
     case 'range':ui.range=d.r;ui.openCat=null;ui.catAll=null;
       if(d.r==='custom'&&!ui.rFrom){const t=new Date();ui.rFrom=ymd(new Date(t.getFullYear(),t.getMonth()-1,1));ui.rTo=ymd(t)}break;
     case 'sp-cat':ui.openCat=ui.openCat===d.line?null:d.line;ui.catAll=null;break;
