@@ -1359,7 +1359,7 @@ function setupFixedSection(){
   return `<section class="panel" style="margin-top:22px"><div class="shead"><h3>Rent & other fixed costs</h3><p>The plan, as RM or % of Income 1 — changes here apply from this month onward; past months keep what they had. "${MONTHS[m]}" is the amount for ${FULL[m]} only: blank means the plan amount (you can also change it on the Budget tab).</p></div>
     <div class="cols-h"><span>Line</span><span class="right">Planned</span><span class="right">${MONTHS[m]}</span><span class="right">Diff</span><span></span></div>
     ${rows}
-    ${ui.addingTo==='fixed'?`<div class="addrow"><input class="txt" id="al-name" placeholder="Line name" maxlength="40"><input class="num" id="al-amt" inputmode="decimal" placeholder="Planned" style="max-width:none"><span style="display:flex;gap:6px"><button class="btn sm primary" data-click="save-line" data-b="fixed">Add</button><button class="btn sm ghost" data-click="cancel-line">Cancel</button></span></div>${ui.err?`<div class="err">${esc(ui.err)}</div>`:''}`
+    ${ui.addingTo==='fixed'?`<div class="addrow"><input class="txt" id="al-name" data-k="al-name" data-keep placeholder="Line name" maxlength="40"><input class="num" id="al-amt" data-k="al-amt" data-keep inputmode="decimal" placeholder="Planned" style="max-width:none"><span style="display:flex;gap:6px"><button class="btn sm primary" data-click="save-line" data-b="fixed">Add</button><button class="btn sm ghost" data-click="cancel-line">Cancel</button></span></div>${ui.err?`<div class="err">${esc(ui.err)}</div>`:''}`
       :`<button class="linkbtn" data-click="add-line" data-b="fixed">Add a line</button>`}
   </section>`;
 }
@@ -1468,7 +1468,7 @@ function budget(){
           <span>${custom?`<button class="xbtn" data-click="del-line" data-line="${l.id}" aria-label="Remove ${esc(l.name)}">\u00d7</button>`:''}</span></div>${chips}`;
       }).join('');
       if(['fixed','variable','lifestyle'].indexOf(b.id)>=0){
-        body+=ui.addingTo===b.id?`<div class="addrow"><input class="txt" id="al-name" placeholder="Line name" maxlength="40"><input class="num" id="al-amt" inputmode="decimal" placeholder="Planned" style="max-width:none"><span style="display:flex;gap:6px"><button class="btn sm primary" data-click="save-line" data-b="${b.id}">Add</button><button class="btn sm ghost" data-click="cancel-line">Cancel</button></span></div>${ui.err?`<div class="err">${esc(ui.err)}</div>`:''}`
+        body+=ui.addingTo===b.id?`<div class="addrow"><input class="txt" id="al-name" data-k="al-name" data-keep placeholder="Line name" maxlength="40"><input class="num" id="al-amt" data-k="al-amt" data-keep inputmode="decimal" placeholder="Planned" style="max-width:none"><span style="display:flex;gap:6px"><button class="btn sm primary" data-click="save-line" data-b="${b.id}">Add</button><button class="btn sm ghost" data-click="cancel-line">Cancel</button></span></div>${ui.err?`<div class="err">${esc(ui.err)}</div>`:''}`
           :`<button class="linkbtn" data-click="add-line" data-b="${b.id}">Add a line</button>`;
       }
     }
@@ -1499,9 +1499,9 @@ function extraView(){
     <div class="fact"><div class="k">To sinking funds</div><div class="v">${fmt(T.sink)}</div><div class="n">${pct(s.sink,0)} of each payment</div></div>
     <div class="fact"><div class="k">Guilt-free</div><div class="v">${fmt(T.free)}</div><div class="n">${pct(s.free,0)}, no tracking needed</div></div></div>
   <div class="panel"><div class="panel-h"><h2>Log a payment</h2></div>
-    <div class="form-row"><div><label class="f" for="x-date">Date</label><input class="txt" id="x-date" type="date" value="${today}"></div>
-    <div><label class="f" for="x-src">Source or note</label><input class="txt" id="x-src" placeholder="e.g. Freelance job" maxlength="50"></div>
-    <div><label class="f" for="x-amt">Amount (RM)</label><input class="txt" id="x-amt" inputmode="decimal" placeholder="0"></div>
+    <div class="form-row"><div><label class="f" for="x-date">Date</label><input class="txt" id="x-date" data-k="x-date" type="date" value="${today}"></div>
+    <div><label class="f" for="x-src">Source or note</label><input class="txt" id="x-src" data-k="x-src" data-keep placeholder="e.g. Freelance job" maxlength="50"></div>
+    <div><label class="f" for="x-amt">Amount (RM)</label><input class="txt" id="x-amt" data-k="x-amt" data-keep inputmode="decimal" placeholder="0"></div>
     <div><label class="f" for="x-fund">Sinking share goes to</label><select class="txt" id="x-fund">${state.funds.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}</select></div>
     <div><button class="btn primary" data-click="add-extra" style="width:100%">Add payment</button></div></div>${ui.err?`<div class="err">${esc(ui.err)}</div>`:''}</div>
   <div class="panel section" style="margin-top:22px"><div class="panel-h"><h2>Payments in ${ui.year}</h2></div>
@@ -1680,7 +1680,7 @@ function modalHtml(){
       </button>`;
     }).join('');
     const addTile=md.addingCat===b
-      ?`<div class="addcatrow"><input class="txt" id="mc-name" placeholder="Category name" maxlength="40" autofocus><button class="btn sm primary" type="button" data-click="save-cat-inline" data-b="${b}">Add</button><button class="btn sm ghost" type="button" data-click="cancel-cat-inline">Cancel</button></div>`
+      ?`<div class="addcatrow"><input class="txt" id="mc-name" data-k="mc-name" data-keep placeholder="Category name" maxlength="40" autofocus><button class="btn sm primary" type="button" data-click="save-cat-inline" data-b="${b}">Add</button><button class="btn sm ghost" type="button" data-click="cancel-cat-inline">Cancel</button></div>`
       :`<button type="button" class="cattile addcat" data-click="add-cat-inline" data-b="${b}" aria-label="Add a new ${n} category"><span class="cicon" style="background:var(--surface-2);color:var(--muted)">+</span>Add category</button>`;
     return `<div class="catgroup"><div class="catlabel">${n}</div><div class="catgrid">${tiles}${addTile}</div></div>`;
   }).join('');
@@ -1714,8 +1714,32 @@ function modalHtml(){
 }
 
 /* ------------------------------------------------------------------ render */
+/* ---- phone keyboard
+   On a phone, closing the keyboard (Back button, or the keyboard's own hide key) leaves the
+   cursor in the box. Any redraw would then put the cursor back and the keyboard would jump up
+   again. So: the moment the keyboard goes down, let go of the box (redraws then have nothing to
+   put the cursor back into). If a phone doesn't report its keyboard, nothing changes. */
+const touchUI=matchMedia('(pointer: coarse)').matches;
+let vvFull=window.visualViewport?visualViewport.height:0, vvW=window.innerWidth;
+function keyboardOpen(){
+  const vv=window.visualViewport;if(!vv)return true;
+  return vv.height<vvFull-120;
+}
+if(window.visualViewport){
+  let wasOpen=false;
+  visualViewport.addEventListener('resize',()=>{
+    if(window.innerWidth!==vvW){vvW=window.innerWidth;vvFull=visualViewport.height;wasOpen=false;return} // rotated
+    if(visualViewport.height>vvFull)vvFull=visualViewport.height;
+    const open=keyboardOpen();
+    if(wasOpen&&!open&&touchUI){const a=document.activeElement;if(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA')&&a.type!=='date')a.blur()}
+    wasOpen=open;
+  });
+}
 function render(){
   const ae=document.activeElement, key=ae&&ae.dataset?ae.dataset.k:null, y=window.scrollY;
+  /* A date box is in use (its calendar may be open): redrawing would close the calendar.
+     Wait until it's done — the change is already saved in ui/state, only the screen waits. */
+  if(ae&&ae.type==='date'&&ae.isConnected){clearTimeout(render._wait);render._wait=setTimeout(render,600);return}
   /* A background sync can re-render while someone is mid-way through typing. Keep exactly
      what they typed and where the cursor was, instead of resetting or selecting it. */
   let typed=null;
@@ -1724,12 +1748,15 @@ function render(){
     typed={v:ae.value,ss,se};
   }
   const keepBk=$('#bk')?$('#bk').value:null;
+  /* Boxes not tied to saved data (a new category's name, its amount…) keep what was typed. */
+  const kept={};document.querySelectorAll('[data-keep]').forEach(x=>{if(x.id&&x.value)kept[x.id]=x.value});
   const th=getTheme();
   if(th)document.documentElement.dataset.theme=th;else document.documentElement.removeAttribute('data-theme');
   const footNote=!storageOk?'Saving is switched off in this browser. Use Setup to create a backup.':sync.url?'Shared live with your wife via Google Sheets.':'Your figures live in this browser only. Set up sharing in Setup to sync with your wife.';
   if(sync.need&&sync.url){$('#app').innerHTML=lockScreen()}
   else $('#app').innerHTML=header()+`<main class="wrap">${view()}</main><footer class="foot">${footNote}</footer>`+fab()+modalHtml()+toastHtml();
   if(keepBk!==null&&$('#bk')&&ui.backup==='paste')$('#bk').value=keepBk;
+  Object.keys(kept).forEach(id=>{const x=document.getElementById(id);if(x&&!x.value)x.value=kept[id]});
   if(key){const el=document.querySelector(`[data-k="${key}"]`);if(el){
     if(typed&&el.value!==typed.v)el.value=typed.v;
     el.focus({preventScroll:true});
@@ -1834,6 +1861,7 @@ function onClick(e){
       if(!date){ui.err='Pick the date the money arrived.';break}
       if(!(amt>0)){ui.err='Enter an amount above zero.';break}
       state.extra.push({id:'x'+Date.now().toString(36),ts:Date.now(),date,source:($('#x-src')||{}).value||'',amount:amt,fund:($('#x-fund')||{}).value||'hol'});
+      ['x-amt','x-src'].forEach(i=>{const x=$('#'+i);if(x)x.value=''}); // start the next one blank
       ui.err=null;save();break}
     case 'del-extra':tomb(d.id);state.extra=state.extra.filter(x=>x.id!==d.id);save();break;
     case 'open-log':{
@@ -1849,7 +1877,8 @@ function onClick(e){
       const day=(ui.year===today.getFullYear()&&ui.month===today.getMonth())?today.getDate():1;
       ui.modal={line,year:ui.year,month:ui.month,day,amount:'',note:'',tag:'',editingId:null,_fresh:true};
       ui.modalErr=null;break}
-    case 'close-modal':if(el===e.target){ui.modal=null;ui.modalErr=null;}break;
+    case 'close-modal':if(el!==e.target)return; /* a tap inside the sheet, not on the backdrop: nothing to do (and no redraw, which would drop a half-typed name) */
+      ui.modal=null;ui.modalErr=null;break;
     case 'toggle-start':ui.startOpen=!ui.startOpen;break;
     case 'reset-month-line':setActual(d.line,ui.month,null);save();break;
     case 'toggle-weeks':ui.expandedLines[d.line]=!ui.expandedLines[d.line];break;
@@ -1962,7 +1991,7 @@ function renameTag(lineId,from,to){
 function tomb(id){if(!state.deleted)state.deleted={};state.deleted[id]=Date.now()}
 function lastIndexOf(b){let i=-1;state.lines.forEach((l,k)=>{if(l.bucket===b)i=k});return i}
 function clearActuals(){state.byYear={};state.entries=[];state.extra=[]}
-let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,180)});
+let rt,lastW=window.innerWidth;window.addEventListener('resize',()=>{if(window.innerWidth===lastW)return;lastW=window.innerWidth;clearTimeout(rt);rt=setTimeout(render,180)});
 document.addEventListener('change',onChange);
 document.addEventListener('click',onClick);
 document.addEventListener('keydown',e=>{
