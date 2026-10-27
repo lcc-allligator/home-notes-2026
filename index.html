@@ -352,7 +352,8 @@ footer.foot{max-width:1180px;margin:0 auto;padding:0 20px 40px;color:var(--muted
 .rchips::-webkit-scrollbar{display:none}
 .rchip{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 13px;font:inherit;font-size:13.5px;font-weight:650;color:var(--muted);cursor:pointer;white-space:nowrap}
 .rchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg,#fff)}
-.rcustom{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 12px;max-width:420px}
+.rcustom{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:4px 0 12px;max-width:420px;box-sizing:border-box}
+.rcustom .txt{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
 .sptop{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;padding:18px 20px 6px}
 .sptop .lbl{font-size:13px;font-weight:650;color:var(--muted)}
 .sptop .big{font-family:var(--display);font-size:clamp(32px,6vw,44px);font-weight:600;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
@@ -384,6 +385,30 @@ footer.foot{max-width:1180px;margin:0 auto;padding:0 20px 40px;color:var(--muted
 .splog .a{font-weight:700;font-variant-numeric:tabular-nums}
 .spempty{padding:6px 20px 20px;color:var(--muted)}
 .spwrap{max-width:780px;margin-bottom:34px}
+.cmpwith{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:2px 20px 8px}
+.cmpwith .lbl{font-size:12.5px;font-weight:650;color:var(--muted);margin-right:2px}
+.rchip.sm{padding:5px 11px;font-size:12.5px}
+.cmpdates{padding:0 20px;margin:2px 0 10px;max-width:460px}
+.sptop.two{display:grid;grid-template-columns:1fr 1fr;align-items:end;gap:10px 14px}
+.sptop.two .cmpbtn{grid-column:1 / -1;justify-self:start;grid-row:1}
+.sptop.two .half{min-width:0}
+.sptop.two .half.b .big{color:var(--muted)}
+.sptop.two .big{font-size:clamp(24px,6vw,38px)}
+.key{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:0;background:var(--primary)}
+.key.b{background:var(--muted);opacity:.45}
+.sphdr{display:grid;grid-template-columns:30px minmax(0,1fr) 78px 78px;gap:0 10px;padding:4px 20px 6px;font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.sphdr span:nth-child(n+3){text-align:right;text-transform:none;letter-spacing:0;line-height:1.25}
+.sprow.c2{grid-template-columns:30px minmax(0,1fr) 78px 78px;gap:4px 10px}
+.sprow.c2 .nm{grid-column:2 / 4}
+.sprow.c2 .dl{grid-column:4;grid-row:1}
+.sprow.c2 .bars{grid-column:2;grid-row:2;display:flex;flex-direction:column;gap:3px}
+.sprow.c2 .bars .fill{position:static;display:block;height:5px;border-radius:3px;min-width:0}
+.sprow.c2 .bars .fill.b{background:var(--muted);opacity:.45}
+.sprow.c2 .am{grid-row:2}
+.sprow.c2 .am.b{color:var(--muted);font-weight:600}
+.spopen.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.spopen h3{font-size:13px;font-weight:700;margin:0 0 8px}
+@media (max-width:560px){.spopen.two{grid-template-columns:1fr}.sphdr,.sprow.c2{grid-template-columns:30px minmax(0,1fr) 72px 72px;gap:4px 8px}.sphdr{padding:4px 20px 6px}.cmpdates{padding:0 20px}}
 @media (max-width:560px){.spopen{margin-left:4px}.rchip{padding:6px 11px;font-size:13px}}
 </style>
 </head>
@@ -504,7 +529,7 @@ function planOf(s,l){
 const canPct=b=>b==='rent'||b==='fixed';
 
 let state=null, storageOk=true;
-const ui={range:'month',rFrom:'',rTo:'',openCat:null,catAll:null,tab:'budget',month:new Date().getMonth(),year:new Date().getFullYear(),scope:'month',addingTo:null,confirm:null,err:null,backup:'',restoreErr:null,modal:null,modalErr:null,expandedLines:{},syncUrlDraft:null,syncErr:null,renamingLine:null};
+const ui={range:'month',rFrom:'',rTo:'',cMode:'auto',cFrom:'',cTo:'',openCat:null,catAll:null,tab:'log',month:new Date().getMonth(),year:new Date().getFullYear(),scope:'month',addingTo:null,confirm:null,err:null,backup:'',restoreErr:null,modal:null,modalErr:null,expandedLines:{},syncUrlDraft:null,syncErr:null,renamingLine:null};
 
 /* Brings an older, single-year save (or a backup made before multi-year support) up to the
    current shape: monthly actuals move into byYear[year], and every logged entry gets a year. */
@@ -1225,7 +1250,7 @@ function yearOptions(){
   return arr;
 }
 function header(){
-  const tabs=[['budget','Budget'],['overview','Overview'],['extra','Extra income'],['sinking','Sinking funds'],['setup','Setup']];
+  const tabs=[['log','Log'],['budget','Budget'],['overview','Overview'],['extra','Extra income'],['sinking','Sinking funds'],['setup','Setup']];
   return `<header class="topbar"><div class="topbar-in">
     <div class="brand"><b>Family Budget</b><small>${ui.year}</small></div>
     <nav class="tabs" aria-label="Sections">${tabs.map(t=>`<button class="tab" data-click="tab" data-t="${t[0]}" ${ui.tab===t[0]?'aria-current="page"':''}>${t[1]}</button>`).join('')}</nav>
@@ -1264,15 +1289,17 @@ function dayLabel(a,b){ // "1–31 Oct 2026", "29 Sep – 5 Oct 2026", "Jul – 
   if(sameM)return a.getDate()+'–'+b.getDate()+' '+MONTHS[a.getMonth()]+' '+a.getFullYear();
   return a.getDate()+' '+MONTHS[a.getMonth()]+(yr?'':' '+a.getFullYear())+' – '+b.getDate()+' '+MONTHS[b.getMonth()]+' '+b.getFullYear();
 }
-/* The chosen range and the one it's compared with (same length, just before — or, for a
-   month or year still in progress, the same days of the previous one). */
+/* The chosen range and the one it's compared with. By default the comparison is the period just
+   before, same length — and for a week, month or year still in progress, the same days of the
+   previous one, so a half-finished week isn't measured against a whole one. "Pick dates" lets
+   you choose the second period yourself. Weeks run Monday to Sunday. */
 function spendRange(){
-  const t=new Date(), y=t.getFullYear(), m=t.getMonth(), d=t.getDate();
+  const t=new Date(), y=t.getFullYear(), m=t.getMonth(), d=t.getDate(), t0=new Date(y,m,d);
   const mStart=(yy,mm)=>new Date(yy,mm,1), mEnd=(yy,mm)=>new Date(yy,mm+1,0);
   let from,to,pf,pt;
   switch(ui.range){
-    case 'week':{const s=Math.floor((d-1)/7)*7+1;from=new Date(y,m,s);to=new Date(y,m,Math.min(s+6,mEnd(y,m).getDate()));
-      if(s>1){pf=new Date(y,m,s-7);pt=new Date(y,m,s-1)}else{const pe=mEnd(y,m-1);pf=new Date(pe.getFullYear(),pe.getMonth(),Math.floor((pe.getDate()-1)/7)*7+1);pt=pe}break}
+    case 'week':{from=addDays(t0,-((t.getDay()+6)%7));to=addDays(from,6);pf=addDays(from,-7);pt=addDays(t0,-7);break}
+    case 'lastweek':{const mon=addDays(t0,-((t.getDay()+6)%7));from=addDays(mon,-7);to=addDays(mon,-1);pf=addDays(from,-7);pt=addDays(from,-1);break}
     case 'last':from=mStart(y,m-1);to=mEnd(y,m-1);pf=mStart(y,m-2);pt=mEnd(y,m-2);break;
     case '3m':from=mStart(y,m-3);to=mEnd(y,m-1);pf=mStart(y,m-6);pt=mEnd(y,m-4);break;
     case 'year':from=new Date(y,0,1);to=new Date(y,11,31);pf=new Date(y-1,0,1);pt=new Date(y-1,m,Math.min(d,mEnd(y-1,m).getDate()));break;
@@ -1282,8 +1309,12 @@ function spendRange(){
       const n=Math.round((to-from)/864e5)+1;pt=addDays(from,-1);pf=addDays(from,-n);break}
     default:from=mStart(y,m);to=mEnd(y,m);pf=mStart(y,m-1);pt=new Date(y,m-1,Math.min(d,mEnd(y,m-1).getDate()));
   }
-  return {from,to,pf,pt,label:dayLabel(from,to),plabel:dayLabel(pf,pt)};
+  const auto={pf,pt};
+  if(ui.cMode==='pick'){const a=fromYmd(ui.cFrom),b=fromYmd(ui.cTo);if(a&&b){pf=a;pt=b;if(dk(pf)>dk(pt)){const x=pf;pf=pt;pt=x}}}
+  return {from,to,pf,pt,auto,label:dayLabel(from,to),plabel:dayLabel(pf,pt)};
 }
+/* Short label for column headings: drops the year when it's this year. */
+function shortLabel(a,b){const y=' '+new Date().getFullYear();let l=dayLabel(a,b);return a.getFullYear()===b.getFullYear()&&a.getFullYear()===new Date().getFullYear()?l.split(y).join(''):l}
 function spendIn(a,b){
   const lo=dk(a),hi=dk(b),by=new Map();let total=0;
   state.entries.forEach(e=>{const k=entryKey(e);if(k<lo||k>hi)return;const v=num(e.amount);total+=v;
@@ -1291,57 +1322,83 @@ function spendIn(a,b){
   return {total,by};
 }
 function spendingView(){
-  const R=spendRange(), cur=spendIn(R.from,R.to), cmpOn=getCmp(), prev=cmpOn?spendIn(R.pf,R.pt):null, cmp=cmpOn&&prev.total>0;
-  const t=new Date(), mName=FULL[t.getMonth()];
-  const chips=[['week','This week'],['month','This month'],['last','Last month'],['3m','Last 3 months'],['year','This year'],['custom','Custom']]
+  const R=spendRange(), cur=spendIn(R.from,R.to), cmp=getCmp(), prev=cmp?spendIn(R.pf,R.pt):null;
+  const t=new Date();
+  const chips=[['week','This week'],['lastweek','Last week'],['month','This month'],['last','Last month'],['3m','Last 3 months'],['year','This year'],['custom','Custom']]
     .map(([k,l])=>`<button class="rchip" data-click="range" data-r="${k}" aria-pressed="${ui.range===k}">${l}</button>`).join('');
   const custom=ui.range==='custom'?`<div class="rcustom"><div><label class="f" for="r-from">From</label><input class="txt" type="date" id="r-from" data-k="r-from" data-act="rFrom" value="${esc(ui.rFrom||ymd(R.from))}"></div>
     <div><label class="f" for="r-to">To</label><input class="txt" type="date" id="r-to" data-k="r-to" data-act="rTo" value="${esc(ui.rTo||ymd(R.to))}"></div></div>`:'';
   const delta=(a,b)=>{const d=a-b;if(Math.round(d)===0)return['same','same'];return[d>0?'up':'down',(d>0?'+':'−')+fmt(Math.abs(d))]};
-  let cmpLine=cmpOn&&!cmp?`<div class="cmpline">Nothing logged in ${esc(R.plabel)} to compare with.</div>`:'';
+  const pick=ui.cMode==='pick';
+  /* --- top: one total, or two side by side */
+  let top, cmpLine='', cmpWith='';
   if(cmp){
     const [cls,txt]=delta(cur.total,prev.total), pc=prev.total>0?Math.round((cur.total-prev.total)/prev.total*100):null;
-    cmpLine=`<div class="cmpline">${cls==='same'?'Same as':`<b class="${cls}">${txt}${pc!==null&&pc!==0?' ('+(pc>0?'+':'\u2212')+Math.abs(pc)+'%)':''}</b> ${cls==='up'?'more than':'less than'}`} ${esc(R.plabel)} (${fmt(prev.total)})</div>`;
+    cmpWith=`<div class="cmpwith"><span class="lbl">Compare with</span>
+      <button class="rchip sm" data-click="cmp-mode" data-m="auto" aria-pressed="${!pick}">${ui.range==='custom'?'Period before':'Previous '+({week:'week',lastweek:'week',month:'month',last:'month','3m':'3 months',year:'year'}[ui.range]||'period')}</button>
+      <button class="rchip sm" data-click="cmp-mode" data-m="pick" aria-pressed="${pick}">Pick dates</button></div>
+      ${pick?`<div class="rcustom cmpdates"><div><label class="f" for="c-from">From</label><input class="txt" type="date" id="c-from" data-k="c-from" data-act="cFrom" value="${esc(ymd(R.pf))}"></div>
+      <div><label class="f" for="c-to">To</label><input class="txt" type="date" id="c-to" data-k="c-to" data-act="cTo" value="${esc(ymd(R.pt))}"></div></div>`:''}`;
+    top=`<div class="sptop two">
+      <div class="half a"><div class="lbl"><i class="key a"></i>${esc(R.label)}</div><div class="big">${fmt(cur.total)}</div></div>
+      <div class="half b"><div class="lbl"><i class="key b"></i>${esc(R.plabel)}</div><div class="big">${fmt(prev.total)}</div></div>
+      <button class="cmpbtn" data-click="toggle-cmp" aria-pressed="true">Comparing ✓</button></div>`;
+    cmpLine=prev.total>0||cur.total>0?`<div class="cmpline">${prev.total===0?`Nothing logged in ${esc(R.plabel)}.`:cls==='same'?'About the same in both.':`<b class="${cls}">${txt}${pc!==null&&pc!==0?' ('+(pc>0?'+':'−')+Math.abs(pc)+'%)':''}</b> ${cls==='up'?'more':'less'} in ${esc(R.label)}.`}</div>`:'';
+  }else{
+    top=`<div class="sptop"><div><div class="lbl">${esc(R.label)}</div><div class="big">${fmt(cur.total)}</div></div>
+        <button class="cmpbtn" data-click="toggle-cmp" aria-pressed="false">Compare</button></div>`;
   }
+  /* --- categories */
   const groups=[...cur.by.values()];
-  if(cmp)prev.by.forEach((g,id)=>{if(!cur.by.has(id))groups.push({line:id,total:0,items:[]})}); // stopped spending there: worth seeing
-  groups.sort((a,b)=>b.total-a.total);
-  const max=Math.max(1,...groups.map(g=>g.total));
+  if(cmp)prev.by.forEach((g,id)=>{if(!cur.by.has(id))groups.push({line:id,total:0,items:[]})});
+  const pv=id=>cmp?(prev.by.get(id)||{total:0,items:[]}):{total:0,items:[]};
+  groups.sort((a,b)=>b.total-a.total||pv(b.line).total-pv(a.line).total);
+  const max=Math.max(1,...groups.map(g=>Math.max(g.total,pv(g.line).total)));
+  const logList=(items,label,key)=>{
+    if(!items.length)return `<span class="muted small">Nothing logged here in ${esc(label)}.</span>`;
+    const where=new Map();items.forEach(e=>{const w=e.tag||'';where.set(w,(where.get(w)||0)+num(e.amount))});
+    const ws=[...where.entries()].sort((a,b)=>(a[0]===''?1:0)-(b[0]===''?1:0)||b[1]-a[1]);
+    const its=items.slice().sort((a,b)=>entryKey(b)-entryKey(a)||num(b.ts)-num(a.ts));
+    const LIM=25, all=ui.catAll===key, shown=all?its:its.slice(0,LIM);
+    return `${ws.length>1||(ws[0]&&ws[0][0])?`<h4>Where</h4><div class="spwhere">${ws.map(([w,v])=>`<span>${esc(w||'Not tagged')} ${fmt(v)}</span>`).join('')}</div>`:''}
+      <h4>${its.length} ${its.length===1?'entry':'entries'}</h4>
+      ${shown.map(e=>`<button class="splog" data-click="open-log" data-entry="${esc(e.id)}"><span class="d">${entryDay(e)} ${MONTHS[e.month]}${e.year!==t.getFullYear()?' ’'+String(e.year).slice(2):''}</span><span class="w">${esc(e.tag||'')}${e.tag&&e.note?' ':''}${e.note?`<small>${e.tag?'— ':''}${esc(e.note)}</small>`:''}${!e.tag&&!e.note?'<small>—</small>':''}</span><span class="a">${fmt(e.amount)}</span></button>`).join('')}
+      ${its.length>shown.length?`<button class="linkbtn" style="padding:8px 0 2px" data-click="cat-all" data-line="${esc(key)}">Show all ${its.length}</button>`:''}`;
+  };
   const rows=groups.map(g=>{
     const l=state.lines.find(x=>x.id===g.line)||{id:g.line,name:'Removed category',bucket:'variable'};
-    const open=ui.openCat===g.line, share=cur.total?g.total/cur.total:0;
-    let dl='';
-    if(cmp){const pv=(prev.by.get(g.line)||{total:0}).total,[cls,txt]=delta(g.total,pv);dl=`<span class="dl ${cls}">${cls==='same'?'same':txt}</span>`}
+    const open=ui.openCat===g.line, share=cur.total?g.total/cur.total:0, p=pv(g.line);
     let body='';
-    if(open){
-      const where=new Map();g.items.forEach(e=>{const w=e.tag||'';where.set(w,(where.get(w)||0)+num(e.amount))});
-      const ws=[...where.entries()].sort((a,b)=>(a[0]===''?1:0)-(b[0]===''?1:0)||b[1]-a[1]);
-      const items=g.items.slice().sort((a,b)=>entryKey(b)-entryKey(a)||num(b.ts)-num(a.ts));
-      const LIM=25, all=ui.catAll===g.line, shown=all?items:items.slice(0,LIM);
-      body=g.items.length?`<div class="spopen">
-        ${ws.length>1||(ws[0]&&ws[0][0])?`<h4>Where</h4><div class="spwhere">${ws.map(([w,v])=>`<span>${esc(w||'Not tagged')} ${fmt(v)}</span>`).join('')}</div>`:''}
-        <h4>${items.length} ${items.length===1?'entry':'entries'}</h4>
-        ${shown.map(e=>`<button class="splog" data-click="open-log" data-entry="${esc(e.id)}"><span class="d">${entryDay(e)} ${MONTHS[e.month]}${e.year!==t.getFullYear()?' ’'+String(e.year).slice(2):''}</span><span class="w">${esc(e.tag||'')}${e.tag&&e.note?' ':''}${e.note?`<small>${e.tag?'— ':''}${esc(e.note)}</small>`:''}${!e.tag&&!e.note?'<small>—</small>':''}</span><span class="a">${fmt(e.amount)}</span></button>`).join('')}
-        ${items.length>shown.length?`<button class="linkbtn" style="padding:8px 0 2px" data-click="cat-all" data-line="${esc(g.line)}">Show all ${items.length}</button>`:''}
-      </div>`:`<div class="spopen"><span class="muted small">Nothing logged here in ${esc(R.label)}.</span></div>`;
+    if(open)body=cmp
+      ?`<div class="spopen two"><div class="col"><h3><i class="key a"></i>${esc(R.label)} · ${fmt(g.total)}</h3>${logList(g.items,R.label,g.line)}</div>
+          <div class="col"><h3><i class="key b"></i>${esc(R.plabel)} · ${fmt(p.total)}</h3>${logList(p.items,R.plabel,g.line+'|b')}</div></div>`
+      :`<div class="spopen">${logList(g.items,R.label,g.line)}</div>`;
+    if(cmp){
+      const [cls,txt]=delta(g.total,p.total);
+      return `<li><button class="sprow c2" data-click="sp-cat" data-line="${esc(g.line)}" aria-expanded="${open}">
+        <span class="ic" style="background:${catColor(l)}">${catIcon(l)}</span>
+        <span class="nm">${esc(l.name)}</span>
+        <span class="dl ${cls}">${cls==='same'?'same':txt}</span>
+        <span class="bars" aria-hidden="true"><span class="fill" style="width:${g.total/max*100}%;background:${catColor(l)}"></span><span class="fill b" style="width:${p.total/max*100}%"></span></span>
+        <span class="am">${fmt(g.total)}</span><span class="am b">${fmt(p.total)}</span>
+      </button>${body}</li>`;
     }
     return `<li><button class="sprow" data-click="sp-cat" data-line="${esc(g.line)}" aria-expanded="${open}">
       <span class="ic" style="background:${catColor(l)}">${catIcon(l)}</span>
       <span class="nm">${esc(l.name)}</span>
       <span class="am">${fmt(g.total)}<small>${g.total?pct(share,0):''}</small></span>
-      <span class="track" aria-hidden="true"><span class="fill" style="width:${g.total/max*100}%;background:${catColor(l)}"></span></span>${dl}
+      <span class="track" aria-hidden="true"><span class="fill" style="width:${g.total/max*100}%;background:${catColor(l)}"></span></span>
     </button>${body}</li>`;
   }).join('');
+  const head=cmp&&groups.length?`<div class="sphdr" aria-hidden="true"><span></span><span>Category</span><span><i class="key a"></i>${esc(shortLabel(R.from,R.to))}</span><span><i class="key b"></i>${esc(shortLabel(R.pf,R.pt))}</span></div>`:'';
+  const none=cmp?`Nothing logged in either period.`:`Nothing logged in ${esc(R.label)}.`;
   return `<div class="spwrap spsec"><div class="rchips" role="group" aria-label="Time range">${chips}</div>${custom}
-    <section class="panel">
-      <div class="sptop"><div><div class="lbl">${esc(R.label)}</div><div class="big">${fmt(cur.total)}</div></div>
-        <button class="cmpbtn" data-click="toggle-cmp" aria-pressed="${cmpOn}">${cmpOn?'Comparing \u2713':'Compare'}</button></div>
-      ${cmpLine}
-      <p class="spnote">Logged spending only \u2014 rent, bills and savings are on the Budget tab. Tap a category to see where and when.</p>
-      ${groups.length?`<ul class="splist">${rows}</ul>`:`<p class="spempty">Nothing logged in ${esc(R.label)}.</p>`}
+    <section class="panel">${top}${cmpWith}${cmpLine}
+      <p class="spnote">Logged spending only — rent, bills and savings are on the Budget tab. Tap a category to see where and when.</p>
+      ${groups.length?`${head}<ul class="splist">${rows}</ul>`:`<p class="spempty">${none}</p>`}
     </section></div>`;
 }
-function overview(){
+function overview(parts){
   const weekMode=ui.scope==='week';
   const wkIdx=currentWeekIndex(ui.month), wkInfo=weeksOf(ui.year,ui.month)[wkIdx];
   const act=isActive(), ms=scopeMonths();
@@ -1432,6 +1489,10 @@ function overview(){
   const lower=`<section class="section three"><div><h2 class="sec">Sinking funds</h2><ul class="flist">${fl}</ul></div><div><h2 class="sec">Recent spending</h2><ul class="flist">${rs}</ul></div><div><h2 class="sec">Recent extra income</h2><ul class="flist">${rl}</ul>
     <p class="muted small" style="margin-top:10px">Each payment is split ${pct(state.extraSplit.pyf,0)} PYF top-up, ${pct(state.extraSplit.sink,0)} sinking funds and ${pct(state.extraSplit.free,0)} guilt-free.</p></div></section>`;
 
+  if(parts)return {ledger,jar,
+    notesSec:`<section><h2 class="sec">Worth a look</h2><ul class="notes">${notes.map(n=>`<li class="${n.t}"><b>${esc(n.h)}</b><span>${esc(n.p)}</span></li>`).join('')}</ul></section>`,
+    fundsSec:`<section><h2 class="sec">Sinking funds</h2><ul class="flist">${fl}</ul></section>`,
+    extraSec:`<section><h2 class="sec">Recent extra income</h2><ul class="flist">${rl}</ul><p class="muted small" style="margin-top:10px">Each payment is split ${pct(state.extraSplit.pyf,0)} PYF top-up, ${pct(state.extraSplit.sink,0)} sinking funds and ${pct(state.extraSplit.free,0)} guilt-free.</p></section>`};
   return `${spendingView()}${banner}${notStarted}
     <div class="scope" role="group" aria-label="Time range"><button data-click="scope" data-s="week" aria-pressed="${ui.scope==='week'}">This week</button><button data-click="scope" data-s="month" aria-pressed="${ui.scope==='month'}">${FULL[ui.month]}</button><button data-click="scope" data-s="ytd" aria-pressed="${ui.scope==='ytd'}">Year to date</button></div>
     <h1 class="headline ${act?'wide':''}">${esc(head)}</h1>${strip}${facts}
@@ -1500,14 +1561,13 @@ function setupFixedSection(){
       :`<button class="linkbtn" data-click="add-line" data-b="fixed">Add a line</button>`}
   </section>`;
 }
-function quickLogPanel(m){
+function balancePanel(m){
   const segs=state.lines.filter(l=>isItemized(l.bucket)).map(l=>({l,v:lineActual(l,m)})).filter(s=>s.v>0).sort((x,y)=>y.v-x.v);
   const bd=monthBreakdown(ui.year,m);
   const expenses=bd.fixedCosts+bd.spending, setAside=bd.setAside;
   const incomeThisMonth=bd.income+bd.extraFree;
   const rollover=rolloverInto(ui.year,m);
   const balance=bd.net+rollover;
-  const donut=`<div class="donut" style="margin:4px 0 6px">${categoryWheel(segs,fmt(incomeThisMonth),fmt(expenses))}</div>`;
   /* Salary often lands a week or so before the month it's meant for, and spending from it
      starts straight away. Log it under the month it's for; the early spending shows here as
      a negative that carries into that month. Once next month's salary is entered, show what
@@ -1531,20 +1591,50 @@ function quickLogPanel(m){
     ${(rollover||!bd.incomeLogged)?`<p class="muted small" style="margin:0 0 4px">${rollover?`Includes ${rollover>0?fmt(rollover)+' carried over':fmt(-rollover)+' shortfall carried over'} from earlier months.`:''}${!bd.incomeLogged?` Estimate: uses planned Income 1 until you enter what arrived.`:''}</p>`:''}
     ${early}
     <details class="balwhy"><summary>How this is worked out</summary><p class="muted small">${parts.join(' · ')}. Bills and set-asides count at their planned amount unless you change them for this month (starting point below). The carry-over is the running total of every earlier month's leftover.</p></details>`;
-  const note=segs.length===0?`<p class="muted small" style="padding:0 4px">Tap a category below to log your first expense this month.</p>`:'';
-  const wheelTot=sum(segs.map(s=>s.v))||1;
+  return `<section class="panel" style="padding:16px 18px 14px;margin-bottom:22px">${balBar}</section>`;
+}
+/* The Log tab. Everything here comes from the expenses you log, so it works the same whether or
+   not Income 1 has been entered for the month (e.g. you start spending next month's salary in
+   the last week of this one: log it under next month and it shows up here straight away). */
+function spentWheel(segs,total,label){
+  const R=52,STROKE=17,C=74,CIRC=2*Math.PI*R,tot=sum(segs.map(s=>s.v))||1;
+  let off=0,arcs='';
+  segs.forEach(s=>{
+    const len=s.v/tot*CIRC, color=catColor(s.l);
+    arcs+=`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="${color}" stroke-width="${STROKE}" stroke-dasharray="${len} ${CIRC-len}" stroke-dashoffset="${-off}" transform="rotate(-90 ${C} ${C})"><title>${esc(s.l.name)}: ${fmt(s.v)} (${pct(s.v/tot)})</title></circle>`;
+    off+=len;
+  });
+  return `<svg viewBox="0 0 ${C*2} ${C*2}" role="img" aria-label="${esc(label)}: ${esc(total)} spent">
+    <circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--track)" stroke-width="${STROKE}"/>${arcs}
+    <text x="${C}" y="${C-1}" text-anchor="middle" style="font-family:var(--display);font-size:18px;font-weight:700;fill:var(--ink)">${esc(total)}</text>
+    <text x="${C}" y="${C+16}" text-anchor="middle" style="font-size:11px;fill:var(--muted)">spent in ${esc(label)}</text>
+  </svg>`;
+}
+function logPanel(m){
+  const segs=state.lines.filter(l=>isItemized(l.bucket)).map(l=>({l,v:lineActual(l,m)})).filter(s=>s.v>0).sort((x,y)=>y.v-x.v);
+  const spent=sum(segs.map(s=>s.v)), wheelTot=spent||1;
   const shareOf=id=>{const s=segs.find(x=>x.l.id===id);return s?pct(s.v/wheelTot):''};
   const PINNED=['v_groc','l_take','v_grab','l_eat','v_house'];
   const itemizedLines=state.lines.filter(l=>isItemized(l.bucket));
   const orderedLines=[...PINNED.map(id=>itemizedLines.find(l=>l.id===id)).filter(Boolean),...itemizedLines.filter(l=>PINNED.indexOf(l.id)<0)];
-  const tiles=orderedLines.map(l=>{const sh=shareOf(l.id);return `<button type="button" class="cattile" data-click="open-log" data-line="${l.id}" aria-label="Log ${esc(l.name)}${sh?', '+sh+' of this month’s spending so far':''}">
+  const tiles=orderedLines.map(l=>{const sh=shareOf(l.id);return `<button type="button" class="cattile" data-click="open-log" data-line="${l.id}" aria-label="Log ${esc(l.name)}${sh?', '+sh+' of this month\u2019s spending so far':''}">
      <span class="cicon" style="background:${catColor(l)}">${catIcon(l)}</span>${esc(l.name)}${sh?`<span class="cpct">${sh}</span>`:''}
   </button>`}).join('');
-  return `<section class="panel" style="padding:18px 16px 16px;text-align:center;margin-bottom:22px">
-    <h2 class="sec" style="text-align:left">Log an expense</h2>
-    ${donut}${balBar}${note}
+  const note=segs.length===0?`<p class="muted small" style="padding:0 4px">Nothing logged in ${FULL[m]} yet. Tap a category below to log the first expense.</p>`:'';
+  return `<section class="panel" style="padding:18px 16px 16px;text-align:center;margin-bottom:26px">
+    <h2 class="sec" style="text-align:left;margin-bottom:2px">Log an expense</h2>
+    <p class="muted small" style="text-align:left;margin-bottom:6px">Saved to ${FULL[m]}. Change the month at the top, for example to log next month\u2019s spending early.</p>
+    <div class="donut" style="margin:4px 0 8px">${spentWheel(segs,fmt(spent),FULL[m])}</div>${note}
     <div class="catgrid" style="margin-top:10px">${tiles}</div>
   </section>`;
+}
+function recentSpendingSec(){
+  const recentSpend=state.entries.slice().sort((x,y)=>(y.year-x.year)||(y.month-x.month)||((y.day||1)-(x.day||1))).slice(0,5);
+  const rs=recentSpend.length?recentSpend.map(x=>{const ln=state.lines.find(z=>z.id===x.line);return `<li class="frow" style="grid-template-columns:minmax(0,1fr) auto"><span><b>${esc(ln?ln.name:'Spending')}</b><br><span class="muted small">${x.day||1} ${MONTHS[x.month]}${x.year!==ui.year?' \u2019'+String(x.year).slice(2):''}${x.note?' \u2014 '+esc(x.note):''}</span></span><span class="amt">${fmt(x.amount)}</span></li>`}).join(''):`<li class="muted small" style="padding:8px 0">No spending logged yet.</li>`;
+  return `<section class="section"><h2 class="sec">Recent spending</h2><ul class="flist">${rs}</ul></section>`;
+}
+function logView(){
+  return logPanel(ui.month)+spendingView()+recentSpendingSec();
 }
 /* The month's starting point: everything that comes off from the 1st — rent, bills, other
    fixed costs, PYF and sinking set-asides — at the planned amount. Any of them can be changed
@@ -1616,7 +1706,15 @@ function budget(){
   };
   const left=['variable'].map(id=>card(BM[id])).join('<div style="height:22px"></div>');
   const right=['lifestyle','buffer'].map(id=>card(BM[id])).join('<div style="height:22px"></div>');
-  return `<h1 class="headline" style="font-size:clamp(24px,3.6vw,34px);max-width:none;margin-bottom:20px">${FULL[m]} budget</h1>${quickLogPanel(m)}${head}${startPanel(m)}<div class="section"><div class="bgrid"><div>${left}</div><div>${right}</div></div></div>`;
+  return `<h1 class="headline" style="font-size:clamp(24px,3.6vw,34px);max-width:none;margin-bottom:20px">${FULL[m]} budget</h1>${balancePanel(m)}${head}${startPanel(m)}<div class="section"><div class="bgrid"><div>${left}</div><div>${right}</div></div></div>${budgetExtras()}`;
+}
+/* Plan against reality, Holiday fund, Worth a look, Sinking funds and Recent extra income —
+   the same sections the Overview builds, shown here for the month chosen at the top. */
+function budgetExtras(){
+  const keep=ui.scope;ui.scope='month';
+  let P;try{P=overview(true)}finally{ui.scope=keep}
+  return `<div class="section"><div class="cols"><div>${P.ledger}</div><div class="rail">${P.jar}${P.notesSec}</div></div></div>
+    <div class="section" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:34px">${P.fundsSec}${P.extraSec}</div>`;
 }
 
 function extraView(){
@@ -1796,11 +1894,11 @@ function setupView(){
 }
 
 function view(){
-  return ({overview,budget,extra:extraView,sinking:sinkingView,setup:setupView}[ui.tab]||overview)();
+  return ({log:logView,overview,budget,extra:extraView,sinking:sinkingView,setup:setupView}[ui.tab]||overview)();
 }
 
 function fab(){
-  if(ui.tab!=='overview'&&ui.tab!=='budget')return '';
+  if(ui.tab!=='overview')return '';
   return `<button class="fab minus" data-click="open-log" aria-label="Log an expense"><span class="plus">−</span><span class="lbl">Log expense</span></button>`;
 }
 const CAT_ICONS={v_groc:'\ud83d\uded2',v_elec:'\ud83d\udca1',v_water:'\ud83d\udca7',v_clin:'\ud83d\udc8a',v_kids:'\ud83e\uddf8',v_house:'\ud83e\uddf9',v_grab:'\ud83d\ude95',l_eat:'\ud83c\udf5c',l_take:'\ud83e\udd61',l_date:'\ud83c\udfac',l_care:'\ud83e\uddf4'};
@@ -1935,10 +2033,12 @@ function onChange(e){
     case 'unlockDraft':ui.unlockDraft=t.value;break;
     case 'rFrom':if(t.value)ui.rFrom=t.value;break;
     case 'rTo':if(t.value)ui.rTo=t.value;break;
+    case 'cFrom':if(t.value){const R=spendRange();ui.cFrom=t.value;if(!ui.cTo)ui.cTo=ymd(R.pt)}break;
+    case 'cTo':if(t.value){const R=spendRange();ui.cTo=t.value;if(!ui.cFrom)ui.cFrom=ymd(R.pf)}break;
   }
   /* Picking a month/year or typing in the log form only changes what's on screen here —
      it isn't budget data, so it shouldn't count as an edit or trigger a sync. */
-  if(['month','year','logDate','logAmount','logNote','syncUrlDraft','lockP1','lockP2','unlockDraft','rFrom','rTo'].indexOf(act)<0)save();
+  if(['month','year','logDate','logAmount','logNote','syncUrlDraft','lockP1','lockP2','unlockDraft','rFrom','rTo','cFrom','cTo'].indexOf(act)<0)save();
   later();
 }
 function onClick(e){
@@ -2055,6 +2155,7 @@ function onClick(e){
     case 'sp-cat':ui.openCat=ui.openCat===d.line?null:d.line;ui.catAll=null;break;
     case 'cat-all':ui.catAll=d.line;break;
     case 'toggle-cmp':setCmp(!getCmp());break;
+    case 'cmp-mode':if(d.m==='pick'){const R=spendRange();if(!ui.cFrom||!ui.cTo){ui.cFrom=ymd(R.auto.pf);ui.cTo=ymd(R.auto.pt)}ui.cMode='pick'}else ui.cMode='auto';ui.catAll=null;break;
     case 'lock-open':ui.lockOpen=true;ui.lockErr=null;ui.lockMsg=null;ui.confirm=null;break;
     case 'lock-cancel':ui.lockOpen=false;ui.lockErr=null;ui.lockP1=ui.lockP2='';break;
     case 'lock-set':{
